@@ -1,0 +1,74 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model ItemType {
+  id        String      @id @default(cuid())
+  name      String
+  ItemChild ItemChild[]
+  ItemStock ItemStock?
+  OrderItem OrderItem[]
+
+  @@map(name: "item_types")
+}
+
+model ItemChild {
+  id           String   @id @default(cuid())
+  parentTypeId String
+  itemTypeId   String
+  quantity     Int
+  ItemType     ItemType @relation(fields: [parentTypeId], references: [id])
+
+  @@map(name: "item_child")
+}
+
+model ItemStock {
+  id         String   @id @default(cuid())
+  itemTypeId String   @unique
+  ItemType   ItemType @relation(fields: [itemTypeId], references: [id])
+  value      Int
+
+  @@map(name: "item_stock")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  num         Int         @default(autoincrement())
+  createdAt   DateTime
+  completedAt DateTime?
+  OrderItem   OrderItem[]
+  completed   Boolean     @default(false)
+
+  @@map(name: "orders")
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  name       String?
+  orderId    String
+  itemTypeId String
+  quantity   Int
+
+  Order    Order    @relation(fields: [orderId], references: [id])
+  ItemType ItemType @relation(fields: [itemTypeId], references: [id])
+
+  @@map(name: "order_items")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  @@map(name: "users")
+}
