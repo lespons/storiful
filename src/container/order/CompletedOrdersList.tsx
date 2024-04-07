@@ -1,6 +1,6 @@
 'use server';
 import prisma from '@/lib/prisma';
-import { OrdersList } from '@/components/OrdersList';
+import { OrdersList } from '@/components/order/OrdersList';
 import { ItemChild, ItemType } from '@prisma/client';
 
 export async function CompletedOrdersList({
@@ -13,7 +13,7 @@ export async function CompletedOrdersList({
       completed: true
     },
     orderBy: {
-      completedAt: 'asc'
+      completedAt: 'desc'
     },
     include: {
       OrderItem: {
@@ -29,7 +29,7 @@ export async function CompletedOrdersList({
   });
 
   return (
-    <>
+    <div className="max-h-[75vh] flex flex-col">
       <div className="text-lg font-bold">Completed orders:</div>
       <OrdersList
         orders={orders.map(({ num, id, completed, createdAt, completedAt, OrderItem }) => ({
@@ -42,6 +42,7 @@ export async function CompletedOrdersList({
             id: oi.id,
             name: oi.ItemType.name,
             quantity: oi.quantity,
+            completed: oi.completed,
             children: oi.ItemType.ItemChild.map((ic) => ({
               name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
               quantity: ic.quantity
@@ -49,6 +50,6 @@ export async function CompletedOrdersList({
           }))
         }))}
       />
-    </>
+    </div>
   );
 }

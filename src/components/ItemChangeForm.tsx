@@ -25,20 +25,22 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
   return (
     <Formik initialValues={{ items: state.items }} onSubmit={formAction}>
       {({ values, setFieldValue, handleChange, handleBlur, handleSubmit, errors }) => (
-        <form onSubmit={handleSubmit} className="flex flex-col max-w-52">
+        <form onSubmit={handleSubmit} className="flex flex-col">
           {values.items.map((item: unknown, index: number) => (
-            <div className="flex flex-row" key={(item as { id: string })['id'] ?? index}>
+            <div
+              className="flex flex-row justify-between gap-2"
+              key={(item as { id: string })['id'] ?? index}>
               {fieldsToView?.map((fieldName) => {
                 const val = (item as { [fieldName: string]: string })[fieldName];
                 return (
-                  <div key={val} className="text-nowrap pr-2 mt-2 font-bold min-w-16">
+                  <div key={val} className="text-nowrap pr-2 mt-2 font-bold">
                     {val}
                   </div>
                 );
               })}
               <div>
                 {fieldsToChange.map((fieldName) => (
-                  <div className="mb-4" key={fieldName}>
+                  <div className="mb-2" key={fieldName}>
                     <Field
                       type="number"
                       name={`items[${index}].${fieldName}`}
@@ -67,7 +69,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
           <button
             type="submit"
             disabled={isPending}
-            className="px-3 py-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-700 font-bold">
+            className="px-3 py-2 my-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-700 font-bold">
             Update
           </button>
 

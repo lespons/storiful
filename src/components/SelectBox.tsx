@@ -14,9 +14,12 @@ export function SelectBox({
   onSelect: (item: Item) => void;
 }) {
   const [options, setOptions] = useState(items);
-  const search = useCallback((v: string) => {
-    setOptions(items.filter(({ name }) => name.toLowerCase().startsWith(v.toLowerCase())));
-  }, []);
+  const search = useCallback(
+    (v: string) => {
+      setOptions(items.filter(({ name }) => name.toLowerCase().startsWith(v.toLowerCase())));
+    },
+    [items]
+  );
   useEffect(() => {
     setOptions(items);
   }, [items]);

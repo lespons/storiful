@@ -28,9 +28,9 @@ export async function ItemTypeView({ itemsTypes }: { itemsTypes: ItemType[] }) {
           itemTypeId: result.id
         }
       });
-      revalidatePath('/itemtype');
-      revalidatePath('/stock');
-      revalidatePath('/order');
+      revalidatePath('/itemtype', 'page');
+      revalidatePath('/stock', 'page');
+      revalidatePath('/order', 'page');
     } catch (error) {
       console.error(error);
     }

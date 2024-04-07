@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { ItemStockEditView } from '@/container/ItemStockEditView';
+import { ItemStockEdit } from '@/container/ItemStockEdit';
 
 async function getProps() {
   const itemStock = await prisma.itemStock.findMany({
@@ -24,7 +24,7 @@ export default async function StockHome() {
   return (
     <div className="flex flex-col items-center">
       <div className="mt-10">
-        <ItemStockEditView itemStock={itemStock} />
+        <ItemStockEdit itemStock={itemStock} />
       </div>
     </div>
   );

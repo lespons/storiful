@@ -77,23 +77,35 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
             {values.order.items?.length ? (
               <div className="bg-fuchsia-700 bg-opacity-10 rounded-md mt-2 py-2 px-4">
                 {values.order.items.map((v, index) => (
-                  <div key={v.id} className="text-xs font-bold">
+                  <div key={v.id} className="text-xs font-bold not-first:pt-2">
                     <div>{v.name}</div>
-                    <Field
-                      type="number"
-                      name={`order.items[${index}].quantity`}
-                      placeholder=""
-                      className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
+
+                    <div className="flex flex-row gap-2">
+                      <Field
+                        type="number"
+                        name={`order.items[${index}].quantity`}
+                        placeholder=""
+                        className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log(index);
+                          values.order.items.splice(index, 1);
+                          setFieldValue('order.items', values.order.items);
+                        }}>
+                        🗑
+                      </button>
+                    </div>
 
                     {v.children?.length ? (
                       <div className="pt-2 font-normal">
                         <label>These items will be used:</label>
                         {v.children.map((c) => (
                           <div key={c.name} className="text-red-700">
-                            - {c.quantity} pcs of {c.name}
+                            - {v.quantity * c.quantity} pcs of {c.name}
                           </div>
                         ))}
                       </div>

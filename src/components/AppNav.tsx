@@ -7,7 +7,8 @@ export function AppNav() {
 
   return (
     <>
-      <div className="flex flex-row min-w-full place-content-center text-3xl pb-5">
+      <div
+        className={`flex flex-row min-w-full place-content-center text-3xl pb-5 ${pathname === '/' ? 'underline underline-offset-8' : ''}`}>
         <a href="/">Home</a>
       </div>
       <div className="flex flex-row min-w-full font-light text-2xl">

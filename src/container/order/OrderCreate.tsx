@@ -1,10 +1,10 @@
 'use server';
 import prisma from '@/lib/prisma';
 import { ItemChild, ItemType } from '@prisma/client';
-import OrderOrderForm, { OrderFormProps, OrderFormValue } from '@/components/ItemOrderForm';
+import OrderOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
 import { revalidatePath } from 'next/cache';
 
-export async function OrderCreateView({
+export async function OrderCreate({
   itemTypes
 }: {
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
@@ -42,6 +42,7 @@ export async function OrderCreateView({
     } finally {
       // redisClient.publish('orders', 'new order!');
       revalidatePath('/order');
+      revalidatePath('/');
     }
   };
 

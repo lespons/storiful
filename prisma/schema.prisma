@@ -56,6 +56,7 @@ model OrderItem {
   orderId    String
   itemTypeId String
   quantity   Int
+  completed  Boolean @default(false)
 
   Order    Order    @relation(fields: [orderId], references: [id])
   ItemType ItemType @relation(fields: [itemTypeId], references: [id])

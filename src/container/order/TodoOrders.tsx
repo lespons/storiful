@@ -24,7 +24,11 @@ export async function TodoOrders({
         include: {
           OrderItem: {
             include: {
-              ItemType: true
+              ItemType: {
+                include: {
+                  ItemChild: true
+                }
+              }
             }
           }
         }
@@ -34,28 +38,16 @@ export async function TodoOrders({
         throw Error(`Order is not found with id ${id}`);
       }
 
-      const itemTypes = await prisma.itemType.findMany({
-        include: {
-          ItemChild: {
-            include: {
-              ItemType: true
-            }
-          }
-        }
-      });
+      const itemsToConsumed = order.OrderItem.map((orderItem) => {
+        const children = orderItem.ItemType.ItemChild.map((child) => {
+          return {
+            itemTypeId: child.itemTypeId,
+            quantity: child.quantity * orderItem.quantity
+          };
+        });
 
-      const itemsToConsumed = itemTypes
-        .filter((it) => {
-          if (!it.ItemChild.length) {
-            return false;
-          }
-          if (!order.OrderItem.some((oi) => oi.itemTypeId === it.id)) {
-            return false;
-          }
-          return true;
-        })
-        .map(({ ItemChild }) => ItemChild)
-        .flat();
+        return children;
+      }).flat();
 
       await Promise.all(
         order.OrderItem.map((oi) =>
@@ -98,7 +90,24 @@ export async function TodoOrders({
     });
 
     revalidatePath('/order');
+    revalidatePath('/');
   };
+
+  const markAsCompletedType = async (orderItemId: string, completed: boolean) => {
+    'use server';
+
+    await prisma.orderItem.update({
+      where: {
+        id: orderItemId
+      },
+      data: {
+        completed
+      }
+    });
+    revalidatePath('/order');
+    revalidatePath('/');
+  };
+
   return (
     <>
       <div className="text-lg font-bold">Orders to do:</div>
@@ -106,7 +115,11 @@ export async function TodoOrders({
         fallback={{
           '/api/order/todo': { orders }
         }}>
-        <TodoOrdersList submitData={submitData} itemTypes={itemTypes} />
+        <TodoOrdersList
+          submitData={submitData}
+          itemTypes={itemTypes}
+          completedOrderItem={markAsCompletedType}
+        />
       </SWRProvider>
     </>
   );

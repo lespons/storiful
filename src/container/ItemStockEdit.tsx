@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { ItemStock, ItemType } from '@prisma/client';
 import ItemChangeForm from '@/components/ItemChangeForm';
 
-export async function ItemStockEditView({ itemStock }: { itemStock: ItemStock[] }) {
+export async function ItemStockEdit({ itemStock }: { itemStock: ItemStock[] }) {
   const submitData = async (prevData: any, values: { items: { id: string; value: number }[] }) => {
     'use server';
     try {
@@ -31,6 +31,7 @@ export async function ItemStockEditView({ itemStock }: { itemStock: ItemStock[] 
     } finally {
       revalidatePath('/stock');
       revalidatePath('/order');
+      revalidatePath('/');
     }
   };
 
