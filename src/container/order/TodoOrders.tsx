@@ -29,6 +29,11 @@ export async function TodoOrders({
                   ItemChild: true
                 }
               }
+            },
+            orderBy: {
+              ItemType: {
+                name: 'asc'
+              }
             }
           }
         }

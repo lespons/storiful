@@ -31,6 +31,7 @@ export async function ItemTypeView({ itemsTypes }: { itemsTypes: ItemType[] }) {
       revalidatePath('/itemtype', 'page');
       revalidatePath('/stock', 'page');
       revalidatePath('/order', 'page');
+      revalidatePath('/', 'page');
     } catch (error) {
       console.error(error);
     }

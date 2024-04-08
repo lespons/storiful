@@ -17,6 +17,11 @@ export const getTodoOrders = async () => {
               ItemChild: true
             }
           }
+        },
+        orderBy: {
+          ItemType: {
+            name: 'asc'
+          }
         }
       }
     }
