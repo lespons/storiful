@@ -28,15 +28,18 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
     OrdersListProps['orders'],
     {
       order: OrdersListProps['orders'][0];
-      orderItem: { id: string; checked: boolean };
+      orderItem?: { id: string; checked: boolean };
     }
   >(orders, (state, { order, orderItem }) => {
     const oldOrderIndex = state.findIndex(({ id }) => id === order.id);
 
-    state[oldOrderIndex].items.find((oi) => oi.id === orderItem.id)!.completed = orderItem.checked;
+    if (orderItem) {
+      state[oldOrderIndex].items.find((oi) => oi.id === orderItem.id)!.completed =
+        orderItem.checked;
+    }
+
     state[oldOrderIndex] = {
-      ...order,
-      pending: true
+      ...order
     };
 
     return [...state];
@@ -104,7 +107,12 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
                   type="submit"
                   disabled={disabled}
                   onClick={async () => {
-                    await onComplete?.(order.id);
+                    startTransition(() => {
+                      setOptimisticOrder({
+                        order: { ...order, pending: true }
+                      });
+                      onComplete?.(order.id);
+                    });
                   }}
                   className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-500' : 'hover:text-green-600 hover:bg-green-100'} font-bold text-sm min-w-full bg-fuchsia-100`}>
                   {order.pending ? 'Updating' : 'Complete'}

@@ -114,7 +114,7 @@ export async function TodoOrders({
   };
 
   return (
-    <>
+    <div className="max-h-[75vh] flex flex-col">
       <div className="text-lg font-bold">Orders to do:</div>
       <SWRProvider
         fallback={{
@@ -126,6 +126,6 @@ export async function TodoOrders({
           completedOrderItem={markAsCompletedType}
         />
       </SWRProvider>
-    </>
+    </div>
   );
 }
