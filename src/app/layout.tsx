@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { AppNav } from '@/components/AppNav';
 import '@johanaarstein/dotlottie-player';
 import Script from 'next/script';
+import { UserAppNav } from '@/containers/UserAppNav';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
         type="module"></Script>
       <body className={inter.className}>
         <main className="flex min-h-screen flex-col items-center pt-12 px-32 overflow-auto">
-          <AppNav />
+          <UserAppNav />
           <div className="min-w-full">{children}</div>
         </main>
       </body>

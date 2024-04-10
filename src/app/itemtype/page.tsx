@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { ItemTypeView } from '@/container/ItemTypeView';
+import { ItemTypeView } from '@/containers/ItemTypeView';
 
 async function getProps() {
   const itemTypes = await prisma.itemType.findMany({

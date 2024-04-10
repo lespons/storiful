@@ -8,6 +8,5 @@ type ResponseData = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   const orders = await prisma.order.findMany({});
-  console.log('CAALLED');
   res.status(200).json({ orders });
 }

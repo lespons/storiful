@@ -5,6 +5,7 @@ import { Field, Formik } from 'formik';
 import { useFormState } from 'react-dom';
 import { SelectBox } from '@/components/SelectBox';
 import { mutate } from 'swr';
+import { useSession } from 'next-auth/react';
 
 export type OrderFormValue = {
   name?: string;
@@ -31,7 +32,7 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
       items: []
     }
   });
-
+  // const { data: session, status } = useSession();
   useEffect(() => {
     if (state.success) {
       mutate('/api/order/todo');
@@ -92,7 +93,6 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
                       <button
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log(index);
                           values.order.items.splice(index, 1);
                           setFieldValue('order.items', values.order.items);
                         }}>

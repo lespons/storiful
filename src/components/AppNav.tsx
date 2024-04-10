@@ -2,11 +2,26 @@
 
 import { usePathname } from 'next/navigation';
 
-export function AppNav() {
+export function AppNav({
+  username,
+  logout
+}: {
+  username?: string | null;
+  logout?: () => Promise<void>;
+}) {
   const pathname = usePathname();
 
   return (
     <>
+      <div
+        className="absolute right-2 top-0 text-gray-500 cursor-pointer hover:text-black"
+        title={'Logout'}
+        aria-description={'logout'}
+        onClick={() => {
+          logout?.();
+        }}>
+        {username}
+      </div>
       <div
         className={`flex flex-row min-w-full place-content-center text-3xl pb-5 ${pathname === '/' ? 'underline underline-offset-8' : ''}`}>
         <a href="/">Home</a>

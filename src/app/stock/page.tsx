@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { ItemStockEdit } from '@/container/ItemStockEdit';
+import { ItemStockEdit } from '@/containers/ItemStockEdit';
 
 async function getProps() {
   const itemStock = await prisma.itemStock.findMany({
@@ -19,7 +19,6 @@ async function getProps() {
 
 export default async function StockHome() {
   const { itemStock } = await getProps();
-  console.log(itemStock);
 
   return (
     <div className="flex flex-col items-center">

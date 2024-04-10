@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/pages/api/order/todo';
-import { TodoOrdersList } from '@/container/order/TodoOrdersList';
+import { TodoOrdersList } from '@/containers/order/TodoOrdersList';
 import { SWRProvider } from '@/components/swr';
 
 export async function TodoOrders({
