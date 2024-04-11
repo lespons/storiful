@@ -56,7 +56,6 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
               Children selector
             </label>
             <SelectBox
-              name="children"
               items={
                 itemsList
                   .filter(

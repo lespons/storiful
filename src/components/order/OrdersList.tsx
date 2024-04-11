@@ -10,6 +10,8 @@ type OrdersListProps = {
     num: number;
     createdAt: Date;
     completedAt?: Date | null;
+    createdBy: string | null;
+    completedBy?: string | null;
     items: {
       id: string;
       quantity: number;
@@ -52,16 +54,29 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
         return (
           <div
             key={order.id}
-            className={`${order.completed ? 'bg-green-600' : 'bg-fuchsia-700'} bg-opacity-10 font-light px-8 py-4 rounded-2xl mb-2`}>
+            className={`${order.completed ? 'bg-green-600' : 'bg-fuchsia-700'} bg-opacity-10 font-light px-6 py-4 mb-2 rounded-2xl  min-w-52`}>
             <div className="text-lg underline">Order #{order.num}</div>
+
             <div className="text-xs font-light mb-2">{order.createdAt.toDateString()}</div>
-            <div>{order.completed}</div>
+
             <Disclosure defaultOpen={true}>
               <Disclosure.Button className="py-0 text-blue-900">Details</Disclosure.Button>
-              <Disclosure.Panel className="text-gray-500">
+              <Disclosure.Panel>
+                <div className="text-xs mt-auto mb-1">Created by {order.createdBy}</div>
                 {order.items.map((oi) => (
                   <div key={oi.id} className="text-sm">
-                    <div className="flex flex-row gap-1 text-green-800 font-normal">
+                    <div
+                      className="flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        startTransition(() => {
+                          setOptimisticOrder({
+                            order: { ...order, pending: true },
+                            orderItem: { id: oi.id, checked: !oi.completed }
+                          });
+                          onCompleteOrderItem?.(oi.id, !oi.completed);
+                        });
+                      }}>
                       {order.completed ? null : (
                         <div className="pt-0.5">
                           <input
@@ -99,8 +114,9 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
             </Disclosure>
             <div className="flex">
               {order.completed ? (
-                <div className="text-xs font-extralight mt-2">
-                  ✅&nbsp;{order.completedAt?.toDateString()}
+                <div className="flex flex-col text-xs font-extralight mt-2">
+                  <div className="">✅&nbsp;{order.completedAt?.toDateString()}</div>
+                  <div className="text-right">Completed by {order.completedBy}</div>
                 </div>
               ) : (
                 <button

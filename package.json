@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
-    "@johanaarstein/dotlottie-player": "^1.5.23",
     "@prisma/client": "^5.11.0",
     "bcrypt": "^5.1.1",
     "formik": "^2.4.5",

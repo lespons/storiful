@@ -5,6 +5,7 @@ import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/pages/api/order/todo';
 import { TodoOrdersList } from '@/containers/order/TodoOrdersList';
 import { SWRProvider } from '@/components/swr';
+import { auth } from '@/lib/auth';
 
 export async function TodoOrders({
   itemTypes
@@ -16,10 +17,13 @@ export async function TodoOrders({
   const submitData = async (id: string) => {
     'use server';
 
+    const session = await auth();
+
     await prisma.$transaction(async (tx) => {
       const order = await tx.order.findFirst({
         where: {
-          id
+          id,
+          completed: false
         },
         include: {
           OrderItem: {
@@ -89,7 +93,8 @@ export async function TodoOrders({
         },
         data: {
           completed: true,
-          completedAt: new Date()
+          completedAt: new Date(),
+          completedById: session!.user!.id!
         }
       });
     });

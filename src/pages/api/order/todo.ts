@@ -10,6 +10,7 @@ export const getTodoOrders = async () => {
       num: 'asc'
     },
     include: {
+      CreatedBy: true,
       OrderItem: {
         include: {
           ItemType: {

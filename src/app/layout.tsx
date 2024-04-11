@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import '@johanaarstein/dotlottie-player';
-import Script from 'next/script';
 import { UserAppNav } from '@/containers/UserAppNav';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -19,9 +17,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Script
-        src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
-        type="module"></Script>
       <body className={inter.className}>
         <main className="flex min-h-screen flex-col items-center pt-12 px-32 overflow-auto">
           <UserAppNav />

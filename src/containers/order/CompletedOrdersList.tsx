@@ -16,6 +16,8 @@ export async function CompletedOrdersList({
       completedAt: 'desc'
     },
     include: {
+      CreatedBy: true,
+      CompletedBy: true,
       OrderItem: {
         include: {
           ItemType: {
@@ -32,23 +34,27 @@ export async function CompletedOrdersList({
     <div className="max-h-[75vh] flex flex-col">
       <div className="text-lg font-bold">Completed orders:</div>
       <OrdersList
-        orders={orders.map(({ num, id, completed, createdAt, completedAt, OrderItem }) => ({
-          completed,
-          createdAt,
-          id,
-          num,
-          completedAt,
-          items: OrderItem.map((oi) => ({
-            id: oi.id,
-            name: oi.ItemType.name,
-            quantity: oi.quantity,
-            completed: oi.completed,
-            children: oi.ItemType.ItemChild.map((ic) => ({
-              name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-              quantity: ic.quantity
+        orders={orders.map(
+          ({ num, id, completed, createdAt, completedAt, CreatedBy, CompletedBy, OrderItem }) => ({
+            completed,
+            createdAt,
+            id,
+            num,
+            completedAt,
+            createdBy: CreatedBy.name,
+            completedBy: CompletedBy?.name,
+            items: OrderItem.map((oi) => ({
+              id: oi.id,
+              name: oi.ItemType.name,
+              quantity: oi.quantity,
+              completed: oi.completed,
+              children: oi.ItemType.ItemChild.map((ic) => ({
+                name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
+                quantity: ic.quantity
+              }))
             }))
-          }))
-        }))}
+          })
+        )}
       />
     </div>
   );

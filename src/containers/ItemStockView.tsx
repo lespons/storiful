@@ -7,7 +7,7 @@ export async function ItemStockView({
   itemStock: (ItemStock & { ItemType: ItemType })[];
 }) {
   return (
-    <>
+    <div>
       <div className="text-lg font-bold">Stock:</div>
       <div className="flex flex-col gap-2 px-2 py-2 border-l-2 border-fuchsia-900">
         {itemStock.map((is) => (
@@ -19,6 +19,6 @@ export async function ItemStockView({
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

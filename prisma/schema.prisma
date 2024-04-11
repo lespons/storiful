@@ -40,12 +40,16 @@ model ItemStock {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  num         Int         @default(autoincrement())
-  createdAt   DateTime
-  completedAt DateTime?
-  OrderItem   OrderItem[]
-  completed   Boolean     @default(false)
+  id            String      @id @default(cuid())
+  num           Int         @default(autoincrement())
+  createdAt     DateTime
+  completedAt   DateTime?
+  OrderItem     OrderItem[]
+  completed     Boolean     @default(false)
+  CreatedBy     User        @relation("CreatedOrders", fields: [createdById], references: [id])
+  CompletedBy   User?       @relation("CompletedOrders", fields: [completedById], references: [id])
+  createdById   String
+  completedById String?
 
   @@map(name: "orders")
 }
@@ -71,6 +75,9 @@ model User {
   password  String
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  createdOrders   Order[] @relation("CreatedOrders")
+  completedOrders Order[] @relation("CompletedOrders")
 
   @@map(name: "users")
 }

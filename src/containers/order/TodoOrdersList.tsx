@@ -33,23 +33,26 @@ export function TodoOrdersList({
           .OrderItem.find((orderItem) => orderItem.id === id)!.completed = completed;
         await mutate('/api/order/todo', { ...data });
       }}
-      orders={data!.orders.map(({ num, id, completed, createdAt, completedAt, OrderItem }) => ({
-        completed,
-        createdAt: new Date(createdAt),
-        id,
-        num,
-        completedAt,
-        items: OrderItem.map((oi) => ({
-          id: oi.id,
-          name: oi.ItemType.name,
-          quantity: oi.quantity,
-          completed: oi.completed,
-          children: oi.ItemType.ItemChild.map((ic) => ({
-            name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-            quantity: ic.quantity
+      orders={data!.orders.map(
+        ({ num, id, completed, createdAt, completedAt, CreatedBy, OrderItem }) => ({
+          completed,
+          createdAt: new Date(createdAt),
+          id,
+          num,
+          completedAt,
+          createdBy: CreatedBy.name,
+          items: OrderItem.map((oi) => ({
+            id: oi.id,
+            name: oi.ItemType.name,
+            quantity: oi.quantity,
+            completed: oi.completed,
+            children: oi.ItemType.ItemChild.map((ic) => ({
+              name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
+              quantity: ic.quantity
+            }))
           }))
-        }))
-      }))}
+        })
+      )}
     />
   );
 }
