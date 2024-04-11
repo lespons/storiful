@@ -4,11 +4,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 type Item = { id: string; name: string; [key: string]: unknown } & unknown;
 
 export function SelectBox({
-  name,
   items,
   onSelect
 }: {
-  name: string;
   items: Item[];
   initialItem?: Item;
   onSelect: (item: Item) => void;
@@ -25,7 +23,7 @@ export function SelectBox({
   }, [items]);
   return (
     <div className="relative">
-      <Combobox name={name} value={null} nullable={true} onChange={onSelect}>
+      <Combobox value={null} nullable={true} onChange={onSelect}>
         <div className="relative">
           <div className="relative w-full cursor-default overflow-hidden rounded-md bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
             <Combobox.Input

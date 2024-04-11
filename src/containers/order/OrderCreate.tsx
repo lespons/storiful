@@ -16,6 +16,9 @@ export async function OrderCreate({
     'use server';
 
     try {
+      if (!values.order.items.length) {
+        throw Error('No items are selected');
+      }
       await prisma.$transaction(async (tx) => {
         await tx.order.create({
           data: {
@@ -24,7 +27,7 @@ export async function OrderCreate({
               createMany: {
                 data: values.order.items.map(({ id, quantity, name }) => ({
                   itemTypeId: id,
-                  quantity
+                  quantity: Number(quantity)
                 }))
               }
             }
@@ -33,7 +36,7 @@ export async function OrderCreate({
       });
 
       return {
-        order: {},
+        order: { items: [] },
         success: true
       };
     } catch (e) {
