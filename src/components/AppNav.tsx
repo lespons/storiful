@@ -1,14 +1,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
-export function AppNav({
-  username,
-  logout
-}: {
-  username?: string | null;
-  logout?: () => Promise<void>;
-}) {
+export function AppNav({ username }: { username?: string | null }) {
   const pathname = usePathname();
 
   return (
@@ -17,9 +12,7 @@ export function AppNav({
         className="absolute right-2 top-0 text-gray-500 cursor-pointer hover:text-black"
         title={'Logout'}
         aria-description={'logout'}
-        onClick={() => {
-          logout?.();
-        }}>
+        onClick={() => signOut()}>
         {username}
       </div>
       <div
