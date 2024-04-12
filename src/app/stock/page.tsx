@@ -1,17 +1,8 @@
-import prisma from '@/lib/prisma';
 import { ItemStockEdit } from '@/containers/ItemStockEdit';
+import { getStock } from '@/pages/api/item/stock';
 
 async function getProps() {
-  const itemStock = await prisma.itemStock.findMany({
-    include: {
-      ItemType: true
-    },
-    orderBy: {
-      ItemType: {
-        name: 'asc'
-      }
-    }
-  });
+  const itemStock = await getStock();
   return {
     itemStock
   };

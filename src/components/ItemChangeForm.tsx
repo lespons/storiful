@@ -4,11 +4,14 @@ import React from 'react';
 import { ErrorMessage, Field, Formik } from 'formik';
 import { useFormState } from 'react-dom';
 
-interface ItemTypeFormProps {
-  items: unknown[];
+export interface ItemTypeFormProps {
+  items: { id: string; value: number; versionLock: number }[];
   fieldsToChange: string[];
   fieldsToView?: string[];
-  onSubmit: (values: { items: unknown[] }) => void;
+  onSubmit: (
+    prevValues: { items: ItemTypeFormProps['items'] },
+    values: { items: ItemTypeFormProps['items'] }
+  ) => Promise<{ items: ItemTypeFormProps['items']; error?: string; success?: boolean }>;
 }
 
 const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
@@ -17,13 +20,18 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
   fieldsToChange,
   fieldsToView
 }) => {
-  const [state, formAction, isPending] = useFormState(onSubmit as any, {
+  // TODO fix types
+  const [state, formAction, isPending] = useFormState<{
+    items: { id: string; value: number; versionLock: number }[];
+    error: undefined;
+    success: undefined;
+  }>(onSubmit as any, {
     items,
     error: undefined,
     success: undefined
   });
   return (
-    <Formik initialValues={{ items: state.items }} onSubmit={formAction}>
+    <Formik initialValues={{ items: state.items }} enableReinitialize={true} onSubmit={formAction}>
       {({ values, setFieldValue, handleChange, handleBlur, handleSubmit, errors }) => (
         <form onSubmit={handleSubmit} className="flex flex-col">
           {values.items.map((item: unknown, index: number) => (

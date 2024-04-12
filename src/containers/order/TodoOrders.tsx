@@ -67,6 +67,9 @@ export async function TodoOrders({
             data: {
               value: {
                 increment: oi.quantity
+              },
+              lockVersion: {
+                increment: 1
               }
             }
           })

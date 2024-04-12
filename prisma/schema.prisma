@@ -31,10 +31,11 @@ model ItemChild {
 }
 
 model ItemStock {
-  id         String   @id @default(cuid())
-  itemTypeId String   @unique
-  ItemType   ItemType @relation(fields: [itemTypeId], references: [id])
-  value      Int
+  id          String   @id @default(cuid())
+  itemTypeId  String   @unique
+  ItemType    ItemType @relation(fields: [itemTypeId], references: [id])
+  value       Int
+  lockVersion Int      @default(0)
 
   @@map(name: "item_stock")
 }
