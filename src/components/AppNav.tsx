@@ -23,7 +23,7 @@ export function AppNav({ username }: { username?: string | null }) {
         <div className="basis-1/3">
           <a href="/order">
             <button
-              className={`min-w-full text-right p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname === '/order' ? 'underline underline-offset-8' : ''}`}>
+              className={`text-gray-500 cursor-default min-w-full text-right p-3 bg-fuchsia-700 bg-opacity-5 ${pathname === '/order' ? 'underline underline-offset-8' : ''}`}>
               Orders
             </button>
           </a>
