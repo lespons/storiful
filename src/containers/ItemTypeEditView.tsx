@@ -4,13 +4,14 @@ import prisma from '@/lib/prisma';
 import ItemTypeForm, { ItemType } from '@/components/ItemTypeForm';
 import { revalidatePath } from 'next/cache';
 
-export async function ItemTypeView({ itemsTypes }: { itemsTypes: ItemType[] }) {
+export async function ItemTypeEditView({ itemsTypes }: { itemsTypes: ItemType[] }) {
   const submitData = async (values: ItemType) => {
     'use server';
     try {
       const result = await prisma.itemType.create({
         data: {
           name: values.name,
+          type: values.type,
           ItemChild: {
             createMany: {
               data: values.children.map((c) => ({

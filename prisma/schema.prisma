@@ -10,9 +10,15 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
+enum ItemTypeType {
+  INVENTORY
+  PRODUCT
+}
+
 model ItemType {
-  id        String      @id @default(cuid())
+  id        String       @id @default(cuid())
   name      String
+  type      ItemTypeType @default(INVENTORY)
   ItemChild ItemChild[]
   ItemStock ItemStock?
   OrderItem OrderItem[]

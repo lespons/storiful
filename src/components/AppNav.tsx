@@ -40,7 +40,7 @@ export function AppNav({ username }: { username?: string | null }) {
           <a href="/itemtype">
             <button
               className={`min-w-full text-left p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname === '/itemtype' ? 'underline underline-offset-8' : ''}`}>
-              Item types
+              Warehouse
             </button>
           </a>
         </div>

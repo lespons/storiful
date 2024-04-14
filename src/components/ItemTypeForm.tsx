@@ -4,10 +4,12 @@ import React, { Fragment } from 'react';
 import { ErrorMessage, Field, Formik } from 'formik';
 import * as Yup from 'yup';
 import { SelectBox } from '@/components/SelectBox';
+import { RadioGroup } from '@headlessui/react';
 
 export interface ItemType {
   id: string;
   name: string;
+  type: 'INVENTORY' | 'PRODUCT';
   children: {
     id?: string;
     name: string;
@@ -28,7 +30,7 @@ const ItemSchema = Yup.object().shape({
 const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
   return (
     <Formik
-      initialValues={{ id: '', name: '', children: [] } as ItemType}
+      initialValues={{ id: '', name: '', type: 'INVENTORY', children: [] } as ItemType}
       validationSchema={ItemSchema}
       onSubmit={(values) => onSubmit(values)}>
       {({ values, setFieldValue, handleChange, handleBlur, handleSubmit, errors }) => (
@@ -49,6 +51,48 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
               onBlur={handleBlur}
             />
             <ErrorMessage name="name" component="div" className="text-red-700 font-bold text-xs" />
+          </div>
+          <div className="mb-4">
+            <RadioGroup
+              value={values.type}
+              onChange={(value) => {
+                setFieldValue('type', value);
+              }}>
+              <RadioGroup.Label className={'block text-gray-700 text-sm font-bold mb-2'}>
+                Type
+              </RadioGroup.Label>
+              {[
+                { name: 'INVENTORY', desc: 'what you buy' },
+                { name: 'PRODUCT', desc: 'what you produce' }
+              ].map(({ name, desc }) => (
+                <RadioGroup.Option
+                  key={name}
+                  value={name}
+                  className={({ active, checked }) =>
+                    `${active ? 'ring-2 ring-fuchsia-100 ring-opacity-40' : ''}
+                  ${checked ? 'bg-fuchsia-700 bg-opacity-20 shadow-sm ' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
+                    relative flex cursor-pointer rounded-md px-4 py-2 drop-shadow-md focus:outline-none mb-2`
+                  }>
+                  {({ active, checked }) => (
+                    <div className={`flex w-full items-center justify-between`}>
+                      <div className="flex flex-col">
+                        <RadioGroup.Label
+                          as="p"
+                          className={`font-medium  ${checked ? '' : 'text-gray-900'}`}>
+                          {name.toLowerCase()}
+                        </RadioGroup.Label>
+                        <RadioGroup.Description
+                          as="span"
+                          className={`inline ${checked ? 'text-sky-100' : 'text-gray-500'}`}>
+                          {desc}
+                        </RadioGroup.Description>
+                      </div>
+                      {checked ? <div>✔️</div> : null}
+                    </div>
+                  )}
+                </RadioGroup.Option>
+              ))}
+            </RadioGroup>
           </div>
           {/* Add child item form fields here (nested or separate components) */}
           <div className="mb-4">
@@ -80,6 +124,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
                 setFieldValue('children', values.children);
               }}
             />
+
             <>
               <div className={'text-xs py-2'}>
                 {values.children?.length > 0 ? 'Children of new item:' : 'No children to add'}
