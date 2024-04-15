@@ -8,7 +8,7 @@ export default function LoginForm() {
 
   return (
     <form action={dispatch} className="space-y-3 mt-10">
-      <div className="flex-1 rounded-lg bg-fuchsia-700 bg-opacity-10 px-8 py-8">
+      <div className="flex-1 rounded-md bg-fuchsia-700 bg-opacity-10 px-8 py-8">
         <h1 className={`mb-3 text-2xl`}>Please log in to continue.</h1>
         <div className="w-full">
           <div>

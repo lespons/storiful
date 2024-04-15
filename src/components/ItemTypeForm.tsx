@@ -19,18 +19,22 @@ export interface ItemType {
 }
 
 interface ItemTypeFormProps {
+  action: 'CREATE' | 'UPDATE';
   itemsList: ItemType[];
   onSubmit: (values: ItemType) => void;
+  itemType?: ItemType;
 }
 
 const ItemSchema = Yup.object().shape({
   name: Yup.string().required('Name is required')
 });
 
-const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
+const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList, itemType }) => {
   return (
     <Formik
-      initialValues={{ id: '', name: '', type: 'INVENTORY', children: [] } as ItemType}
+      initialValues={
+        (itemType ?? { id: '', name: '', type: 'INVENTORY', children: [] }) as ItemType
+      }
       validationSchema={ItemSchema}
       onSubmit={(values) => onSubmit(values)}>
       {({ values, setFieldValue, handleChange, handleBlur, handleSubmit, errors }) => (
@@ -120,7 +124,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
                   itemTypeId: item.id,
                   quantity: 0
                 });
-                // setItems(items.filter((item) => !values.children.some(({ id }) => id === item.id)));
+
                 setFieldValue('children', values.children);
               }}
             />
@@ -132,11 +136,24 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
               {values.children.map((v, index) => (
                 <div key={v.itemTypeId} className="text-xs font-bold">
                   <div>- {v.name}</div>
-                  <Field
-                    type="number"
-                    name={`children[${index}].quantity`}
-                    className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-                  />
+                  <div className="flex flex-row gap-2">
+                    <Field
+                      type="number"
+                      name={`children[${index}].quantity`}
+                      className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        values.children = values.children.filter(
+                          (children) => children.itemTypeId !== v.itemTypeId
+                        );
+                        setFieldValue('children', values.children);
+                        // remove(index);
+                      }}>
+                      🗑
+                    </button>
+                  </div>
                 </div>
               ))}
             </>
@@ -145,7 +162,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ onSubmit, itemsList }) => {
           <button
             type="submit"
             className="px-3 py-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-700 font-bold">
-            Create
+            {action?.toLowerCase()}
           </button>
         </form>
       )}

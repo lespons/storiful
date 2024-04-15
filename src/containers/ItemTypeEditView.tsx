@@ -39,7 +39,7 @@ export async function ItemTypeEditView({ itemsTypes }: { itemsTypes: ItemType[] 
   };
   return (
     <>
-      <ItemTypeForm onSubmit={submitData} itemsList={itemsTypes} />
+      <ItemTypeForm action={'CREATE'} onSubmit={submitData} itemsList={itemsTypes} />
     </>
   );
 }

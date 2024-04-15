@@ -108,8 +108,9 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
             });
           }}
         />
+        {orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}
         {orderItems.length ? (
-          <div className="bg-fuchsia-700 bg-opacity-10 rounded-md mt-2 py-2 px-4">
+          <div className="bg-fuchsia-700 bg-opacity-10 rounded-md mt-2 py-4 px-4">
             {orderItems.map((orderItem, index) => (
               <div key={orderItem.id} className="text-xs font-bold not-first:pt-2">
                 <div>{orderItem.name}</div>
@@ -159,7 +160,7 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
       {/*  </p>*/}
       {/*) : undefined}*/}
       {error ? (
-        <p className="text-red-700 bg-red-100 rounded-2xl m-auto mt-5 p-2 text-center text-sm font-bold">
+        <p className="text-red-700 bg-red-100 rounded-md m-auto mt-5 p-2 text-center text-sm font-bold">
           {error}
         </p>
       ) : undefined}

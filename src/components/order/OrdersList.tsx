@@ -54,7 +54,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
         return (
           <div
             key={order.id}
-            className={`${order.completed ? 'bg-green-600' : 'bg-fuchsia-700'} bg-opacity-10 font-light px-6 py-4 mb-2 rounded-2xl  min-w-52`}>
+            className={`${order.completed ? 'bg-green-700' : 'bg-blue-700'} bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
             <div className="text-lg underline">Order #{order.num}</div>
 
             <div className="text-xs font-light mb-2">{order.createdAt.toDateString()}</div>
