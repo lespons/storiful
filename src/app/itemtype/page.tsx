@@ -15,7 +15,7 @@ async function getProps() {
   };
 }
 
-export default async function () {
+export default async function ItemTypeCreatePage() {
   const { itemTypes } = await getProps();
 
   const submitData = async (values: ItemType) => {

@@ -39,7 +39,7 @@ export function AppNav({ username }: { username?: string | null }) {
         <div className="basis-1/3">
           <a href="/itemtype">
             <button
-              className={`min-w-full text-left p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname === '/itemtype' ? 'underline underline-offset-8' : ''}`}>
+              className={`min-w-full text-left p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname?.startsWith('/itemtype') ? 'underline underline-offset-8' : ''}`}>
               Warehouse
             </button>
           </a>
