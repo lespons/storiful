@@ -33,7 +33,6 @@ async function getProps() {
 
 export default async function OrderHome() {
   const { itemTypes, itemStock } = await getProps();
-
   return (
     <div className="flex flex-row gap-4 mt-6">
       <OrderCreate itemTypes={itemTypes} />

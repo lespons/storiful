@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { UserAppNav } from '@/containers/UserAppNav';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +21,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <main className="flex min-h-screen flex-col items-center pt-12 px-32 overflow-auto">
+          <SpeedInsights />
+          <Analytics />
           <UserAppNav />
           <div className="min-w-full">{children}</div>
         </main>
