@@ -6,6 +6,18 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ActionButton, RedirectButton } from '@/components/Button';
 
+export async function generateStaticParams() {
+  const itemTypes = await prisma.itemType.findMany({
+    select: {
+      id: true
+    }
+  });
+
+  return itemTypes.map((itemType) => ({
+    itemid: itemType.id
+  }));
+}
+
 async function getProps(itemid: string) {
   const itemTypes = await prisma.itemType.findMany({
     include: {
@@ -29,7 +41,6 @@ async function getProps(itemid: string) {
 
 export default async function ItemTypeEditPage({ params }: { params: { itemid: string } }) {
   const { itemType, itemTypes } = await getProps(params.itemid);
-
   const submitData = async (values: ItemType) => {
     'use server';
     try {
@@ -95,7 +106,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         // });
       });
 
-      revalidatePath('/itemtype', 'page');
+      revalidatePath('/itemtype', 'layout');
       revalidatePath('/stock', 'page');
       revalidatePath('/', 'page');
     } catch (error) {
@@ -126,7 +137,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         });
       });
 
-      revalidatePath('/itemtype', 'page');
+      revalidatePath('/itemtype', 'layout');
       revalidatePath('/stock', 'page');
       revalidatePath('/', 'page');
 
