@@ -8,6 +8,9 @@ async function getProps() {
   const itemTypes = await prisma.itemType.findMany({
     include: {
       ItemChild: true
+    },
+    orderBy: {
+      name: 'asc'
     }
   });
   return {
