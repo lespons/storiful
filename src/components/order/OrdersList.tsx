@@ -55,18 +55,20 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
           <div
             key={order.id}
             className={`${order.completed ? 'bg-green-700' : 'bg-blue-700'} bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-            <div className="text-lg underline">Order #{order.num}</div>
+            <div className="flex text-xs gap-2 mb-1">
+              <div className="underline">#{order.num}</div>
 
-            <div className="text-xs font-light mb-2">{order.createdAt.toDateString()}</div>
-
+              <div className="font-light">{order.createdAt.toDateString()}</div>
+            </div>
+            <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
             <Disclosure defaultOpen={true}>
               <Disclosure.Button className="py-0 text-blue-900">Details</Disclosure.Button>
-              <Disclosure.Panel>
-                <div className="text-xs mt-auto mb-1">Created by {order.createdBy}</div>
+              <Disclosure.Panel
+                className={`bg-white hover:scale-105 hover:bg-opacity-80 p-2 rounded-md shadow-md  transition-transform duration-100 ${order.completed ? 'bg-opacity-20' : ' bg-opacity-30'}`}>
                 {order.items.map((oi) => (
-                  <div key={oi.id} className="text-sm">
+                  <div key={oi.id} className="">
                     <div
-                      className="flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700"
+                      className={`flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700`}
                       onClick={(e) => {
                         e.preventDefault();
                         startTransition(() => {
@@ -78,7 +80,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
                         });
                       }}>
                       {order.completed ? null : (
-                        <div className="pt-0.5">
+                        <div className={'flex'}>
                           <input
                             className="cursor-pointer"
                             type="checkbox"
@@ -95,8 +97,10 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
                           />
                         </div>
                       )}
-                      <div className="font-bold">{oi.name}</div>
-                      <div className="text-xs pt-0.5">(+{oi.quantity})</div>
+                      <div className={`font-bold ${order.completed ? 'text-sm' : ''}`}>
+                        {oi.name}
+                      </div>
+                      <div className="text-xs my-auto">(+{oi.quantity})</div>
                     </div>
                     <div>
                       {oi.children?.map((oic) => (
@@ -112,7 +116,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
                 ))}
               </Disclosure.Panel>
             </Disclosure>
-            <div className="flex">
+            <div className="flex mt-2 text-gray-600">
               {order.completed ? (
                 <div className="flex flex-col text-xs font-extralight mt-2">
                   <div className="">✅&nbsp;{order.completedAt?.toDateString()}</div>
@@ -130,7 +134,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
                       onComplete?.(order.id);
                     });
                   }}
-                  className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-500' : 'hover:text-green-600 hover:bg-green-100'} font-bold text-sm min-w-full bg-fuchsia-100`}>
+                  className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-400' : 'hover:text-green-600 hover:bg-green-100 shadow-md'} font-bold text-sm min-w-full bg-fuchsia-100`}>
                   {order.pending ? 'Updating' : 'Complete'}
                 </button>
               )}
