@@ -1,10 +1,10 @@
-'use server';
-
 import ItemTypeForm, { ItemType } from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ActionButton, RedirectButton } from '@/components/Button';
+
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const itemTypes = await prisma.itemType.findMany({
@@ -19,20 +19,38 @@ export async function generateStaticParams() {
 }
 
 async function getProps(itemid: string) {
-  const itemTypes = await prisma.itemType.findMany({
-    include: {
-      ItemChild: true
+  const itemTypes = await unstable_cache(
+    async () =>
+      prisma.itemType.findMany({
+        include: {
+          ItemChild: true
+        },
+        orderBy: {
+          name: 'asc'
+        }
+      }),
+    ['item_types_edit'],
+    {
+      tags: ['item_types_edit']
     }
-  });
-  const itemType = await prisma.itemType.findUnique({
-    where: {
-      id: itemid
-    },
-    include: {
-      ItemChild: true,
-      ItemStock: true
+  )();
+
+  const itemType = await unstable_cache(
+    async () =>
+      prisma.itemType.findUnique({
+        where: {
+          id: itemid
+        },
+        include: {
+          ItemChild: true,
+          ItemStock: true
+        }
+      }),
+    [`item_types_edit_${itemid}`],
+    {
+      tags: ['item_types_edit']
     }
-  });
+  )();
   return {
     itemTypes,
     itemType
@@ -97,18 +115,9 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
             }
           });
         }
-
-        // await tx.itemStock.create({
-        //   data: {
-        //     value: 0,
-        //     itemTypeId: result.id
-        //   }
-        // });
       });
-
-      revalidatePath('/itemtype', 'layout');
-      revalidatePath('/stock', 'page');
-      revalidatePath('/', 'page');
+      revalidateTag('item_types_edit');
+      revalidatePath('/', 'layout');
     } catch (error) {
       console.error(error);
     }
@@ -137,9 +146,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         });
       });
 
-      revalidatePath('/itemtype', 'layout');
-      revalidatePath('/stock', 'page');
-      revalidatePath('/', 'page');
+      revalidatePath('/', 'layout');
 
       return { success: true };
     } catch (error) {

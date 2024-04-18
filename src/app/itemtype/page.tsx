@@ -1,15 +1,22 @@
 'use server';
 import React from 'react';
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import ItemTypeForm, { ItemType } from '@/components/ItemTypeForm';
 
 async function getProps() {
-  const itemTypes = await prisma.itemType.findMany({
-    include: {
-      ItemChild: true
+  const itemTypes = await unstable_cache(
+    () =>
+      prisma.itemType.findMany({
+        include: {
+          ItemChild: true
+        }
+      }),
+    ['item_types_edit'],
+    {
+      tags: ['item_types_edit']
     }
-  });
+  )();
   return {
     itemTypes
   };
@@ -42,9 +49,9 @@ export default async function ItemTypeCreatePage() {
           itemTypeId: result.id
         }
       });
-      revalidatePath('/itemtype', 'page');
-      revalidatePath('/stock', 'page');
+      revalidateTag('item_types_edit');
       revalidatePath('/', 'page');
+      revalidatePath('/stock', 'page');
     } catch (error) {
       console.error(error);
     }

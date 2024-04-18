@@ -46,7 +46,6 @@ export async function OrderCreate({
       return { error: (e as { message: string }).message };
     } finally {
       // redisClient.publish('orders', 'new order!');
-      revalidatePath('/order');
       revalidatePath('/');
     }
   };

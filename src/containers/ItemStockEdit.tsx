@@ -52,9 +52,7 @@ export async function ItemStockEdit({ itemStock }: { itemStock: ItemStock[] }) {
       console.error(e);
       return { error: (e as { message: string }).message, items: mapItemsStock(await getStock()) };
     } finally {
-      revalidatePath('/stock');
-      revalidatePath('/order');
-      revalidatePath('/');
+      revalidatePath('/', 'layout');
     }
   };
 

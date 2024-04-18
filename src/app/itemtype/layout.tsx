@@ -1,18 +1,26 @@
-'use server';
-
 import prisma from '@/lib/prisma';
 import React from 'react';
 import { ItemTypeElement } from '@/components/ItemType';
+import { unstable_cache } from 'next/cache';
+
+export const dynamic = 'force-dynamic';
 
 async function getProps() {
-  const itemTypes = await prisma.itemType.findMany({
-    include: {
-      ItemChild: true
-    },
-    orderBy: {
-      name: 'asc'
+  const itemTypes = await unstable_cache(
+    async () =>
+      prisma.itemType.findMany({
+        include: {
+          ItemChild: true
+        },
+        orderBy: {
+          name: 'asc'
+        }
+      }),
+    ['item_types_edit'],
+    {
+      tags: ['item_types_edit']
     }
-  });
+  )();
   return {
     itemTypes
   };

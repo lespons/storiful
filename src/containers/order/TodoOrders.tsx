@@ -102,8 +102,7 @@ export async function TodoOrders({
       });
     });
 
-    revalidatePath('/order');
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
   };
 
   const markAsCompletedType = async (orderItemId: string, completed: boolean) => {
@@ -117,8 +116,7 @@ export async function TodoOrders({
         completed
       }
     });
-    revalidatePath('/order');
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
   };
 
   return (
