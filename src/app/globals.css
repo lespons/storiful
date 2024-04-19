@@ -31,3 +31,15 @@ body {
     text-wrap: balance;
   }
 }
+::-webkit-scrollbar {
+  width: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-track {
+  background: #ddd;
+}

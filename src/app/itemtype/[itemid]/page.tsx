@@ -135,7 +135,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
 
         await tx.itemChild.deleteMany({
           where: {
-            parentTypeId: params.itemid
+            itemTypeId: params.itemid
           }
         });
 

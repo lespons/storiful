@@ -37,7 +37,7 @@ export async function ItemStockView({
     if (consumedItemsTotalsById[itm2.itemTypeId]) {
       return 1;
     }
-    return itm2.value - itm1.value;
+    return itm1.ItemType.name.localeCompare(itm2.ItemType.name);
   });
 
   function background(is: (typeof itemStock)[0]) {
