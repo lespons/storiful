@@ -47,20 +47,19 @@ export async function ItemStockView({
     );
     const existProgress = Math.round((is.value / consumedItemsTotalsById[is.itemTypeId]) * 100);
     return (
-      <>
+      <div className="h-full w-full flex flex-row absolute z-0 left-0 top-0 rounded-md overflow-hidden">
         <div
-          className={`h-full left-0 top-0 rounded-l-md ${existProgress === Infinity || existProgress === 100 ? 'rounded-r-md' : ''} bg-blue-800 bg-opacity-40 absolute z-0`}
+          className={`bg-blue-800 bg-opacity-40`}
           style={{
             width: `${useProgress > 100 ? existProgress : useProgress}%`
           }}></div>
         <div
-          className={`h-full top-0 rounded-r-md ${useProgress === Infinity || useProgress === 0 ? 'rounded-l-md' : ''}  ${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-800' : 'bg-green-600'}
-                   bg-opacity-40 absolute z-0`}
+          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-800' : 'bg-green-600'}
+                   bg-opacity-40`}
           style={{
-            left: `calc(${useProgress > 100 ? existProgress : useProgress}%)`,
             width: `${useProgress > 100 ? 100 - existProgress : 100 - useProgress}%`
           }}></div>
-      </>
+      </div>
     );
   }
 
@@ -82,7 +81,7 @@ export async function ItemStockView({
              hover:bg-black hover:text-white hover:scale-105 transition-transform duration-300
             `}>
             {consumedItemsTotalsById[is.itemTypeId] ? background(is) : null}
-            <div className="font-bold flex-3 z-10">{is.ItemType.name}</div>
+            <div className={`font-bold flex-3 z-10`}>{is.ItemType.name}</div>
             <div className="flex-2 z-10 flex gap-1">
               <span>{is.value}</span>
               {consumedItemsTotalsById[is.itemTypeId] > is.value ? (
