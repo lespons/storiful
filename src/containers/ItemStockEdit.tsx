@@ -1,19 +1,20 @@
 'use server';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { ItemStock, ItemType } from '@prisma/client';
+import { ItemType } from '@prisma/client';
 import ItemChangeForm, { ItemTypeFormProps } from '@/components/ItemChangeForm';
-import { getStock } from '@/pages/api/item/stock';
+import { getStock, StockReturnType } from '@/pages/api/item/stock';
 
-function mapItemsStock(itemStock: ItemStock[]) {
+function mapItemsStock(itemStock: StockReturnType) {
   return itemStock.map((item) => ({
     id: item.id,
     value: item.value,
     itemTypeName: (item as unknown as { ItemType: ItemType }).ItemType.name,
-    versionLock: item.lockVersion
+    versionLock: item.lockVersion,
+    itemType: item.ItemType.type
   }));
 }
-export async function ItemStockEdit({ itemStock }: { itemStock: ItemStock[] }) {
+export async function ItemStockEdit({ itemStock }: { itemStock: StockReturnType }) {
   const submitData = async (
     prevData: { items: ItemTypeFormProps['items'] },
     values: { items: ItemTypeFormProps['items'] }

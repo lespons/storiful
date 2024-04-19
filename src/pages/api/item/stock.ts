@@ -11,3 +11,4 @@ export const getStock = async () =>
       }
     }
   });
+export type StockReturnType = ReturnType<typeof getStock> extends Promise<infer T> ? T : never;

@@ -13,7 +13,7 @@ export default async function StockHome() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mt-10">
+      <div className="mt-4">
         <ItemStockEdit itemStock={itemStock} />
       </div>
     </div>
