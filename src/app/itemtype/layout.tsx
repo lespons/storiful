@@ -41,8 +41,8 @@ export default async function WarehouseLayout({ children }: { children: React.Re
             <label className="text-sm">ID</label>
           </div>
           <div className="flex flex-col gap-2">
-            {itemTypes.map((it) => (
-              <ItemTypeElement key={it.id} type={it.type} name={it.name} id={it.id} />
+            {itemTypes.map((it, index) => (
+              <ItemTypeElement key={it.id} type={it.type} name={it.name} id={it.id} index={index} />
             ))}
           </div>
         </div>

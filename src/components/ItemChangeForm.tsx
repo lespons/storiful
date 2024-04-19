@@ -56,7 +56,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
             {values.items.map((item, index: number) => (
               <div
                 className={`flex flex-row justify-between gap-2 shadow-md pl-6 
-                rounded-md ${rowsMap[item.itemType] % 2 === 0 ? 'bg-fuchsia-700 bg-opacity-10' : 'bg-white bg-opacity-90'}`}
+                rounded-md ${rowsMap[item.itemType] % 2 === 0 ? 'bg-fuchsia-700 bg-opacity-5' : 'bg-white bg-opacity-30'}`}
                 style={{
                   gridColumn: item.itemType === 'INVENTORY' ? 1 : 2,
                   gridRow: String(rowsMap[item.itemType]++)
@@ -93,7 +93,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
               </div>
             ))}
 
-            <div className="absolute bottom-0 left-0 flex justify-center gap-4 w-full bg-white py-2">
+            <div className="absolute bottom-0 left-0 flex justify-center gap-4 w-full bg-white py-2 bg-opacity-50">
               <div className="w-fit flex">
                 <button
                   type="submit"
