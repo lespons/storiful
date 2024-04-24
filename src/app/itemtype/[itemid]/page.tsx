@@ -2,9 +2,10 @@ import ItemTypeForm, { ItemTypeFormValuesType } from '@/components/ItemTypeForm'
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ActionButton, RedirectButton } from '@/components/Button';
+import { RedirectButton } from '@/components/Button';
 import { getItemType } from '@/app/lib/actions/itemType';
 import { mapItemType } from '@/app/itemtype/page';
+import LongPressButton from '@/components/LongPressButton';
 
 export const dynamicParams = false;
 
@@ -210,10 +211,10 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
       />
 
       <div className="pt-2 mt-2">
-        <ActionButton
-          click={deleteItemType}
+        <LongPressButton
+          onLongPress={deleteItemType}
           title={'Delete'}
-          className={'text-gray-500 font-bold hover:text-red-700 w-full'}
+          className={'text-gray-500 font-bold hover:text-red-700 w-full text-center'}
         />
       </div>
     </div>
