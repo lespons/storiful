@@ -1,3 +1,4 @@
+'use server';
 import prisma from '@/lib/prisma';
 
 export const getStock = async () =>
@@ -11,4 +12,4 @@ export const getStock = async () =>
       }
     }
   });
-export type StockReturnType = ReturnType<typeof getStock> extends Promise<infer T> ? T : never;
+export type StockReturnType = UnwrapPromise<ReturnType<typeof getStock>>;

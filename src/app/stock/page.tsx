@@ -1,5 +1,5 @@
 import { ItemStockEdit } from '@/containers/ItemStockEdit';
-import { getStock } from '@/pages/api/item/stock';
+import { getStock } from '@/app/lib/actions/stock';
 
 async function getProps() {
   const itemStock = await getStock();

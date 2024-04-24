@@ -1,6 +1,6 @@
 'use server';
 import { ItemStock, ItemType } from '@prisma/client';
-import { getTodoOrders } from '@/pages/api/order/todo';
+import { getTodoOrders } from '@/app/lib/actions/order/todo';
 
 export async function ItemStockView({
   itemStock

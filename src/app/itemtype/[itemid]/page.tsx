@@ -1,8 +1,10 @@
-import ItemTypeForm, { ItemType } from '@/components/ItemTypeForm';
+import ItemTypeForm, { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ActionButton, RedirectButton } from '@/components/Button';
+import { getItemType } from '@/app/lib/actions/itemType';
+import { mapItemType } from '@/app/itemtype/page';
 
 export const dynamicParams = false;
 
@@ -36,16 +38,7 @@ async function getProps(itemid: string) {
   )();
 
   const itemType = await unstable_cache(
-    async () =>
-      prisma.itemType.findUnique({
-        where: {
-          id: itemid
-        },
-        include: {
-          ItemChild: true,
-          ItemStock: true
-        }
-      }),
+    async () => getItemType(itemid),
     [`item_types_edit_${itemid}`],
     {
       tags: ['item_types_edit']
@@ -59,13 +52,16 @@ async function getProps(itemid: string) {
 
 export default async function ItemTypeEditPage({ params }: { params: { itemid: string } }) {
   const { itemType, itemTypes } = await getProps(params.itemid);
-  const submitData = async (values: ItemType) => {
+  const submitData = async (
+    { itemType: prevItemType2 }: ItemTypeFormValuesType,
+    { itemType }: ItemTypeFormValuesType
+  ): Promise<ItemTypeFormValuesType> => {
     'use server';
     try {
       await prisma.$transaction(async (tx) => {
         const prevItemType = await tx.itemType.findUniqueOrThrow({
           where: {
-            id: values.id
+            id: itemType.id
           },
           include: {
             ItemChild: true
@@ -73,24 +69,24 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         });
 
         const childrenToDelete = prevItemType.ItemChild.filter((prevItemChild) => {
-          return !values.children.some(
+          return !itemType.children.some(
             ({ id: actualChildId }) => prevItemChild.id === actualChildId
           );
         });
-        const childrenToUpdate = values.children.filter((actualChild) => {
+        const childrenToUpdate = itemType.children.filter((actualChild) => {
           return prevItemType.ItemChild.some(
             ({ id: prevChildId }) => actualChild.id === prevChildId
           );
         });
 
-        const childrenToAdd = values.children.filter((actualChild) => !actualChild.id);
+        const childrenToAdd = itemType.children.filter((actualChild) => !actualChild.id);
         await tx.itemType.update({
           where: {
-            id: values.id
+            id: itemType.id
           },
           data: {
-            name: values.name,
-            type: values.type,
+            name: itemType.name,
+            type: itemType.type,
             ItemChild: {
               deleteMany: {
                 id: { in: childrenToDelete.map(({ id }) => id) }
@@ -98,7 +94,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
               createMany: {
                 data: childrenToAdd.map((c) => ({
                   itemTypeId: c.itemTypeId,
-                  quantity: c.quantity
+                  quantity: Number(c.quantity)
                 }))
               }
             }
@@ -111,15 +107,40 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
               id: cu.id
             },
             data: {
-              quantity: cu.quantity
+              quantity: Number(cu.quantity)
             }
           });
         }
       });
-      revalidateTag('item_types_edit');
-      revalidatePath('/', 'layout');
+
+      const newItemType = await getItemType(itemType.id);
+
+      if (!newItemType) {
+        throw Error('Item is not found');
+      }
+
+      return {
+        success: true,
+        itemType: mapItemType(itemTypes, {
+          id: newItemType.id,
+          type: newItemType.type,
+          name: newItemType.name,
+          ItemChild: newItemType.ItemChild
+        })
+      };
     } catch (error) {
       console.error(error);
+
+      return {
+        error:
+          'message' in (error as { message: string })
+            ? ((error as { message: string }).message as string)
+            : 'unknown error',
+        itemType
+      };
+    } finally {
+      revalidateTag('item_types_edit');
+      revalidatePath('/', 'layout');
     }
   };
 
@@ -139,6 +160,12 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           }
         });
 
+        await tx.itemChild.deleteMany({
+          where: {
+            parentTypeId: params.itemid
+          }
+        });
+
         await tx.itemType.delete({
           where: {
             id: params.itemid
@@ -146,12 +173,13 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         });
       });
 
-      revalidatePath('/', 'layout');
-
       return { success: true };
     } catch (error) {
+      console.error(error);
       return { error: 'Failed' };
     } finally {
+      revalidateTag('item_types_edit');
+      revalidatePath('/itemtype', 'layout');
       redirect('/itemtype');
     }
   };
@@ -177,32 +205,8 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
       <ItemTypeForm
         action={'UPDATE'}
         onSubmit={submitData}
-        itemsList={itemTypes.map(({ name, ItemChild, id, type }) => ({
-          id: id!,
-          name,
-          type: type,
-          children: ItemChild.map((ch) => {
-            const it = itemTypes.find((it) => it.id === ch.itemTypeId)!;
-
-            return {
-              id: it.id,
-              name: it.name,
-              itemTypeId: ch.itemTypeId,
-              quantity: ch.quantity
-            };
-          })
-        }))}
-        itemType={{
-          type: itemType.type,
-          id: itemType.id,
-          name: itemType.name,
-          children: itemType.ItemChild.map((ic) => ({
-            id: ic.id,
-            name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name,
-            quantity: ic.quantity,
-            itemTypeId: ic.itemTypeId
-          }))
-        }}
+        itemsList={itemTypes.map((itemType) => mapItemType(itemTypes, itemType))}
+        itemType={mapItemType(itemTypes, itemType)}
       />
 
       <div className="pt-2 mt-2">

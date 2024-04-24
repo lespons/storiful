@@ -4,7 +4,7 @@ import { OrdersList } from '@/components/order/OrdersList';
 import useSWR, { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
 import { fetcher } from '@/lib/rest_fecther';
-import type { TodoOrdersResponseData } from '@/pages/api/order/todo';
+import type { TodoOrdersResponseData } from '@/app/lib/actions/order/todo';
 
 export function TodoOrdersList({
   submitData,

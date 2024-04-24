@@ -154,11 +154,6 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
 
       <OrderSubmit />
 
-      {/*{state?.success ? (*/}
-      {/*  <p className="text-green-700 font-bold bg-green-100 rounded-2xl m-auto mt-5 p-2">*/}
-      {/*    Success!*/}
-      {/*  </p>*/}
-      {/*) : undefined}*/}
       {error ? (
         <p className="text-red-700 bg-red-100 rounded-md m-auto mt-5 p-2 text-center text-sm font-bold">
           {error}

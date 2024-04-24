@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { ItemType } from '@prisma/client';
 import ItemChangeForm, { ItemTypeFormProps } from '@/components/ItemChangeForm';
-import { getStock, StockReturnType } from '@/pages/api/item/stock';
+import { getStock, StockReturnType } from '@/app/lib/actions/stock';
 
 function mapItemsStock(itemStock: StockReturnType) {
   return itemStock.map((item) => ({
