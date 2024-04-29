@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { SelectBox } from '@/components/SelectBox';
 import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
@@ -94,13 +94,13 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
     }
   });
   const [state, formAction] = useFormState(onSubmit, defaultValues as ItemTypeFormValuesType);
-  useEffect(() => {
-    if (state.success) {
-      reset({
-        itemType: state.itemType
-      });
-    }
-  }, [state.success]);
+  // useEffect(() => {
+  //   if (state.success) {
+  //     reset({
+  //       itemType: state.itemType
+  //     });
+  //   }
+  // }, [state.success]);
 
   return (
     <form

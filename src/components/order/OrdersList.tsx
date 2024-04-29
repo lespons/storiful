@@ -93,7 +93,7 @@ const TodoOrder = memo(function TodoOrder({
       <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
       {/*<Disclosure.Button className="py-0 text-blue-900">Details</Disclosure.Button>*/}
       <div
-        className={`bg-white hover:shadow-lg hover:bg-opacity-80 p-2 rounded-md shadow-md transition-colors duration-100 bg-opacity-30`}>
+        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
           <div key={oi.id} className="">
             <div
@@ -124,7 +124,7 @@ const TodoOrder = memo(function TodoOrder({
                   }}
                 />
               </div>
-              <div className={`font-bold`}>{oi.name}</div>
+              <div className={`font-bold pl-2`}>{oi.name}</div>
               <div className="text-xs my-auto">(+{oi.quantity})</div>
             </div>
             <div>
@@ -173,7 +173,8 @@ const CompletedOrder = memo(function CompletedOrder({
         <div className="font-light">{order.createdAt.toDateString()}</div>
       </div>
       <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
-      <div className="bg-white hover:shadow-lg hover:bg-opacity-80 p-2 rounded-md shadow-md transition-colors duration-100 bg-opacity-20">
+      <div
+        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20`}>
         {order.items.map((oi) => (
           <Disclosure key={oi.id} defaultOpen={false}>
             <Disclosure.Button as="div" className="py-0 text-blue-900">
@@ -188,7 +189,7 @@ const CompletedOrder = memo(function CompletedOrder({
                 {oi.children?.map((oic) => (
                   <div
                     key={oic.name}
-                    className={`text-red-700 text-xs font-normal flex flex-row gap-1 pl-2`}>
+                    className={`text-red-700 text-xs font-normal flex flex-row gap-1`}>
                     <div className="font-bold">{oic.name}</div>
                     <div className="text-xs">(-{oic.quantity * oi.quantity})</div>
                   </div>

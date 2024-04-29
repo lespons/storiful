@@ -81,7 +81,9 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
 
   const error = state.error || errors.order?.items?.root?.message;
   return (
-    <form action={handleSubmit(formAction) as typeof formAction} className="flex flex-col max-w-52">
+    <form
+      action={handleSubmit(formAction) as typeof formAction}
+      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-md min-w-64 max-w-80">
       <div className="mb-2">
         <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
           Item selector
@@ -110,9 +112,11 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
         />
         {orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}
         {orderItems.length ? (
-          <div className="bg-fuchsia-700 bg-opacity-10 rounded-md mt-2 py-4 px-4">
+          <div className="mt-2">
             {orderItems.map((orderItem, index) => (
-              <div key={orderItem.id} className="text-xs font-bold not-first:pt-2">
+              <div
+                key={orderItem.id}
+                className="text-xs font-bold not-first:pt-2 hover:drop-shadow-lg rounded-md px-4 py-2">
                 <div>{orderItem.name}</div>
 
                 <div className="flex flex-row gap-2">
