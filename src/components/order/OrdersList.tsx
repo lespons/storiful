@@ -2,30 +2,44 @@
 
 import React, { memo, startTransition, useOptimistic } from 'react';
 import { Disclosure } from '@headlessui/react';
+import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
 
-type OrdersListProps = {
-  orders: {
+type OrderListItem = {
+  id: string;
+  completed: boolean;
+  num: number;
+  createdAt: Date;
+  completedAt?: Date | null;
+  createdBy: string | null;
+  completedBy?: string | null;
+  items: {
     id: string;
+    itemId: string;
+    quantity: number;
+    name: string;
     completed: boolean;
-    num: number;
-    createdAt: Date;
-    completedAt?: Date | null;
-    createdBy: string | null;
-    completedBy?: string | null;
-    items: {
-      id: string;
-      quantity: number;
-      name: string;
-      completed: boolean;
-      children: { name: string; quantity: number }[];
-    }[];
-    pending?: boolean;
+    children: { name: string; quantity: number }[];
   }[];
-  onComplete?: (id: string) => void;
-  onCompleteOrderItem?: (orderItemId: string, completed: boolean) => void;
+  pending?: boolean;
+  edit?: boolean;
 };
 
-export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersListProps) {
+export type OrdersListEditCallback = (
+  prevState: { order: OrderFormValue },
+  state: { order: OrderFormValue }
+) => Promise<{ order: OrderFormValue }>;
+
+export type OrdersListProps = {
+  orders: OrderListItem[];
+  onComplete?: (id: string) => void;
+  onCompleteOrderItem?: (orderItemId: string, completed: boolean) => void;
+  edit?: {
+    itemTypes: OrderFormProps['itemTypes'];
+    onEditOrder: OrdersListEditCallback;
+  };
+};
+
+export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: OrdersListProps) {
   const [optimisticOrders, setOptimisticOrder] = useOptimistic<
     OrdersListProps['orders'],
     {
@@ -40,6 +54,14 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
         orderItem.checked;
     }
 
+    if (order.edit) {
+      state.forEach((o) => {
+        if (order.id !== o.id) {
+          o.edit = false;
+        }
+      });
+    }
+
     state[oldOrderIndex] = {
       ...order
     };
@@ -47,12 +69,33 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
     return [...state];
   });
 
+  const someInEdit = orders.some(({ edit }) => edit);
   return (
     <div className="overflow-auto">
       {!orders.length ? <div>-</div> : null}
       {optimisticOrders.map((order) => {
         if (order.completed) return <CompletedOrder key={order.id} order={order} />;
 
+        if (order.edit && edit) {
+          return (
+            <div key={order.id} className={'mb-2'}>
+              <div className="font-light">Edit of the order #{order.num}</div>
+              <ItemOrderForm
+                action={'UPDATE'}
+                itemTypes={edit.itemTypes}
+                onSubmit={edit.onEditOrder}
+                order={order}
+                onReset={() => {
+                  startTransition(() => {
+                    setOptimisticOrder({
+                      order: { ...order, edit: false }
+                    });
+                  });
+                }}
+              />
+            </div>
+          );
+        }
         return (
           <TodoOrder
             key={order.id}
@@ -60,6 +103,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem }: OrdersLi
             setOptimisticOrder={setOptimisticOrder}
             onCompleteOrderItem={onCompleteOrderItem}
             onComplete={onComplete}
+            blurred={someInEdit}
           />
         );
       })}
@@ -71,7 +115,8 @@ const TodoOrder = memo(function TodoOrder({
   order,
   setOptimisticOrder,
   onComplete,
-  onCompleteOrderItem
+  onCompleteOrderItem,
+  blurred
 }: {
   order: OrdersListProps['orders'][0];
   setOptimisticOrder: (action: {
@@ -80,18 +125,33 @@ const TodoOrder = memo(function TodoOrder({
   }) => void;
   onCompleteOrderItem: OrdersListProps['onCompleteOrderItem'];
   onComplete: OrdersListProps['onComplete'];
+  blurred?: boolean;
 }) {
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
   return (
     <div
-      className={`${order.completed ? 'bg-green-700' : 'bg-blue-700'} bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
+      className={`${order.completed ? 'bg-green-700' : 'bg-blue-700'} group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
 
         <div className="font-light">{order.createdAt.toDateString()}</div>
+
+        <div
+          className={
+            'invisible group-hover:visible flex-1 text-right hover:underline hover:cursor-pointer font-bold text-gray-700'
+          }
+          onClick={(e) => {
+            e.preventDefault();
+            startTransition(() => {
+              setOptimisticOrder({
+                order: { ...order, edit: true }
+              });
+            });
+          }}>
+          Edit
+        </div>
       </div>
       <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
-      {/*<Disclosure.Button className="py-0 text-blue-900">Details</Disclosure.Button>*/}
       <div
         className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
@@ -174,7 +234,7 @@ const CompletedOrder = memo(function CompletedOrder({
       </div>
       <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
       <div
-        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20`}>
+        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20 pointer-events-auto`}>
         {order.items.map((oi) => (
           <Disclosure key={oi.id} defaultOpen={false}>
             <Disclosure.Button as="div" className="py-0 text-blue-900">

@@ -45,6 +45,7 @@ export async function CompletedOrdersList({
             completedBy: CompletedBy?.name,
             items: OrderItem.map((oi) => ({
               id: oi.id,
+              itemId: oi.ItemType.id,
               name: oi.ItemType.name,
               quantity: oi.quantity,
               completed: oi.completed,

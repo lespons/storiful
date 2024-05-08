@@ -27,3 +27,28 @@ export const getTodoOrders = async () => {
     }
   });
 };
+
+export const getOrder = async (id: string) => {
+  return prisma.order.findUniqueOrThrow({
+    where: {
+      id
+    },
+    include: {
+      CreatedBy: true,
+      OrderItem: {
+        include: {
+          ItemType: {
+            include: {
+              ItemChild: true
+            }
+          }
+        },
+        orderBy: {
+          ItemType: {
+            name: 'asc'
+          }
+        }
+      }
+    }
+  });
+};

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { SelectBox } from '@/components/SelectBox';
-import { mutate } from 'swr';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 export type OrderFormValue = {
+  id?: string;
   name?: string;
   items: {
-    id: string;
+    id?: string;
+    itemId: string;
     name: string;
     quantity: number;
     children: { name: string; quantity: number }[];
@@ -18,34 +19,50 @@ export type OrderFormValue = {
 
 export interface OrderFormProps {
   itemTypes: { id: string; name: string; children: { name: string; quantity: number }[] }[];
-  onSubmit: (state: { order: OrderFormValue }) => Promise<{ order: OrderFormValue }>;
+  onSubmit: (
+    prevstate: { order: OrderFormValue },
+    state: { order: OrderFormValue }
+  ) => Promise<{ order: OrderFormValue }>;
+  onReset?: () => void;
+  order?: OrderFormValue;
+  action: 'CREATE' | 'UPDATE';
 }
 
-function OrderSubmit() {
+function OrderSubmit({
+  action,
+  disabled
+}: {
+  action: OrderFormProps['action'];
+  disabled: boolean;
+}) {
   const { pending, ...rest } = useFormStatus();
   return (
     <button
       type="submit"
-      disabled={pending}
-      className={`px-3 py-2 rounded-md ${pending ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
-      {pending ? 'Creating' : 'Create'}
+      disabled={pending || disabled}
+      className={`px-3 py-2 rounded-md ${pending || disabled ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
+      {pending ? '...' : action.toLowerCase()}
     </button>
   );
 }
 
-const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
+const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, order, action }) => {
   const {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors }
-  } = useForm<{ order: OrderFormValue; error?: string; success?: boolean }>();
+  } = useForm<{ order: OrderFormValue; error?: string; success?: boolean }>({
+    defaultValues: { order }
+  });
 
   const {
     fields: orderItems,
     append,
     update,
-    remove
+    remove,
+    replace
   } = useFieldArray({
     control, // control props comes from useForm (optional: if you are using FormProvider)
     name: 'order.items',
@@ -63,27 +80,17 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
     }
   });
 
-  const [state, formAction, isPending] = useFormState<{
-    order: OrderFormValue;
-    error?: string;
-    success?: boolean;
-  }>(onSubmit, {
+  const [state, formAction, isPending] = useFormState(onSubmit, {
     order: {
       items: []
     }
   });
 
-  useEffect(() => {
-    if (state.success) {
-      mutate('/api/order/todo');
-    }
-  }, [state]);
-
-  const error = state.error || errors.order?.items?.root?.message;
+  const error = errors.order?.items?.root?.message;
   return (
     <form
-      action={handleSubmit(formAction) as typeof formAction}
-      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-md min-w-64 max-w-80">
+      action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
+      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-md min-w-64">
       <div className="mb-2">
         <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
           Item selector
@@ -104,7 +111,7 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
             }
             append({
               name: item.name,
-              id: item.id,
+              itemId: item.id,
               children: item.children as OrderFormProps['itemTypes'][0]['children'],
               quantity: 0
             });
@@ -115,7 +122,7 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
           <div className="mt-2">
             {orderItems.map((orderItem, index) => (
               <div
-                key={orderItem.id}
+                key={orderItem.itemId}
                 className="text-xs font-bold not-first:pt-2 hover:drop-shadow-lg rounded-md px-4 py-2">
                 <div>{orderItem.name}</div>
 
@@ -156,8 +163,19 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
         ) : null}
       </div>
 
-      <OrderSubmit />
+      <OrderSubmit action={action} disabled={!orderItems.length} />
 
+      {order || orderItems.length ? (
+        <button
+          className={`mt-2 px-3 py-0 rounded-md hover:text-red-900 font-light text-sm`}
+          onClick={() => {
+            reset();
+            replace([]);
+            onReset?.();
+          }}>
+          reset
+        </button>
+      ) : null}
       {error ? (
         <p className="text-red-700 bg-red-100 rounded-md m-auto mt-5 p-2 text-center text-sm font-bold">
           {error}
@@ -167,4 +185,4 @@ const OrderOrderForm: React.FC<OrderFormProps> = ({ onSubmit, itemTypes }) => {
   );
 };
 
-export default OrderOrderForm;
+export default OrderForm;

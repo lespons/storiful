@@ -31,7 +31,7 @@ export default async function WarehouseLayout({ children }: { children: React.Re
   return (
     <div className="w-fit">
       <div className="flex flex-row gap-6 mt-4">
-        <div className="bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md h-fit w-fit max-h-[80vh] overflow-auto">
+        <div className="bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md w-fit max-h-[80vh] overflow-auto">
           {children}
         </div>
         <div className="flex-[2] bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md max-h-[calc(80vh)] overflow-auto  max-w-[45vw]">

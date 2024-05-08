@@ -99,7 +99,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
                   type="submit"
                   disabled={isPending}
                   className="ml-auto px-3 py-2 rounded-md bg-indigo-500 text-white hover:bg-indigo-700 font-bold">
-                  Update
+                  update
                 </button>
 
                 {state?.success ? (

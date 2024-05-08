@@ -1,11 +1,11 @@
-'use server';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order/todo';
-import { TodoOrdersList } from '@/containers/order/TodoOrdersList';
+import { TodoOrdersClient } from '@/containers/order/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
 import { auth } from '@/lib/auth';
+import { OrdersListEditCallback } from '@/components/order/OrdersList';
 
 export async function TodoOrders({
   itemTypes
@@ -119,6 +119,69 @@ export async function TodoOrders({
     revalidatePath('/', 'layout');
   };
 
+  const updateOrder: OrdersListEditCallback = async (prevData, values) => {
+    'use server';
+    const session = await auth();
+    try {
+      if (!values.order.items.length) {
+        throw Error('No items are selected');
+      }
+      if (!session?.user?.id) {
+        throw Error('Access is denied');
+      }
+      await prisma.$transaction(async (tx) => {
+        const oldOrder = await tx.order.findUniqueOrThrow({
+          where: {
+            id: values.order.id
+          },
+          include: {
+            OrderItem: true
+          }
+        });
+        const orderItemsToUpdate = values.order.items.filter((item) => item.id);
+        const orderItemsToCreate = values.order.items.filter((item) => !item.id);
+        const orderItemsToDelete = oldOrder.OrderItem.filter(
+          (oi) => !values.order.items.some(({ id }) => id === oi.id)
+        );
+
+        await tx.orderItem.deleteMany({
+          where: {
+            id: { in: orderItemsToDelete.map(({ id }) => id) }
+          }
+        });
+        for (const orderItems of orderItemsToUpdate) {
+          await tx.orderItem.update({
+            where: {
+              id: orderItems.id
+            },
+            data: {
+              quantity: Number(orderItems.quantity)
+            }
+          });
+        }
+
+        await tx.orderItem.createMany({
+          data: orderItemsToCreate.map((orderItemToCreate) => ({
+            orderId: values.order.id!,
+            quantity: Number(orderItemToCreate.quantity),
+            itemTypeId: orderItemToCreate.itemId
+          }))
+        });
+      });
+
+      return {
+        order: { items: [] },
+        success: true
+      };
+    } catch (e) {
+      console.error(e);
+      return { error: (e as { message: string }).message, order: { items: [] } };
+    } finally {
+      // redisClient.publish('orders', 'new order!');
+      revalidatePath('/', 'page');
+    }
+  };
+
   return (
     <div className="max-h-[80vh] flex flex-col">
       <div className="text-lg font-bold">Orders to do:</div>
@@ -126,10 +189,11 @@ export async function TodoOrders({
         fallback={{
           '/api/order/todo': { orders }
         }}>
-        <TodoOrdersList
+        <TodoOrdersClient
           submitData={submitData}
           itemTypes={itemTypes}
           completedOrderItem={markAsCompletedType}
+          updateOrder={updateOrder}
         />
       </SWRProvider>
     </div>

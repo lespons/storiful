@@ -1,9 +1,9 @@
-'use server';
 import prisma from '@/lib/prisma';
 import { ItemChild, ItemType } from '@prisma/client';
-import OrderOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
+import { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
+import { OrderCreateClient } from '@/containers/order/OrderCreateClient';
 
 export async function OrderCreate({
   itemTypes
@@ -27,8 +27,8 @@ export async function OrderCreate({
             createdById: session!.user!.id!,
             OrderItem: {
               createMany: {
-                data: values.order.items.map(({ id, quantity, name }) => ({
-                  itemTypeId: id,
+                data: values.order.items.map(({ id, itemId, quantity, name }) => ({
+                  itemTypeId: itemId,
                   quantity: Number(quantity)
                 }))
               }
@@ -45,7 +45,6 @@ export async function OrderCreate({
       console.error(e);
       return { error: (e as { message: string }).message };
     } finally {
-      // redisClient.publish('orders', 'new order!');
       revalidatePath('/');
     }
   };
@@ -53,7 +52,7 @@ export async function OrderCreate({
   return (
     <div>
       <div className="text-lg font-bold">Create an order:</div>
-      <OrderOrderForm
+      <OrderCreateClient
         itemTypes={itemTypes.map(({ name, id, ItemChild }) => ({
           id,
           name,
