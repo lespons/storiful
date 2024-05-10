@@ -35,7 +35,17 @@ export async function CompletedOrdersList({
       <div className="text-lg font-bold">Completed orders:</div>
       <OrdersList
         orders={orders.map(
-          ({ num, id, completed, createdAt, completedAt, CreatedBy, CompletedBy, OrderItem }) => ({
+          ({
+            num,
+            id,
+            completed,
+            createdAt,
+            completedAt,
+            deadlineAt,
+            CreatedBy,
+            CompletedBy,
+            OrderItem
+          }) => ({
             completed,
             createdAt,
             id,
@@ -43,6 +53,7 @@ export async function CompletedOrdersList({
             completedAt,
             createdBy: CreatedBy.name,
             completedBy: CompletedBy?.name,
+            deadlineAt: deadlineAt,
             items: OrderItem.map((oi) => ({
               id: oi.id,
               itemId: oi.ItemType.id,

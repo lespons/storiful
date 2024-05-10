@@ -51,6 +51,7 @@ model Order {
   num           Int         @default(autoincrement())
   createdAt     DateTime
   completedAt   DateTime?
+  deadlineAt    DateTime?
   OrderItem     OrderItem[]
   completed     Boolean     @default(false)
   CreatedBy     User        @relation("CreatedOrders", fields: [createdById], references: [id])

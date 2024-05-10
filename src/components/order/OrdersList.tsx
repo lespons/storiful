@@ -3,6 +3,7 @@
 import React, { memo, startTransition, useOptimistic } from 'react';
 import { Disclosure } from '@headlessui/react';
 import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
+import { compareAsc, differenceInDays, format, formatDistanceToNow } from 'date-fns';
 
 type OrderListItem = {
   id: string;
@@ -10,6 +11,7 @@ type OrderListItem = {
   num: number;
   createdAt: Date;
   completedAt?: Date | null;
+  deadlineAt?: Date | null;
   createdBy: string | null;
   completedBy?: string | null;
   items: {
@@ -77,6 +79,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: Or
         if (order.completed) return <CompletedOrder key={order.id} order={order} />;
 
         if (order.edit && edit) {
+          console.log(order);
           return (
             <div key={order.id} className={'mb-2'}>
               <div className="font-light">Edit of the order #{order.num}</div>
@@ -84,7 +87,11 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: Or
                 action={'UPDATE'}
                 itemTypes={edit.itemTypes}
                 onSubmit={edit.onEditOrder}
-                order={order}
+                order={{
+                  id: order.id,
+                  deadline: order.deadlineAt ? format(order.deadlineAt, 'yyyy-MM-dd') : null,
+                  items: order.items
+                }}
                 onReset={() => {
                   startTransition(() => {
                     setOptimisticOrder({
@@ -130,12 +137,12 @@ const TodoOrder = memo(function TodoOrder({
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
   return (
     <div
-      className={`${order.completed ? 'bg-green-700' : 'bg-blue-700'} group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
+      className={`relative ${order.completed ? 'bg-green-700' : 'bg-blue-700'} group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
-
-        <div className="font-light">{order.createdAt.toDateString()}</div>
-
+        <div className={'flex gap-1'}>
+          <div className="font-light">{format(order.createdAt, 'dd MMM yyyy')}</div>
+        </div>
         <div
           className={
             'invisible group-hover:visible flex-1 text-right hover:underline hover:cursor-pointer font-bold text-gray-700'
@@ -200,7 +207,22 @@ const TodoOrder = memo(function TodoOrder({
           </div>
         ))}
       </div>
-      <div className="flex mt-2 text-gray-600">
+      {order.deadlineAt ? (
+        <div
+          className={`mt-2 flex gap-2 text-xs px-2 py-0.5 rounded-md ${
+            compareAsc(new Date(), order.deadlineAt) > 0
+              ? 'font-bold text-red-800 bg-red-100'
+              : differenceInDays(order.deadlineAt, new Date()) <= 3
+                ? 'text-orange-600 font-bold bg-orange-100'
+                : 'font-normal'
+          }`}>
+          🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
+          <span className={'font-light'}>
+            ({formatDistanceToNow(order.deadlineAt, { addSuffix: true })})
+          </span>
+        </div>
+      ) : null}
+      <div className="flex text-gray-600">
         <button
           type="submit"
           disabled={disabled}

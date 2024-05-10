@@ -1,6 +1,6 @@
 'use client';
 
-import { OrdersList, OrdersListEditCallback } from '@/components/order/OrdersList';
+import { OrdersList, OrdersListEditCallback, OrdersListProps } from '@/components/order/OrdersList';
 import useSWR, { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
 import { fetcher } from '@/lib/rest_fecther';
@@ -14,16 +14,18 @@ export const mapOrderToListItem = (
     createdAt,
     completedAt,
     CreatedBy,
+    deadlineAt,
     OrderItem
   }: TodoOrdersResponseData['orders'][0],
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
-) => ({
+): OrdersListProps['orders'][0] => ({
   completed,
   createdAt: new Date(createdAt),
   id,
   num,
   completedAt,
   createdBy: CreatedBy.name,
+  deadlineAt,
   items: OrderItem.map((oi) => ({
     id: oi.id,
     itemId: oi.ItemType.id,
@@ -51,12 +53,8 @@ export function TodoOrdersClient({
   const { mutate } = useSWRConfig();
   const { data: todoOrdersData, isLoading } = useSWR<TodoOrdersResponseData>(
     '/api/order/todo',
-    fetcher,
-    {
-      focusThrottleInterval: 2000
-    }
+    fetcher
   );
-
   return (
     <OrdersList
       onComplete={async (id) => {

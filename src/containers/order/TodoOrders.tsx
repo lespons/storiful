@@ -143,6 +143,17 @@ export async function TodoOrders({
         const orderItemsToDelete = oldOrder.OrderItem.filter(
           (oi) => !values.order.items.some(({ id }) => id === oi.id)
         );
+        console.log('to save', values.order.deadline);
+        if (values.order.deadline) {
+          await tx.order.update({
+            where: {
+              id: values.order.id
+            },
+            data: {
+              deadlineAt: new Date(values.order.deadline)
+            }
+          });
+        }
 
         await tx.orderItem.deleteMany({
           where: {

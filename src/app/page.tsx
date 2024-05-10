@@ -35,17 +35,17 @@ export default async function OrderHome() {
   const { itemTypes, itemStock } = await getProps();
   return (
     <div className="flex flex-row gap-4 mt-6">
-      <div className="flex-[1]">
+      <div className="">
         {' '}
         <OrderCreate itemTypes={itemTypes} />
       </div>
-      <div className="flex-[2]">
+      <div className="flex-[3]">
         <TodoOrders itemTypes={itemTypes} />
       </div>
-      <div className="flex-[2]">
+      <div className="flex-[3]">
         <CompletedOrdersList itemTypes={itemTypes} />
       </div>
-      <div className="flex-[3]">
+      <div className="flex-[4]">
         <ItemStockView itemStock={itemStock} />
       </div>
     </div>

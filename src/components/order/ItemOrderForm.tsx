@@ -8,6 +8,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 export type OrderFormValue = {
   id?: string;
   name?: string;
+  deadline?: string | null;
   items: {
     id?: string;
     itemId: string;
@@ -54,9 +55,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
     reset,
     formState: { errors }
   } = useForm<{ order: OrderFormValue; error?: string; success?: boolean }>({
-    defaultValues: { order }
+    defaultValues: {
+      order
+    }
   });
-
   const {
     fields: orderItems,
     append,
@@ -92,13 +94,26 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
       className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-md min-w-64">
       <div className="mb-2">
+        <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
+          Deadline
+        </label>
+        <input
+          id={'deadline'}
+          {...register(`order.deadline`, {
+            valueAsDate: false
+          })}
+          type={'date'}
+          className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+        />
+      </div>
+      <div className="mb-2">
         <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
           Item selector
         </label>
         <SelectBox
           items={
             itemTypes
-              .filter((item) => !orderItems.some(({ id }) => id === item.id))
+              .filter((item) => !orderItems.some(({ itemId }) => itemId === item.id))
               .map(({ name, id, children }) => ({
                 name,
                 id,

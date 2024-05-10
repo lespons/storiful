@@ -25,6 +25,7 @@ export async function OrderCreate({
           data: {
             createdAt: new Date(),
             createdById: session!.user!.id!,
+            deadlineAt: values.order.deadline ? new Date(values.order.deadline) : null,
             OrderItem: {
               createMany: {
                 data: values.order.items.map(({ id, itemId, quantity, name }) => ({
