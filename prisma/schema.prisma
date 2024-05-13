@@ -58,6 +58,7 @@ model Order {
   CompletedBy   User?       @relation("CompletedOrders", fields: [completedById], references: [id])
   createdById   String
   completedById String?
+  details       String?
 
   @@map(name: "orders")
 }

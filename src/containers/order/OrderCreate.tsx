@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import { ItemChild, ItemType } from '@prisma/client';
-import { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
+import { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { OrderCreateClient } from '@/containers/order/OrderCreateClient';
@@ -26,6 +26,7 @@ export async function OrderCreate({
             createdAt: new Date(),
             createdById: session!.user!.id!,
             deadlineAt: values.order.deadline ? new Date(values.order.deadline) : null,
+            details: values.order.details,
             OrderItem: {
               createMany: {
                 data: values.order.items.map(({ id, itemId, quantity, name }) => ({

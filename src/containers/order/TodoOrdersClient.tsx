@@ -15,7 +15,8 @@ export const mapOrderToListItem = (
     completedAt,
     CreatedBy,
     deadlineAt,
-    OrderItem
+    OrderItem,
+    details
   }: TodoOrdersResponseData['orders'][0],
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
 ): OrdersListProps['orders'][0] => ({
@@ -26,6 +27,7 @@ export const mapOrderToListItem = (
   completedAt,
   createdBy: CreatedBy.name,
   deadlineAt,
+  details,
   items: OrderItem.map((oi) => ({
     id: oi.id,
     itemId: oi.ItemType.id,
@@ -86,13 +88,16 @@ export function TodoOrdersClient({
         })),
         onEditOrder: async (prev, next) => {
           const oldOrderData = todoOrdersData!.orders.find((order) => order.id === next.order.id);
-
           const result = await updateOrder(prev, next);
-          oldOrderData!.OrderItem.forEach((orderItem) => {
-            orderItem.quantity = Number(
-              next.order.items.find(({ id }) => id === orderItem.id)?.quantity
-            );
-          });
+          if (oldOrderData) {
+            oldOrderData.OrderItem.forEach((orderItem) => {
+              orderItem.quantity = Number(
+                next.order.items.find(({ id }) => id === orderItem.id)?.quantity
+              );
+            });
+            oldOrderData.details = next.order.details!;
+          }
+
           await mutate('/api/order/todo', { ...todoOrdersData });
 
           return result;

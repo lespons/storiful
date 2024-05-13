@@ -9,6 +9,7 @@ export type OrderFormValue = {
   id?: string;
   name?: string;
   deadline?: string | null;
+  details?: string | null;
   items: {
     id?: string;
     itemId: string;
@@ -103,6 +104,16 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
             valueAsDate: false
           })}
           type={'date'}
+          className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+        />
+      </div>
+      <div className="mb-2">
+        <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
+          Details
+        </label>
+        <textarea
+          id={'details'}
+          {...register(`order.details`)}
           className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
         />
       </div>

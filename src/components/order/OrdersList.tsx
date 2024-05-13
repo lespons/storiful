@@ -2,7 +2,7 @@
 
 import React, { memo, startTransition, useOptimistic } from 'react';
 import { Disclosure } from '@headlessui/react';
-import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/ItemOrderForm';
+import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
 import { compareAsc, differenceInDays, format, formatDistanceToNow } from 'date-fns';
 
 type OrderListItem = {
@@ -14,6 +14,7 @@ type OrderListItem = {
   deadlineAt?: Date | null;
   createdBy: string | null;
   completedBy?: string | null;
+  details?: string | null;
   items: {
     id: string;
     itemId: string;
@@ -79,7 +80,6 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: Or
         if (order.completed) return <CompletedOrder key={order.id} order={order} />;
 
         if (order.edit && edit) {
-          console.log(order);
           return (
             <div key={order.id} className={'mb-2'}>
               <div className="font-light">Edit of the order #{order.num}</div>
@@ -90,6 +90,7 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: Or
                 order={{
                   id: order.id,
                   deadline: order.deadlineAt ? format(order.deadlineAt, 'yyyy-MM-dd') : null,
+                  details: order.details,
                   items: order.items
                 }}
                 onReset={() => {
@@ -207,6 +208,13 @@ const TodoOrder = memo(function TodoOrder({
           </div>
         ))}
       </div>
+
+      {order.details ? (
+        <div
+          className={`mt-2 text-gray-900 font-medium border-l-4 border-fuchsia-300 pl-2 hover:border-fuchsia-400 hover:text-gray-950`}>
+          {order.details}
+        </div>
+      ) : null}
       {order.deadlineAt ? (
         <div
           className={`mt-2 flex gap-2 text-xs px-2 py-0.5 rounded-md ${
@@ -281,6 +289,12 @@ const CompletedOrder = memo(function CompletedOrder({
           </Disclosure>
         ))}
       </div>
+      {order.details ? (
+        <div
+          className={`mt-2 text-gray-900 font-medium border-l-4 border-green-600 pl-2 hover:border-green-800 hover:text-gray-950`}>
+          {order.details}
+        </div>
+      ) : null}
       <div className="flex mt-2 text-gray-600">
         <div className="flex flex-col text-xs font-extralight mt-2">
           <div className="">✅&nbsp;{order.completedAt?.toDateString()}</div>

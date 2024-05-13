@@ -1,5 +1,5 @@
 'use client';
-import OrderForm, { OrderFormProps } from '@/components/order/ItemOrderForm';
+import OrderForm, { OrderFormProps } from '@/components/order/OrderForm';
 import { mutate } from 'swr';
 
 export function OrderCreateClient({

@@ -38,6 +38,7 @@ export async function CompletedOrdersList({
           ({
             num,
             id,
+            details,
             completed,
             createdAt,
             completedAt,
@@ -54,6 +55,7 @@ export async function CompletedOrdersList({
             createdBy: CreatedBy.name,
             completedBy: CompletedBy?.name,
             deadlineAt: deadlineAt,
+            details,
             items: OrderItem.map((oi) => ({
               id: oi.id,
               itemId: oi.ItemType.id,
