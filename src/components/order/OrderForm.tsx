@@ -93,7 +93,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
-      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-md min-w-64">
+      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-b-md min-w-64">
       <div className="mb-2">
         <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
           Deadline
@@ -104,7 +104,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
             valueAsDate: false
           })}
           type={'date'}
-          className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
         />
       </div>
       <div className="mb-2">
@@ -114,7 +114,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
         <textarea
           id={'details'}
           {...register(`order.details`)}
-          className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
         />
       </div>
       <div className="mb-2">
@@ -145,11 +145,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
         />
         {orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}
         {orderItems.length ? (
-          <div className="mt-2">
+          <div className="mt-0">
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
-                className="text-xs font-bold not-first:pt-2 hover:drop-shadow-lg rounded-md px-4 py-2">
+                className="font-bold not-first:pt-2 hover:drop-shadow-lg rounded-md px-4 py-2 text-sm">
                 <div>{orderItem.name}</div>
 
                 <div className="flex flex-row gap-2">
@@ -163,7 +163,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
                         quantity: Number(value)
                       });
                     }}
-                    className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                    className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
                   />
                   <button
                     onClick={(e) => {

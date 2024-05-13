@@ -53,7 +53,7 @@ export async function OrderCreate({
 
   return (
     <div>
-      <div className="text-lg font-bold">Create an order:</div>
+      {/*<div className="text-lg font-bold">Create an order:</div>*/}
       <OrderCreateClient
         itemTypes={itemTypes.map(({ name, id, ItemChild }) => ({
           id,

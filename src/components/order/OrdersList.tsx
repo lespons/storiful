@@ -217,11 +217,11 @@ const TodoOrder = memo(function TodoOrder({
       ) : null}
       {order.deadlineAt ? (
         <div
-          className={`mt-2 flex gap-2 text-xs px-2 py-0.5 rounded-md ${
+          className={`mt-2 flex gap-2 text-sm px-2 py-0.5 rounded-md ${
             compareAsc(new Date(), order.deadlineAt) > 0
-              ? 'font-bold text-red-800 bg-red-100'
+              ? 'font-bold text-red-800 bg-red-50'
               : differenceInDays(order.deadlineAt, new Date()) <= 3
-                ? 'text-orange-600 font-bold bg-orange-100'
+                ? 'text-orange-600 font-bold bg-orange-50'
                 : 'font-normal'
           }`}>
           🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
@@ -262,9 +262,9 @@ const CompletedOrder = memo(function CompletedOrder({
 
         <div className="font-light">{order.createdAt.toDateString()}</div>
       </div>
-      <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
+      <div className="text-xs text-gray-600">Created by {order.createdBy}</div>
       <div
-        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20 pointer-events-auto`}>
+        className={`bg-white mt-2 hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20 pointer-events-auto`}>
         {order.items.map((oi) => (
           <Disclosure key={oi.id} defaultOpen={false}>
             <Disclosure.Button as="div" className="py-0 text-blue-900">
@@ -296,7 +296,7 @@ const CompletedOrder = memo(function CompletedOrder({
         </div>
       ) : null}
       <div className="flex mt-2 text-gray-600">
-        <div className="flex flex-col text-xs font-extralight mt-2">
+        <div className="flex flex-col text-xs font-extralight">
           <div className="">✅&nbsp;{order.completedAt?.toDateString()}</div>
           <div className="text-right">Completed by {order.completedBy}</div>
         </div>

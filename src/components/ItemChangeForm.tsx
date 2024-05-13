@@ -72,7 +72,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
                         type="number"
                         name={`items[${index}].${fieldName}`}
                         placeholder=""
-                        className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                        className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
                           (errors?.items?.[index] as unknown as { [fieldName: string]: string })?.[
                             fieldName
                           ]

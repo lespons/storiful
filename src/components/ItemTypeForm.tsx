@@ -115,7 +115,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           {...register(`itemType.name`)}
           id="name"
           placeholder="Enter item type name"
-          className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+          className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
             errors.itemType?.name ? 'border-red-500' : ''
           }`}
         />
@@ -201,7 +201,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
                 <input
                   type="number"
                   {...register(`itemType.children.${index}.quantity`)}
-                  className={`w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+                  className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
                 />
                 <button
                   onClick={(e) => {
