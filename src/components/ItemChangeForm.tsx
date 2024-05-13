@@ -55,8 +55,8 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
             className="grid grid-cols-2 gap-x-6 gap-y-1 max-h-[75vh] overflow-auto p-2">
             {values.items.map((item, index: number) => (
               <div
-                className={`flex flex-row justify-between gap-2 shadow-md pl-6 
-                rounded-md ${rowsMap[item.itemType] % 2 === 0 ? 'bg-fuchsia-700 bg-opacity-5' : 'bg-white bg-opacity-30'}`}
+                className={`flex flex-row justify-between gap-2  pl-6 group hover:bg-black hover:text-white
+                rounded-md ${rowsMap[item.itemType] % 2 === 0 ? 'bg-fuchsia-700 bg-opacity-0' : 'shadow-md bg-white bg-opacity-30'}`}
                 style={{
                   gridColumn: item.itemType === 'INVENTORY' ? 1 : 2,
                   gridRow: String(rowsMap[item.itemType]++)
@@ -72,7 +72,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
                         type="number"
                         name={`items[${index}].${fieldName}`}
                         placeholder=""
-                        className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                        className={`group-hover:bg-black focus:font-bold focus:bg-black focus:text-white w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
                           (errors?.items?.[index] as unknown as { [fieldName: string]: string })?.[
                             fieldName
                           ]
