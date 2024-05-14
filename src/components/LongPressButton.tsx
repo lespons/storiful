@@ -12,13 +12,13 @@ function LongPressButton({
 }) {
   const [isPressed, setIsPressed] = useState(false);
   const [holdTime, setHoldTime] = useState(0);
-
+  const holdtime = 3000;
   useEffect(() => {
     let timerId: any;
     if (isPressed) {
       timerId = setInterval(() => {
         setHoldTime((holdTime) => {
-          if (holdTime >= 5000) {
+          if (holdTime >= holdtime) {
             onLongPress(); // Call your action function
             setHoldTime(0);
             clearInterval(timerId);
@@ -28,7 +28,7 @@ function LongPressButton({
       }, 100);
     } else {
       clearInterval(timerId);
-      if (holdTime >= 5000) {
+      if (holdTime >= holdtime) {
         onLongPress(); // Call your action function
       }
       setHoldTime(0);
@@ -49,7 +49,7 @@ function LongPressButton({
         <div
           className="absolute h-full top-0 rounded-md bg-red-700 bg-opacity-20"
           style={{
-            width: `${(holdTime / 5000) * 100}%`,
+            width: `${(holdTime / holdtime) * 100}%`,
             transition: 'width 0.2s ease-in-out' // Optional: Smooth animation
           }}
         />

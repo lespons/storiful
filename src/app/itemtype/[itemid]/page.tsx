@@ -149,13 +149,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
     'use server';
     try {
       await prisma.$transaction(async (tx) => {
-        await tx.itemStock.delete({
-          where: {
-            itemTypeId: params.itemid
-          }
-        });
-
-        await tx.itemChild.deleteMany({
+        await tx.itemStock.deleteMany({
           where: {
             itemTypeId: params.itemid
           }
@@ -167,7 +161,13 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           }
         });
 
-        await tx.itemType.delete({
+        await tx.itemChild.deleteMany({
+          where: {
+            itemTypeId: params.itemid
+          }
+        });
+
+        await tx.itemType.deleteMany({
           where: {
             id: params.itemid
           }
@@ -213,7 +213,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
       <div className="pt-2 mt-2">
         <LongPressButton
           onLongPress={deleteItemType}
-          title={'Delete'}
+          title={'delete'}
           className={'text-gray-500 font-bold hover:text-red-700 w-full text-center'}
         />
       </div>

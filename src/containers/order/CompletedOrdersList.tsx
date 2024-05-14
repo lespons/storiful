@@ -32,7 +32,7 @@ export async function CompletedOrdersList({
 
   return (
     <div className="max-h-[80vh] flex flex-col">
-      <div className="text-lg font-bold">Completed orders:</div>
+      <div className="text-lg font-bold">Completed orders</div>
       <OrdersList
         orders={orders.map(
           ({

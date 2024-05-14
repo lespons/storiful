@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="flex min-h-screen flex-col items-center pt-12 px-32 overflow-auto">
+        <main className="flex min-h-screen flex-col items-center pt-6 px-32 overflow-auto">
           <SpeedInsights />
           <Analytics />
           <UserAppNav />

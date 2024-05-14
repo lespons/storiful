@@ -66,7 +66,7 @@ export async function ItemStockView({
   const isItemsRequired = itemStock.some((is) => consumedItemsTotalsById[is.itemTypeId] > is.value);
   return (
     <div className="max-h-[80vh] flex flex-col">
-      <label className="text-lg font-bold">Stock:</label>
+      <label className="text-lg font-bold">Stock</label>
       <div className="flex flex-col gap-1 px-6 py-4 bg-fuchsia-700 bg-opacity-5 rounded-md overflow-auto">
         {isItemsRequired ? (
           <div className={'text-red-800 rounded-md text-center mb-2'}>
