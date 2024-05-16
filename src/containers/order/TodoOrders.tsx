@@ -23,7 +23,9 @@ export async function TodoOrders({
       const order = await tx.order.findFirst({
         where: {
           id,
-          completed: false
+          lastState: {
+            state: { in: ['CREATED', 'INPROGRESS'] }
+          }
         },
         include: {
           OrderItem: {
@@ -95,9 +97,22 @@ export async function TodoOrders({
           id
         },
         data: {
-          completed: true,
-          completedAt: new Date(),
-          completedById: session!.user!.id!
+          lastState: {
+            create: {
+              state: 'COMPLETED',
+              User: {
+                connect: {
+                  id: session!.user!.id!
+                }
+              },
+              Order: {
+                connect: {
+                  id
+                }
+              },
+              date: new Date()
+            }
+          }
         }
       });
     });

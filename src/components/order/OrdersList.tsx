@@ -3,16 +3,22 @@
 import React, { memo, startTransition, useOptimistic } from 'react';
 import { Disclosure } from '@headlessui/react';
 import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
-import { compareAsc, differenceInDays, format, formatDistanceToNow } from 'date-fns';
+import {
+  compareAsc,
+  differenceInDays,
+  format,
+  formatDistance,
+  formatDistanceToNow
+} from 'date-fns';
 
 type OrderListItem = {
   id: string;
   completed: boolean;
   num: number;
-  createdAt: Date;
+  createdAt?: Date;
   completedAt?: Date | null;
   deadlineAt?: Date | null;
-  createdBy: string | null;
+  createdBy?: string | null;
   completedBy?: string | null;
   details?: string | null;
   items: {
@@ -142,7 +148,7 @@ const TodoOrder = memo(function TodoOrder({
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
         <div className={'flex gap-1'}>
-          <div className="font-light">{format(order.createdAt, 'dd MMM yyyy')}</div>
+          <div className="font-light">{format(order.createdAt!, 'dd MMM yyyy')}</div>
         </div>
         <div
           className={
@@ -217,15 +223,15 @@ const TodoOrder = memo(function TodoOrder({
       ) : null}
       {order.deadlineAt ? (
         <div
-          className={`mt-2 flex gap-2 text-sm px-2 py-0.5 rounded-md ${
+          className={`mt-2 text-sm px-2 py-1 rounded-md ${
             compareAsc(new Date(), order.deadlineAt) > 0
-              ? 'font-bold text-red-800 bg-red-50'
+              ? 'font-bold text-red-800 bg-red-50  bg-opacity-50'
               : differenceInDays(order.deadlineAt, new Date()) <= 3
-                ? 'text-orange-600 font-bold bg-orange-50'
+                ? 'text-orange-600 font-bold bg-white bg-opacity-80'
                 : 'font-normal'
           }`}>
           🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
-          <span className={'font-light'}>
+          <span className={'font-light ml-1'}>
             ({formatDistanceToNow(order.deadlineAt, { addSuffix: true })})
           </span>
         </div>
@@ -255,14 +261,37 @@ const CompletedOrder = memo(function CompletedOrder({
 }: {
   order: OrdersListProps['orders'][0];
 }) {
+  const deadLine = () => {
+    if (!order.deadlineAt) {
+      return null;
+    }
+
+    const withDelay = differenceInDays(order.completedAt!, order.deadlineAt) > 0;
+    return (
+      <div
+        className={`mt-2 text-xs py-0.5 rounded-md ${
+          withDelay ? 'font-bold text-red-800' : 'font-normal'
+        }`}>
+        🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
+        <span className={'font-light ml-1'}>
+          {withDelay ? (
+            <>
+              ({formatDistance(order.completedAt!, order.deadlineAt, { addSuffix: false })}
+              &nbsp;{withDelay ? 'delay' : ''})
+            </>
+          ) : null}
+        </span>
+      </div>
+    );
+  };
   return (
     <div className={`bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
 
-        <div className="font-light">{order.createdAt.toDateString()}</div>
+        <div className="font-light">✅&nbsp;{order.completedAt?.toDateString()}</div>
       </div>
-      <div className="text-xs text-gray-600">Created by {order.createdBy}</div>
+      <div className="text-xs text-gray-600">Completed by {order.completedBy}</div>
       <div
         className={`bg-white mt-2 hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20 pointer-events-auto`}>
         {order.items.map((oi) => (
@@ -295,12 +324,7 @@ const CompletedOrder = memo(function CompletedOrder({
           {order.details}
         </div>
       ) : null}
-      <div className="flex mt-2 text-gray-600">
-        <div className="flex flex-col text-xs font-extralight">
-          <div className="">✅&nbsp;{order.completedAt?.toDateString()}</div>
-          <div className="text-right">Completed by {order.completedBy}</div>
-        </div>
-      </div>
+      {deadLine()}
     </div>
   );
 });

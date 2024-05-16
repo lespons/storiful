@@ -10,10 +10,14 @@ export async function CompletedOrdersList({
 }) {
   const orders = await prisma.order.findMany({
     where: {
-      completed: true
+      lastState: {
+        state: { in: ['COMPLETED', 'SENT'] }
+      }
     },
     orderBy: {
-      completedAt: 'desc'
+      lastState: {
+        date: 'desc'
+      }
     },
     include: {
       CreatedBy: true,
@@ -26,6 +30,11 @@ export async function CompletedOrdersList({
             }
           }
         }
+      },
+      lastState: {
+        include: {
+          User: true
+        }
       }
     }
   });
@@ -34,41 +43,26 @@ export async function CompletedOrdersList({
     <div className="max-h-[80vh] flex flex-col">
       <div className="text-lg font-bold">Completed orders</div>
       <OrdersList
-        orders={orders.map(
-          ({
-            num,
-            id,
-            details,
-            completed,
-            createdAt,
-            completedAt,
-            deadlineAt,
-            CreatedBy,
-            CompletedBy,
-            OrderItem
-          }) => ({
-            completed,
-            createdAt,
-            id,
-            num,
-            completedAt,
-            createdBy: CreatedBy.name,
-            completedBy: CompletedBy?.name,
-            deadlineAt: deadlineAt,
-            details,
-            items: OrderItem.map((oi) => ({
-              id: oi.id,
-              itemId: oi.ItemType.id,
-              name: oi.ItemType.name,
-              quantity: oi.quantity,
-              completed: oi.completed,
-              children: oi.ItemType.ItemChild.map((ic) => ({
-                name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-                quantity: ic.quantity
-              }))
+        orders={orders.map(({ num, id, details, deadlineAt, OrderItem, lastState }) => ({
+          completed: true,
+          id,
+          num,
+          completedAt: lastState!.date,
+          completedBy: lastState!.User.name ? lastState!.User.name : null,
+          deadlineAt: deadlineAt,
+          details,
+          items: OrderItem.map((oi) => ({
+            id: oi.id,
+            itemId: oi.ItemType.id,
+            name: oi.ItemType.name,
+            quantity: oi.quantity,
+            completed: oi.completed,
+            children: oi.ItemType.ItemChild.map((ic) => ({
+              name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
+              quantity: ic.quantity
             }))
-          })
-        )}
+          }))
+        }))}
       />
     </div>
   );

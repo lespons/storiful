@@ -7,25 +7,15 @@ import { fetcher } from '@/lib/rest_fecther';
 import { TodoOrdersResponseData } from '@/pages/api/order/todo';
 
 export const mapOrderToListItem = (
-  {
-    num,
-    id,
-    completed,
-    createdAt,
-    completedAt,
-    CreatedBy,
-    deadlineAt,
-    OrderItem,
-    details
-  }: TodoOrdersResponseData['orders'][0],
+  { num, id, deadlineAt, OrderItem, details, lastState }: TodoOrdersResponseData['orders'][0],
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
 ): OrdersListProps['orders'][0] => ({
-  completed,
-  createdAt: new Date(createdAt),
+  completed: ['COMPLETED', 'SENT'].includes(lastState!.state),
+  createdAt: new Date(lastState!.date),
   id,
   num,
-  completedAt,
-  createdBy: CreatedBy.name,
+
+  createdBy: lastState!.User.name,
   deadlineAt,
   details,
   items: OrderItem.map((oi) => ({

@@ -3,13 +3,14 @@ import prisma from '@/lib/prisma';
 export const getTodoOrders = async () => {
   return prisma.order.findMany({
     where: {
-      completed: false
+      lastState: {
+        state: { in: ['CREATED', 'INPROGRESS'] }
+      }
     },
     orderBy: {
       num: 'asc'
     },
     include: {
-      CreatedBy: true,
       OrderItem: {
         include: {
           ItemType: {
@@ -22,6 +23,11 @@ export const getTodoOrders = async () => {
           ItemType: {
             name: 'asc'
           }
+        }
+      },
+      lastState: {
+        include: {
+          User: true
         }
       }
     }

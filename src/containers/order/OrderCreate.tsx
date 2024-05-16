@@ -21,10 +21,13 @@ export async function OrderCreate({
         throw Error('No items are selected');
       }
       await prisma.$transaction(async (tx) => {
-        await tx.order.create({
+        const userId = session?.user?.id;
+
+        if (!userId) {
+          throw Error('user is not provided');
+        }
+        const order = await tx.order.create({
           data: {
-            createdAt: new Date(),
-            createdById: session!.user!.id!,
             deadlineAt: values.order.deadline ? new Date(values.order.deadline) : null,
             details: values.order.details,
             OrderItem: {
@@ -34,7 +37,25 @@ export async function OrderCreate({
                   quantity: Number(quantity)
                 }))
               }
+            },
+            states: {
+              create: {
+                date: new Date(),
+                state: 'CREATED',
+                userId
+              }
             }
+          },
+          include: {
+            states: true
+          }
+        });
+        await tx.order.update({
+          where: {
+            id: order.id
+          },
+          data: {
+            lastStateId: order.states[0].id
           }
         });
       });
