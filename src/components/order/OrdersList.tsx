@@ -346,7 +346,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
             'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
           }>
           <button
-            className={`group flex justify-center gap-2 w-full bg-yellow-400 hover:bg-yellow-300 p-1 rounded-md font-bold ${order.pending ? 'bg-gray-300 hover:bg-gray-300' : ''}`}
+            className={`group flex justify-center gap-2 w-full p-1 rounded-md font-bold ${order.pending ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-300'}`}
             disabled={order.pending}
             onClick={async () => {
               startTransition(() => {
