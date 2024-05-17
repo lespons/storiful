@@ -13,13 +13,8 @@ import {
 
 type OrderListItem = {
   id: string;
-  completed: boolean;
   num: number;
-  createdAt?: Date;
-  completedAt?: Date | null;
   deadlineAt?: Date | null;
-  createdBy?: string | null;
-  completedBy?: string | null;
   details?: string | null;
   items: {
     id: string;
@@ -31,6 +26,11 @@ type OrderListItem = {
   }[];
   pending?: boolean;
   edit?: boolean;
+  lastState: {
+    userName: string | null;
+    state: 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
+    date: Date;
+  };
 };
 
 export type OrdersListEditCallback = (
@@ -83,7 +83,8 @@ export function OrdersList({ orders, onComplete, onCompleteOrderItem, edit }: Or
     <div className="overflow-auto">
       {!orders.length ? <div>-</div> : null}
       {optimisticOrders.map((order) => {
-        if (order.completed) return <CompletedOrder key={order.id} order={order} />;
+        if (order.lastState.state === 'COMPLETED')
+          return <CompletedOrder key={order.id} order={order} />;
 
         if (order.edit && edit) {
           return (
@@ -144,11 +145,11 @@ const TodoOrder = memo(function TodoOrder({
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
   return (
     <div
-      className={`relative ${order.completed ? 'bg-green-700' : 'bg-blue-700'} group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
+      className={`relative bg-green-700 group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
         <div className={'flex gap-1'}>
-          <div className="font-light">{format(order.createdAt!, 'dd MMM yyyy')}</div>
+          <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
         </div>
         <div
           className={
@@ -165,7 +166,7 @@ const TodoOrder = memo(function TodoOrder({
           Edit
         </div>
       </div>
-      <div className="text-xs mb-2 text-gray-600">Created by {order.createdBy}</div>
+      <div className="text-xs mb-2 text-gray-600">Created by {order.lastState.userName}</div>
       <div
         className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
@@ -266,7 +267,7 @@ const CompletedOrder = memo(function CompletedOrder({
       return null;
     }
 
-    const withDelay = differenceInDays(order.completedAt!, order.deadlineAt) > 0;
+    const withDelay = differenceInDays(order.lastState.date, order.deadlineAt) > 0;
     return (
       <div
         className={`mt-2 text-xs py-0.5 rounded-md ${
@@ -276,7 +277,7 @@ const CompletedOrder = memo(function CompletedOrder({
         <span className={'font-light ml-1'}>
           {withDelay ? (
             <>
-              ({formatDistance(order.completedAt!, order.deadlineAt, { addSuffix: false })}
+              ({formatDistance(order.lastState.date, order.deadlineAt, { addSuffix: false })}
               &nbsp;{withDelay ? 'delay' : ''})
             </>
           ) : null}
@@ -289,9 +290,9 @@ const CompletedOrder = memo(function CompletedOrder({
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
 
-        <div className="font-light">✅&nbsp;{order.completedAt?.toDateString()}</div>
+        <div className="font-light">✅&nbsp;{order.lastState.date.toDateString()}</div>
       </div>
-      <div className="text-xs text-gray-600">Completed by {order.completedBy}</div>
+      <div className="text-xs text-gray-600">Completed by {order.lastState.userName}</div>
       <div
         className={`bg-white mt-2 hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-20 pointer-events-auto`}>
         {order.items.map((oi) => (
@@ -299,7 +300,7 @@ const CompletedOrder = memo(function CompletedOrder({
             <Disclosure.Button as="div" className="py-0 text-blue-900">
               <div
                 className={`flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700`}>
-                <div className={`font-bold ${order.completed ? 'text-sm' : ''}`}>{oi.name}</div>
+                <div className={`font-bold text-sm`}>{oi.name}</div>
                 <div className="text-xs my-auto">(+{oi.quantity})</div>
               </div>
             </Disclosure.Button>

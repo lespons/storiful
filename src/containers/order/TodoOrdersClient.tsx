@@ -10,12 +10,8 @@ export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: TodoOrdersResponseData['orders'][0],
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
 ): OrdersListProps['orders'][0] => ({
-  completed: ['COMPLETED', 'SENT'].includes(lastState!.state),
-  createdAt: new Date(lastState!.date),
   id,
   num,
-
-  createdBy: lastState!.User.name,
   deadlineAt,
   details,
   items: OrderItem.map((oi) => ({
@@ -28,7 +24,12 @@ export const mapOrderToListItem = (
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
       quantity: ic.quantity
     }))
-  }))
+  })),
+  lastState: {
+    userName: lastState!.User.name,
+    state: lastState!.state,
+    date: lastState!.date
+  }
 });
 
 export function TodoOrdersClient({

@@ -42,7 +42,6 @@ export async function CompletedOrdersList({
       <div className="text-lg font-bold">Completed orders</div>
       <OrdersList
         orders={orders.map(({ num, id, details, deadlineAt, OrderItem, lastState }) => ({
-          completed: true,
           id,
           num,
           completedAt: lastState!.date,
@@ -59,7 +58,12 @@ export async function CompletedOrdersList({
               name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
               quantity: ic.quantity
             }))
-          }))
+          })),
+          lastState: {
+            userName: lastState!.User.name,
+            state: lastState!.state,
+            date: lastState!.date
+          }
         }))}
       />
     </div>
