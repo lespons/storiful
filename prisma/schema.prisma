@@ -54,19 +54,12 @@ model ItemStock {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  num           Int         @default(autoincrement())
-  createdAt     DateTime?
-  completedAt   DateTime?
-  deadlineAt    DateTime?
-  OrderItem     OrderItem[]
-  completed     Boolean?    @default(false)
-  CreatedBy     User?       @relation("CreatedOrders", fields: [createdById], references: [id])
-  CompletedBy   User?       @relation("CompletedOrders", fields: [completedById], references: [id])
-  createdById   String?
-  completedById String?
-  details       String?
-  lastStateId   String?     @unique
+  id          String      @id @default(cuid())
+  num         Int         @default(autoincrement())
+  deadlineAt  DateTime?
+  OrderItem   OrderItem[]
+  details     String?
+  lastStateId String?     @unique
 
   states    OrderStatesHistory[] @relation("OrderStates")
   lastState OrderStatesHistory?  @relation("LastState", fields: [lastStateId], references: [id])
@@ -75,14 +68,14 @@ model Order {
 }
 
 model OrderStatesHistory {
-  id      String      @id @default(cuid())
-  state   OrderStates @default(CREATED)
-  date    DateTime
-  userId  String
-  User    User        @relation(fields: [userId], references: [id])
-  Order   Order       @relation("OrderStates", fields: [orderId], references: [id])
-  orderId String
-  LastStateOrder   Order?      @relation("LastState")
+  id             String      @id @default(cuid())
+  state          OrderStates @default(CREATED)
+  date           DateTime
+  userId         String
+  User           User        @relation(fields: [userId], references: [id])
+  Order          Order       @relation("OrderStates", fields: [orderId], references: [id])
+  orderId        String
+  LastStateOrder Order?      @relation("LastState")
 
   @@map(name: "orderStatesHistory")
 }
@@ -109,8 +102,6 @@ model User {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  createdOrders      Order[]              @relation("CreatedOrders")
-  completedOrders    Order[]              @relation("CompletedOrders")
   OrderStatesHistory OrderStatesHistory[]
 
   @@map(name: "users")

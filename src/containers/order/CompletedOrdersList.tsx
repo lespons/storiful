@@ -20,8 +20,6 @@ export async function CompletedOrdersList({
       }
     },
     include: {
-      CreatedBy: true,
-      CompletedBy: true,
       OrderItem: {
         include: {
           ItemType: {

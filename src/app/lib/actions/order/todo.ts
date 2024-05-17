@@ -40,7 +40,6 @@ export const getOrder = async (id: string) => {
       id
     },
     include: {
-      CreatedBy: true,
       OrderItem: {
         include: {
           ItemType: {

@@ -1,2 +1,3 @@
 cheatsheet
 - prisma migrate resolve --applied 20240515134554_initial_state
+- prisma migrate dev --name retroactively-add-index
