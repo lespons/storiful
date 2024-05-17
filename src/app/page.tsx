@@ -2,7 +2,7 @@
 import prisma from '@/lib/prisma';
 import { OrderCreate } from '@/containers/order/OrderCreate';
 import { TodoOrders } from '@/containers/order/TodoOrders';
-import { CompletedOrdersList } from '@/containers/order/CompletedOrdersList';
+import { CompletedOrders } from '@/containers/order/CompletedOrders';
 import { ItemStockView } from '@/containers/ItemStockView';
 
 async function getProps() {
@@ -43,7 +43,7 @@ export default async function OrderHome() {
         <TodoOrders itemTypes={itemTypes} />
       </div>
       <div className="flex-[3]">
-        <CompletedOrdersList itemTypes={itemTypes} />
+        <CompletedOrders itemTypes={itemTypes} />
       </div>
       <div className="flex-[4]">
         <ItemStockView itemStock={itemStock} />

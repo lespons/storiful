@@ -49,13 +49,12 @@ export async function ItemStockView({
     return (
       <div className="h-full w-full flex flex-row absolute z-0 left-0 top-0 rounded-md overflow-hidden">
         <div
-          className={`bg-blue-800 bg-opacity-40`}
+          className={`bg-violet-300 group-hover:bg-violet-800`}
           style={{
             width: `${useProgress > 100 ? existProgress : useProgress}%`
           }}></div>
         <div
-          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-800' : 'bg-green-600'}
-                   bg-opacity-40`}
+          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-400' : 'bg-green-400 bg-opacity-50 group-hover:bg-green-800'}`}
           style={{
             width: `${useProgress > 100 ? 100 - existProgress : 100 - useProgress}%`
           }}></div>
@@ -67,18 +66,19 @@ export async function ItemStockView({
   return (
     <div className="max-h-[80vh] flex flex-col">
       <label className="text-lg font-bold">Stock</label>
-      <div className="flex flex-col gap-1 px-6 py-4 bg-fuchsia-700 bg-opacity-5 rounded-md overflow-auto">
+      <div
+        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100' : 'bg-gray-700 bg-opacity-10'} px-6 py-4 rounded-md`}>
         {isItemsRequired ? (
-          <div className={'text-red-800 rounded-md text-center mb-2'}>
-            <label className="font-bold text-sm">Items Required❗</label>
+          <div className={'text-red-800 rounded-md text-center p-2'}>
+            <label className="font-bold text-sm w-full">Items Required❗</label>
           </div>
         ) : null}
         {sortedItemsStock.map((is, index) => (
           <div
             key={is.id}
-            className={`flex flex-row relative shadow-md gap-4 min-w-full justify-between px-4 py-1 rounded-md bg-white
-            ${consumedItemsTotalsById[is.itemTypeId] ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-opacity-80' : 'bg-opacity-5'}
-             hover:bg-black hover:text-white hover:scale-105 transition-transform duration-300
+            className={`group flex flex-row relative gap-4 min-w-full justify-between px-4 py-1 rounded-md bg-white border-b-[1px] border-gray-400
+            ${consumedItemsTotalsById[is.itemTypeId] ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
+             hover:bg-black hover:text-white transition-transform duration-300 hover:scale-105
             `}>
             {consumedItemsTotalsById[is.itemTypeId] ? background(is) : null}
             <div className={`font-bold flex-3 z-10`}>{is.ItemType.name}</div>

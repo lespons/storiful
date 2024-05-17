@@ -70,7 +70,7 @@ model Order {
 model OrderStatesHistory {
   id             String      @id @default(cuid())
   state          OrderStates @default(CREATED)
-  date           DateTime
+  date           DateTime    @default(now())
   userId         String
   User           User        @relation(fields: [userId], references: [id])
   Order          Order       @relation("OrderStates", fields: [orderId], references: [id])

@@ -109,8 +109,7 @@ export async function TodoOrders({
                 connect: {
                   id
                 }
-              },
-              date: new Date()
+              }
             }
           }
         }

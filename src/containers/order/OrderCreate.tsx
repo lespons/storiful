@@ -40,7 +40,6 @@ export async function OrderCreate({
             },
             states: {
               create: {
-                date: new Date(),
                 state: 'CREATED',
                 userId
               }
