@@ -69,8 +69,8 @@ export async function ItemStockView({
       <div
         className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100' : 'bg-gray-700 bg-opacity-10'} px-6 py-4 rounded-md`}>
         {isItemsRequired ? (
-          <div className={'text-red-800 rounded-md text-center p-2'}>
-            <label className="font-bold text-sm w-full">Items Required❗</label>
+          <div className={'text-red-800 rounded-md text-center pb-2'}>
+            <label className="font-bold w-full">Items Required</label>
           </div>
         ) : null}
         {sortedItemsStock.map((is, index) => (

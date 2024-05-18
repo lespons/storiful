@@ -93,7 +93,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
-      className="flex flex-col bg-fuchsia-700 bg-opacity-5 px-5 py-4 rounded-b-md min-w-64">
+      className="flex flex-col bg-fuchsia-900 bg-opacity-10 px-5 py-4 rounded-b-md min-w-64">
       <div className="mb-2">
         <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
           Deadline
@@ -143,16 +143,16 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
             });
           }}
         />
-        {orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}
+        {/*{orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}*/}
         {orderItems.length ? (
-          <div className="mt-0">
+          <div className="mt-2">
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
-                className="font-bold not-first:pt-2 hover:drop-shadow-lg rounded-md px-4 py-2 text-sm">
-                <div>{orderItem.name}</div>
+                className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30 shadow-md">
+                <div className={'text-base text-green-800'}>{orderItem.name}</div>
 
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 mt-1">
                   <input
                     type="number"
                     placeholder=""
@@ -174,11 +174,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
                   </button>
                 </div>
                 {orderItem.children?.length ? (
-                  <div className="pt-2 font-normal">
-                    <label>These items will be used:</label>
+                  <div className="pt-2 font-normal text-xs">
                     {orderItem.children.map((c) => (
-                      <div key={c.name} className="text-red-700">
-                        - {orderItem.quantity * c.quantity} pcs of {c.name}
+                      <div key={c.name} className="flex  gap-1 text-red-700 font-bold">
+                        <div>{c.name}</div>
+                        <div className={'font-normal'}>(- {orderItem.quantity * c.quantity})</div>
                       </div>
                     ))}
                   </div>

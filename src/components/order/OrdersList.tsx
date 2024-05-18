@@ -161,9 +161,17 @@ export const TodoOrderListItem = memo(function TodoOrder({
   blurred?: boolean;
 }) {
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
+
+  const deadlineFailed = order.deadlineAt ? compareAsc(new Date(), order.deadlineAt) > 0 : false;
+
+  const deadlineSoon =
+    !order.deadlineAt || deadlineFailed
+      ? false
+      : differenceInDays(order.deadlineAt, new Date()) <= 3;
   return (
     <div
-      className={`relative bg-violet-900 group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
+      className={`relative bg-fuchsia-900 group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
+       ${deadlineSoon ? '' : ''}`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
         <div className={'flex gap-1'}>
@@ -242,10 +250,10 @@ export const TodoOrderListItem = memo(function TodoOrder({
       {order.deadlineAt ? (
         <div
           className={`mt-2 text-sm px-2 py-1 rounded-md ${
-            compareAsc(new Date(), order.deadlineAt) > 0
-              ? 'font-bold text-red-800 bg-red-50  bg-opacity-50'
-              : differenceInDays(order.deadlineAt, new Date()) <= 3
-                ? 'text-orange-600 font-bold bg-white bg-opacity-80'
+            deadlineFailed
+              ? 'text-white font-bold bg-red-700 bg-opacity-90'
+              : deadlineSoon
+                ? 'text-white font-bold bg-orange-700 bg-opacity-90'
                 : 'font-normal'
           }`}>
           🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
@@ -356,7 +364,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
                 onChangeState?.(order.id, 'SENT');
               });
             }}>
-            <div>Sent</div> <div className={'group-hover:animate-shake'}>📦</div>
+            <div>Send</div> <div className={'group-hover:animate-shake'}>📦</div>
           </button>
         </div>
       </div>
