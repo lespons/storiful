@@ -54,7 +54,7 @@ export async function ItemStockView({
             width: `${useProgress > 100 ? existProgress : useProgress}%`
           }}></div>
         <div
-          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-400' : 'bg-green-400 bg-opacity-50 group-hover:bg-green-800'}`}
+          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-400 group-hover:bg-red-800' : 'bg-green-400 bg-opacity-50 group-hover:bg-green-800'}`}
           style={{
             width: `${useProgress > 100 ? 100 - existProgress : 100 - useProgress}%`
           }}></div>

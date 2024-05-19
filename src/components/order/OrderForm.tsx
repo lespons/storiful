@@ -149,7 +149,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
-                className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30 shadow-md">
+                className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30">
                 <div className={'text-base text-green-800'}>{orderItem.name}</div>
 
                 <div className="flex flex-row gap-2 mt-1">

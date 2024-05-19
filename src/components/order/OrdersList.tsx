@@ -170,7 +170,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
       : differenceInDays(order.deadlineAt, new Date()) <= 3;
   return (
     <div
-      className={`relative bg-fuchsia-900 group bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 group ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
+      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900 bg-opacity-10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
        ${deadlineSoon ? '' : ''}`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
@@ -262,7 +262,8 @@ export const TodoOrderListItem = memo(function TodoOrder({
           </span>
         </div>
       ) : null}
-      <div className="flex text-gray-600">
+      <div
+        className={`overflow-hidden max-h-0 ${disabled ? '' : 'group-hover:max-h-10 group-hover:mt-2'}  transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100`}>
         <button
           type="submit"
           disabled={disabled}
@@ -274,7 +275,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
               onComplete?.(order.id);
             });
           }}
-          className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-400' : 'hover:text-green-600 hover:bg-green-100 shadow-md'} font-bold text-sm min-w-full bg-fuchsia-100`}>
+          className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-400 bg-gray-100' : 'bg-green-100 hover:text-green-600 hover:bg-green-100 shadow-md'} font-bold text-sm min-w-full`}>
           {order.pending ? 'Updating' : 'Complete'}
         </button>
       </div>

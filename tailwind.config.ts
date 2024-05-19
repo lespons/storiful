@@ -12,7 +12,8 @@ const config: Config = {
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'fuchsia-gradient': 'linear-gradient(270deg, #8b5cf6, #a78bfa, #c4b5fd)'
       },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',
@@ -26,10 +27,16 @@ const config: Config = {
           '20%, 80%': { transform: 'translateX(10%)' },
           '30%, 50%, 70%': { transform: 'translateX(-10%)' },
           '40%, 60%': { transform: 'translateX(10%)' }
+        },
+        shift: {
+          '0%': { backgroundPosition: '0% 0%' },
+          '50%': { backgroundPosition: '100% 0%' },
+          '100%': { backgroundPosition: '0% 0%' }
         }
       },
       animation: {
-        shake: 'shake 1.5s ease-in-out infinite'
+        shake: 'shake 1.5s ease-in-out infinite',
+        shift: 'shift 2s ease infinite'
       }
     }
   },
