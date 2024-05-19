@@ -1,6 +1,7 @@
 'use server';
 import { ItemStock, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order/todo';
+import { ItemStockElement } from '@/components/ItemStockElement';
 
 export async function ItemStockView({
   itemStock
@@ -40,28 +41,6 @@ export async function ItemStockView({
     return itm1.ItemType.name.localeCompare(itm2.ItemType.name);
   });
 
-  function background(is: (typeof itemStock)[0]) {
-    const useProgress = Math.max(
-      Math.round((consumedItemsTotalsById[is.itemTypeId] / is.value) * 100),
-      0
-    );
-    const existProgress = Math.round((is.value / consumedItemsTotalsById[is.itemTypeId]) * 100);
-    return (
-      <div className="h-full w-full flex flex-row absolute z-0 left-0 top-0 rounded-md overflow-hidden">
-        <div
-          className={`bg-violet-300 group-hover:bg-violet-800`}
-          style={{
-            width: `${useProgress > 100 ? existProgress : useProgress}%`
-          }}></div>
-        <div
-          className={`${consumedItemsTotalsById[is.itemTypeId] > is.value ? 'bg-red-400 group-hover:bg-red-800' : 'bg-green-400 bg-opacity-50 group-hover:bg-green-800'}`}
-          style={{
-            width: `${useProgress > 100 ? 100 - existProgress : 100 - useProgress}%`
-          }}></div>
-      </div>
-    );
-  }
-
   const isItemsRequired = itemStock.some((is) => consumedItemsTotalsById[is.itemTypeId] > is.value);
   return (
     <div className="max-h-[80vh] flex flex-col">
@@ -74,25 +53,17 @@ export async function ItemStockView({
           </div>
         ) : null}
         {sortedItemsStock.map((is, index) => (
-          <div
+          <ItemStockElement
             key={is.id}
-            className={`group flex flex-row relative gap-4 min-w-full justify-between px-4 py-1 rounded-md bg-white border-b-[1px] border-gray-400
-            ${consumedItemsTotalsById[is.itemTypeId] ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
-             hover:bg-black hover:text-white transition-transform duration-300 hover:scale-105
-            `}>
-            {consumedItemsTotalsById[is.itemTypeId] ? background(is) : null}
-            <div className={`font-bold flex-3 z-10`}>{is.ItemType.name}</div>
-            <div className="flex-2 z-10 flex gap-1">
-              <span>{is.value}</span>
-              {consumedItemsTotalsById[is.itemTypeId] > is.value ? (
-                <span className="z-10 font-bold text-red-800">
-                  ({consumedItemsTotalsById[is.itemTypeId] - is.value})
-                </span>
-              ) : null}
-            </div>
-          </div>
+            name={is.ItemType.name}
+            value={is.value}
+            consumedItemsCount={consumedItemsTotalsById[is.itemTypeId]}
+            index={index}
+            image={is.ItemType.image}
+          />
         ))}
       </div>
     </div>
   );
 }
+//(is, consumedItemsTotalsById[is.itemTypeId], index, background)

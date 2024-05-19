@@ -29,6 +29,7 @@ model ItemType {
   ItemChild ItemChild[]
   ItemStock ItemStock?
   OrderItem OrderItem[]
+  image     String?
 
   @@map(name: "item_types")
 }

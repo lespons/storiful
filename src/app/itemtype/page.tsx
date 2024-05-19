@@ -15,12 +15,13 @@ async function getProps() {
 
 export function mapItemType(
   itemTypes: ItemTypesReturnType,
-  { id, name, type, ItemChild }: ItemTypesReturnType[0]
+  { id, name, type, ItemChild, image }: ItemTypesReturnType[0]
 ) {
   return {
     id: id!,
     name,
     type: type,
+    image,
     children: ItemChild.map((ch) => {
       const it = itemTypes.find((it) => it.id === ch.itemTypeId)!;
 
@@ -47,6 +48,7 @@ export default async function ItemTypeCreatePage() {
         data: {
           name: itemType.name,
           type: itemType.type,
+          image: itemType.image,
           ItemChild: {
             createMany: {
               data: itemType.children.map((c) => ({

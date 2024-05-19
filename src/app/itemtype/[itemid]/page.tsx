@@ -88,6 +88,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           data: {
             name: itemType.name,
             type: itemType.type,
+            image: itemType.image,
             ItemChild: {
               deleteMany: {
                 id: { in: childrenToDelete.map(({ id }) => id) }
@@ -126,6 +127,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           id: newItemType.id,
           type: newItemType.type,
           name: newItemType.name,
+          image: newItemType.image,
           ItemChild: newItemType.ItemChild
         })
       };

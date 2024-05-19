@@ -5,11 +5,13 @@ import { SelectBox } from '@/components/SelectBox';
 import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
+import FileSelector from '@/components/FileSelector';
 
 export interface ItemType {
   id: string;
   name: string;
   type: 'INVENTORY' | 'PRODUCT';
+  image?: string | null;
   children: {
     id?: string;
     name: string;
@@ -215,7 +217,12 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           ))}
         </>
       </div>
-
+      <FileSelector
+        onChange={(url) => {
+          setValue('itemType.image', url);
+        }}
+        initValue={defaultValues?.itemType?.image}
+      />
       <ItemTypeSubmit action={action} />
     </form>
   );
