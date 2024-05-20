@@ -55,7 +55,9 @@ export function ItemStockElement({
       <div className="flex-2 z-10 flex gap-1">
         <span>{value}</span>
         {consumedItemsCount > value ? (
-          <span className="z-10 font-bold text-red-800">({consumedItemsCount - value})</span>
+          <span className="z-10 font-bold text-red-800 group-hover:text-white">
+            ({consumedItemsCount - value})
+          </span>
         ) : null}
       </div>
     </div>
