@@ -10,6 +10,7 @@ export type OrderFormValue = {
   name?: string;
   deadline?: string | null;
   details?: string | null;
+  pending?: boolean; //TODO use to show pending state
   items: {
     id?: string;
     itemId: string;
@@ -42,7 +43,7 @@ function OrderSubmit({
     <button
       type="submit"
       disabled={pending || disabled}
-      className={`px-3 py-2 rounded-md ${pending || disabled ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
+      className={`px-3 py-1 rounded-md ${pending || disabled ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
       {pending ? '...' : action.toLowerCase()}
     </button>
   );
@@ -83,7 +84,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
     }
   });
 
-  const [state, formAction, isPending] = useFormState(onSubmit, {
+  const [state, formAction] = useFormState(onSubmit, {
     order: {
       items: []
     }

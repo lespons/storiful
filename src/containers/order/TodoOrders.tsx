@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order/todo';
 import { TodoOrdersClient } from '@/containers/order/TodoOrdersClient';
@@ -14,7 +14,7 @@ export async function TodoOrders({
 }) {
   const orders = await getTodoOrders();
 
-  const submitData = async (id: string) => {
+  const completeOrder = async (id: string) => {
     'use server';
 
     const session = await auth();
@@ -202,6 +202,7 @@ export async function TodoOrders({
     } finally {
       // redisClient.publish('orders', 'new order!');
       revalidatePath('/', 'page');
+      revalidateTag('order_find');
     }
   };
 
@@ -213,7 +214,7 @@ export async function TodoOrders({
           '/api/order/todo': { orders }
         }}>
         <TodoOrdersClient
-          submitData={submitData}
+          submitData={completeOrder}
           itemTypes={itemTypes}
           completedOrderItem={markAsCompletedType}
           updateOrder={updateOrder}

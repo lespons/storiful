@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { OrdersList } from '@/components/order/OrdersList';
 import { ItemChild, ItemType } from '@prisma/client';
 import { auth } from '@/lib/auth';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function CompletedOrders({
   itemTypes
@@ -49,7 +49,7 @@ export async function CompletedOrders({
     return completedState2.date.getTime() - completedState1.date.getTime();
   });
 
-  const sentOrder = async (id: string) => {
+  const sendOrder = async (id: string) => {
     'use server';
 
     const session = await auth();
@@ -118,6 +118,7 @@ export async function CompletedOrders({
     });
 
     revalidatePath('/', 'layout');
+    revalidateTag('order_find');
   };
 
   return (
@@ -150,8 +151,9 @@ export async function CompletedOrders({
         }))}
         onChangeState={async (orderId, state) => {
           'use server';
+          console.log('onChangeState', orderId, state);
           if (state === 'SENT') {
-            await sentOrder(orderId);
+            await sendOrder(orderId);
           }
         }}
       />

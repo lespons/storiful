@@ -9,7 +9,7 @@ export function SelectBox({
 }: {
   items: Item[];
   initialItem?: Item;
-  onSelect: (item: Item) => void;
+  onSelect: (item: Item | null) => void;
 }) {
   const [options, setOptions] = useState(items);
   const search = useCallback(
@@ -23,7 +23,7 @@ export function SelectBox({
   }, [items]);
   return (
     <div className="relative">
-      <Combobox value={null} nullable={true} onChange={onSelect}>
+      <Combobox value={null} onChange={onSelect}>
         <div className="relative">
           <div className="relative w-full cursor-default overflow-hidden rounded-md bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300">
             <Combobox.Input

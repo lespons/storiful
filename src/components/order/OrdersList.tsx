@@ -10,6 +10,7 @@ import {
   formatDistance,
   formatDistanceToNow
 } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
 type OrderListItem = {
@@ -88,7 +89,7 @@ export function OrdersList({
 
   const someInEdit = orders.some(({ edit }) => edit);
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto pr-0.5">
       {!orders.length ? <div>-</div> : null}
       {optimisticOrders.map((order) => {
         if (order.lastState.state === 'COMPLETED')
@@ -107,7 +108,11 @@ export function OrdersList({
         if (order.edit && edit) {
           return (
             <div key={order.id} className={'mb-2'}>
-              <div className="font-light">Edit of the order #{order.num}</div>
+              <div
+                className="font-light bg-black text-white rounded-t-md px-3 py-0.5 font-semibold
+              ">
+                Edit of the order #{order.num}
+              </div>
               <ItemOrderForm
                 action={'UPDATE'}
                 itemTypes={edit.itemTypes}
@@ -116,7 +121,8 @@ export function OrdersList({
                   id: order.id,
                   deadline: order.deadlineAt ? format(order.deadlineAt, 'yyyy-MM-dd') : null,
                   details: order.details,
-                  items: order.items
+                  items: order.items,
+                  pending: order.pending
                 }}
                 onReset={() => {
                   startTransition(() => {
@@ -159,6 +165,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
   onCompleteOrderItem: OrdersListProps['onCompleteOrderItem'];
   onComplete: OrdersListProps['onComplete'];
   blurred?: boolean;
+  key?: string;
 }) {
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
 
@@ -172,14 +179,13 @@ export const TodoOrderListItem = memo(function TodoOrder({
     <div
       className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900 bg-opacity-10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
        ${deadlineSoon ? '' : ''}`}>
-      <div className="flex text-xs gap-2 mb-1 leading-none">
+      <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
-        <div className={'flex gap-1'}>
-          <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
-        </div>
+        <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
+        <OrderOpen orderId={order.id} state={order.lastState.state} />
         <div
           className={
-            'invisible group-hover:visible flex-1 text-right hover:underline hover:cursor-pointer font-bold text-gray-700'
+            'invisible group-hover:visible text-right hover:underline hover:cursor-pointer font-bold text-gray-700'
           }
           onClick={(e) => {
             e.preventDefault();
@@ -189,7 +195,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
               });
             });
           }}>
-          Edit
+          EDIT
         </div>
       </div>
       <div className="text-xs mb-2 text-gray-600">Created by {order.lastState.userName}</div>
@@ -243,7 +249,8 @@ export const TodoOrderListItem = memo(function TodoOrder({
       </div>
 
       {order.details ? (
-        <div className={`mt-2 text-gray-950 font-medium border-l-4 border-fuchsia-300 pl-2`}>
+        <div
+          className={`mt-2 text-gray-950 font-medium border-l-4 border-fuchsia-300 pl-2 line-clamp-3`}>
           {order.details}
         </div>
       ) : null}
@@ -275,8 +282,8 @@ export const TodoOrderListItem = memo(function TodoOrder({
               onComplete?.(order.id);
             });
           }}
-          className={`px-2 py-1 mt-2 rounded-md ${disabled ? 'text-gray-400 bg-gray-100' : 'bg-green-100 hover:text-green-600 hover:bg-green-100 shadow-md'} font-bold text-sm min-w-full`}>
-          {order.pending ? 'Updating' : 'Complete'}
+          className={`group flex justify-center gap-2 w-full p-1 rounded-md font-bold ${disabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-green-300 hover:bg-green-200'}`}>
+          {order.pending ? 'updating' : 'complete'}
         </button>
       </div>
     </div>
@@ -319,10 +326,12 @@ const CompletedOrderListItem = memo(function CompletedOrder({
     );
   };
   return (
-    <div className={`bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
+    <div
+      className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
         <div className="font-light">✅&nbsp;{order.lastState.date.toDateString()}</div>
+        <OrderOpen orderId={order.id} state={order.lastState.state} />
       </div>
       <div className="text-xs text-gray-600">Completed by {order.lastState.userName}</div>
       <div
@@ -365,12 +374,13 @@ const CompletedOrderListItem = memo(function CompletedOrder({
                 onChangeState?.(order.id, 'SENT');
               });
             }}>
-            <div>Send</div> <div className={'group-hover:animate-shake'}>📦</div>
+            <div>send</div> <div className={'group-hover:animate-shake'}>📦</div>
           </button>
         </div>
       </div>
       {order.details ? (
-        <div className={`mt-2 text-gray-950 font-medium border-l-4 border-green-600 pl-2`}>
+        <div
+          className={`mt-2 text-gray-950 font-medium border-l-4 border-green-600 pl-2 line-clamp-3`}>
           {order.details}
         </div>
       ) : null}
@@ -387,10 +397,12 @@ const SentOrderListItem = memo(function SentOrder({
   onChangeState: OrdersListProps['onChangeState'];
 }) {
   return (
-    <div className={`bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
+    <div
+      className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="flex text-xs gap-2 mb-1 leading-none">
         <div className="underline">#{order.num}</div>
         <div className="font-light">📦&nbsp;{order.lastState.date.toDateString()}</div>
+        <OrderOpen orderId={order.id} state={order.lastState.state} />
       </div>
       <div className="text-xs text-gray-600">Sent by {order.lastState.userName}</div>
       <div className={`mt-2`}>
@@ -404,10 +416,27 @@ const SentOrderListItem = memo(function SentOrder({
         ))}
       </div>
       {order.details ? (
-        <div className={`mt-2 text-gray-900 font-medium border-l-4 border-yellow-600 pl-2`}>
+        <div
+          className={`mt-2 text-gray-900 font-medium border-l-4 border-yellow-600 pl-2 line-clamp-3`}>
           {order.details}
         </div>
       ) : null}
     </div>
   );
 });
+
+function OrderOpen({ orderId, state }: { orderId: string; state: string }) {
+  const router = useRouter();
+  return (
+    <div
+      className={
+        'invisible group-hover:visible flex-1 text-right hover:underline hover:cursor-pointer font-bold'
+      }
+      onClick={(e) => {
+        e.preventDefault();
+        router.push(`/order/${state.toLowerCase()}/${orderId}`);
+      }}>
+      OPEN
+    </div>
+  );
+}
