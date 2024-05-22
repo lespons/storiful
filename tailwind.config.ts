@@ -13,7 +13,9 @@ const config: Config = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'fuchsia-gradient': 'linear-gradient(270deg, #8b5cf6, #a78bfa, #c4b5fd)'
+        'fuchsia-gradient': 'linear-gradient(270deg, #8b5cf6, #a78bfa, #c4b5fd)',
+        'black-gradient':
+          'linear-gradient(270deg, rgba(255, 255, 255, 0),rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.1),rgba(255, 255, 255, 0))'
       },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',

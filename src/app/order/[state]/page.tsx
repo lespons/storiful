@@ -1,12 +1,14 @@
 'use server';
+
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
+import { $Enums } from '@prisma/client';
 
-export default async function _() {
+export default async function _({ params: { state } }: { params: { state: string } }) {
   const order = await prisma.order.findFirst({
     where: {
       lastState: {
-        state: 'CREATED'
+        state: state.toUpperCase() as $Enums.OrderStates
       }
     },
     orderBy: {
@@ -16,5 +18,5 @@ export default async function _() {
       id: true
     }
   });
-  return redirect(`/order/created/${order?.id}`);
+  return redirect(`/order/${state}/${order?.id}`);
 }

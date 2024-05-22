@@ -36,7 +36,6 @@ export default async function OrderHome() {
   return (
     <div className="flex flex-row gap-4 mt-6">
       <div className="">
-        {' '}
         <OrderCreate itemTypes={itemTypes} />
       </div>
       <div className="flex-[3]">

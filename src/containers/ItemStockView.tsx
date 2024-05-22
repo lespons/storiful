@@ -46,7 +46,7 @@ export async function ItemStockView({
     <div className="max-h-[80vh] flex flex-col">
       <label className="text-lg font-bold">Stock</label>
       <div
-        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100' : 'bg-gray-700 bg-opacity-10'} px-6 py-4 rounded-md`}>
+        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/50' : 'bg-gray-700 bg-opacity-10'} px-6 py-4 rounded-md`}>
         {isItemsRequired ? (
           <div className={'text-red-800 rounded-md text-center pb-2'}>
             <label className="font-bold w-full">Items Required</label>
