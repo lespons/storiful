@@ -1,6 +1,6 @@
 'use client';
 
-import React, { memo, startTransition, useOptimistic } from 'react';
+import React, { memo, startTransition, useOptimistic, useState } from 'react';
 import { Disclosure } from '@headlessui/react';
 import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
 import {
@@ -11,6 +11,7 @@ import {
   formatDistanceToNow
 } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import LongPressButton from '@/components/LongPressButton';
 
 type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
 type OrderListItem = {
@@ -44,6 +45,7 @@ export type OrdersListProps = {
   orders: OrderListItem[];
   onComplete?: (id: string) => void;
   onChangeState?: (id: string, state: OrderState) => void;
+  onClone?: (id: string) => void;
   onCompleteOrderItem?: (orderItemId: string, completed: boolean) => void;
   edit?: {
     itemTypes: OrderFormProps['itemTypes'];
@@ -56,7 +58,8 @@ export function OrdersList({
   onComplete,
   onCompleteOrderItem,
   edit,
-  onChangeState
+  onChangeState,
+  onClone
 }: OrdersListProps) {
   const [optimisticOrders, setOptimisticOrder] = useOptimistic<
     OrdersListProps['orders'],
@@ -99,11 +102,12 @@ export function OrdersList({
               order={order}
               onChangeState={onChangeState}
               setOptimisticOrder={setOptimisticOrder}
+              onClone={onClone}
             />
           );
 
         if (order.lastState.state === 'SENT')
-          return <SentOrderListItem key={order.id} order={order} onChangeState={onChangeState} />;
+          return <SentOrderListItem key={order.id} order={order} onClone={onClone} />;
 
         if (order.edit && edit) {
           return (
@@ -182,6 +186,9 @@ export const TodoOrderListItem = memo(function TodoOrder({
       <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
+        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+          <div className={'font-normal text-white bg-fuchsia-900 px-2 rounded-md'}>new</div>
+        ) : null}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <div
           className={
@@ -293,10 +300,12 @@ export const TodoOrderListItem = memo(function TodoOrder({
 const CompletedOrderListItem = memo(function CompletedOrder({
   order,
   onChangeState,
-  setOptimisticOrder
+  setOptimisticOrder,
+  onClone
 }: {
   order: OrdersListProps['orders'][0];
   onChangeState: OrdersListProps['onChangeState'];
+  onClone: OrdersListProps['onClone'];
   setOptimisticOrder: (action: {
     order: OrdersListProps['orders'][0];
     orderItem?: { id: string; checked: boolean } | undefined;
@@ -332,6 +341,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
         <div className="underline">#{order.num}</div>
         <div className="font-light">✅&nbsp;{order.lastState.date.toDateString()}</div>
         <OrderOpen orderId={order.id} state={order.lastState.state} />
+        <OrderClone orderId={order.id} onClone={onClone} />
       </div>
       <div className="text-xs text-gray-600">Completed by {order.lastState.userName}</div>
       <div
@@ -391,10 +401,10 @@ const CompletedOrderListItem = memo(function CompletedOrder({
 
 const SentOrderListItem = memo(function SentOrder({
   order,
-  onChangeState
+  onClone
 }: {
   order: OrdersListProps['orders'][0];
-  onChangeState: OrdersListProps['onChangeState'];
+  onClone: OrdersListProps['onClone'];
 }) {
   return (
     <div
@@ -403,6 +413,7 @@ const SentOrderListItem = memo(function SentOrder({
         <div className="underline">#{order.num}</div>
         <div className="font-light">📦&nbsp;{order.lastState.date.toDateString()}</div>
         <OrderOpen orderId={order.id} state={order.lastState.state} />
+        <OrderClone orderId={order.id} onClone={onClone} />
       </div>
       <div className="text-xs text-gray-600">Sent by {order.lastState.userName}</div>
       <div className={`mt-2`}>
@@ -437,6 +448,43 @@ function OrderOpen({ orderId, state }: { orderId: string; state: string }) {
         router.push(`/order/${state.toLowerCase()}/${orderId}`);
       }}>
       OPEN
+    </div>
+  );
+}
+
+function OrderClone({
+  orderId,
+  onClone
+}: {
+  orderId: string;
+  onClone: OrdersListProps['onClone'];
+}) {
+  const [actionApplied, setActionApplied] = useState(false);
+  return (
+    <div
+      className={'invisible group-hover:visible text-right hover:cursor-pointer font-bold'}
+      title={'the same order will be created for TODO column'}>
+      {actionApplied ? (
+        <div className={'bg-green-100 rounded-md cursor-default'}>COPIED</div>
+      ) : (
+        <LongPressButton
+          onLongPress={() => {
+            startTransition(() => {
+              setActionApplied(true);
+              setTimeout(() => {
+                onClone?.(orderId);
+              });
+              setTimeout(() => {
+                setActionApplied(false);
+              }, 3000);
+            });
+          }}
+          title={'CLONE'}
+          className={'hover:bg-blue-100 rounded-md text-blue-900'}
+          defaultHoldTime={750}
+          bgColor={'bg-blue-300'}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getTodoOrders } from '@/app/lib/actions/order/todo';
+import { getTodoOrders } from '@/app/lib/actions/order';
 
 export type TodoOrdersResponseData = {
   orders: ReturnType<typeof getTodoOrders> extends Promise<infer T> ? T : never;

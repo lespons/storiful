@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { $Enums } from '@prisma/client';
 
 export const getTodoOrders = async (args?: Paging) => {
+  'use server';
   return prisma.order.findMany({
     where: {
       lastState: {
@@ -38,6 +39,7 @@ export const getTodoOrders = async (args?: Paging) => {
 };
 
 export const getOrders = async (args?: Paging & { states: $Enums.OrderStates[] }) => {
+  'use server';
   return prisma.order.findMany({
     where: args
       ? {

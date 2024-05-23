@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getOrders, getTodoOrders } from '@/app/lib/actions/order/todo';
+import { getOrders, getTodoOrders } from '@/app/lib/actions/order';
 import { unstable_cache } from 'next/cache';
 
 export type FindOrdersResponseData = {

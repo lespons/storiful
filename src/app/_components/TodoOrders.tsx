@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { ItemChild, ItemType } from '@prisma/client';
-import { getTodoOrders } from '@/app/lib/actions/order/todo';
+import { getTodoOrders } from '@/app/lib/actions/order';
 import { TodoOrdersClient } from '@/app/_components/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
 import { auth } from '@/lib/auth';

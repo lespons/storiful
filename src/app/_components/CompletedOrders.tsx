@@ -4,46 +4,16 @@ import { OrdersList } from '@/components/order/OrdersList';
 import { ItemChild, ItemType } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { cloneOrder } from '@/app/_actions/cloneOrder';
+import { getCompleted } from '@/app/_actions/getCompleted';
+import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
 
 export async function CompletedOrders({
   itemTypes
 }: {
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
 }) {
-  const orders = await prisma.order.findMany({
-    where: {
-      states: {
-        some: {
-          state: {
-            in: ['COMPLETED', 'SENT']
-          }
-        }
-      }
-    },
-
-    include: {
-      states: {
-        where: {
-          state: 'COMPLETED'
-        },
-        take: 1
-      },
-      OrderItem: {
-        include: {
-          ItemType: {
-            include: {
-              ItemChild: true
-            }
-          }
-        }
-      },
-      lastState: {
-        include: {
-          User: true
-        }
-      }
-    }
-  });
+  const orders = await getCompleted();
 
   orders.sort(({ states: [completedState1] }, { states: [completedState2] }) => {
     return completedState2.date.getTime() - completedState1.date.getTime();
@@ -123,35 +93,13 @@ export async function CompletedOrders({
 
   return (
     <div className="max-h-[80vh] flex flex-col">
-      <div className="text-lg font-bold">Completed orders</div>
-      <OrdersList
-        orders={orders.map(({ num, id, details, deadlineAt, OrderItem, lastState }) => ({
-          id,
-          num,
-          completedAt: lastState!.date,
-          completedBy: lastState!.User.name ? lastState!.User.name : null,
-          deadlineAt: deadlineAt,
-          details,
-          items: OrderItem.map((oi) => ({
-            id: oi.id,
-            itemId: oi.ItemType.id,
-            name: oi.ItemType.name,
-            quantity: oi.quantity,
-            completed: oi.completed,
-            children: oi.ItemType.ItemChild.map((ic) => ({
-              name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-              quantity: ic.quantity
-            }))
-          })),
-          lastState: {
-            userName: lastState!.User.name,
-            state: lastState!.state,
-            date: lastState!.date
-          }
-        }))}
+      <div className="text-lg font-bold">Orders to complete</div>
+      <CompletedOrdersClient
+        orders={orders}
+        itemTypes={itemTypes}
+        cloneOrder={cloneOrder}
         onChangeState={async (orderId, state) => {
           'use server';
-          console.log('onChangeState', orderId, state);
           if (state === 'SENT') {
             await sendOrder(orderId);
           }

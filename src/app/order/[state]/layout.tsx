@@ -3,7 +3,7 @@ import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { SWRProvider } from '@/components/swr';
 import { SimpleOrderList } from '@/app/order/[state]/_components/SimpleOrderList';
 import { $Enums } from '@prisma/client';
-import { getOrders, getOrdersCount } from '@/app/lib/actions/order/todo';
+import { getOrders, getOrdersCount } from '@/app/lib/actions/order';
 import OrdersNav from '@/app/order/[state]/_components/OrdersNav';
 import { unstable_serialize } from 'swr';
 

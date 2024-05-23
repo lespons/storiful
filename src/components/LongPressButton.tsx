@@ -1,40 +1,46 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function LongPressButton({
   onLongPress,
   title,
-  className
+  className,
+  defaultHoldTime,
+  bgColor
 }: {
   onLongPress: Function;
   title: string;
   className: string;
+  defaultHoldTime?: number;
+  bgColor?: string;
 }) {
+  const timerId = useRef<any>();
   const [isPressed, setIsPressed] = useState(false);
   const [holdTime, setHoldTime] = useState(0);
-  const holdtime = 3000;
+  const holdtime = defaultHoldTime ?? 3000;
   useEffect(() => {
-    let timerId: any;
     if (isPressed) {
-      timerId = setInterval(() => {
+      timerId.current = setInterval(() => {
         setHoldTime((holdTime) => {
-          if (holdTime >= holdtime) {
-            onLongPress(); // Call your action function
-            setHoldTime(0);
-            clearInterval(timerId);
+          if (!timerId.current) {
+            return holdTime;
           }
-          return holdTime + 100;
+          if (holdTime >= holdtime) {
+            clearInterval(timerId.current);
+            timerId.current = null;
+            onLongPress(); // Call your action function
+            setIsPressed(false);
+            return 0;
+          }
+          return holdTime + 50;
         });
-      }, 100);
+      }, 50);
     } else {
-      clearInterval(timerId);
-      if (holdTime >= holdtime) {
-        onLongPress(); // Call your action function
-      }
+      clearInterval(timerId.current);
       setHoldTime(0);
     }
-    return () => clearInterval(timerId);
-  }, [isPressed]);
+    return () => clearInterval(timerId.current);
+  }, [isPressed, onLongPress]);
 
   return (
     <div className={className} style={{ position: 'relative' }}>
@@ -47,10 +53,10 @@ function LongPressButton({
       </button>
       {isPressed && ( // Optional: Show progress bar only when pressed
         <div
-          className="absolute h-full top-0 rounded-md bg-red-700 bg-opacity-20"
+          className={`absolute h-full top-0 rounded-md ${bgColor ? bgColor : 'bg-red-700/20'}`}
           style={{
             width: `${(holdTime / holdtime) * 100}%`,
-            transition: 'width 0.2s ease-in-out' // Optional: Smooth animation
+            transition: 'width 0.05s ease-in-out' // Optional: Smooth animation
           }}
         />
       )}
