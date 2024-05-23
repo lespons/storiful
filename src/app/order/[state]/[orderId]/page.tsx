@@ -81,7 +81,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
           </tbody>
         </table>
       </div>
-      <div className={'border-l-4 px-6 py-4'}>
+      <div className={'border-l-4 px-6 py-4 overflow-y-auto'}>
         <div className={'text-3xl mb-4'}>items</div>
         <table className={'border-[1px]'}>
           <tbody className={'overflow-y-auto align-top text-left'}>

@@ -37,7 +37,7 @@ export function Paging({
           type="number"
           max={max}
           min={1}
-          defaultValue={defaultValue ?? 1}
+          value={defaultValue ?? 1}
         />
         <div className={'my-auto'}>of {max}</div>
       </div>
