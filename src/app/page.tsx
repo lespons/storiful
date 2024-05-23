@@ -1,9 +1,9 @@
 'use server';
 import prisma from '@/lib/prisma';
-import { OrderCreate } from '@/containers/order/OrderCreate';
-import { TodoOrders } from '@/containers/order/TodoOrders';
-import { CompletedOrders } from '@/containers/order/CompletedOrders';
-import { ItemStockView } from '@/containers/ItemStockView';
+import { OrderCreate } from '@/app/_components/OrderCreate';
+import { TodoOrders } from '@/app/_components/TodoOrders';
+import { CompletedOrders } from '@/app/_components/CompletedOrders';
+import { ItemStockView } from '@/app/_components/ItemStockView';
 
 async function getProps() {
   const itemTypes = await prisma.itemType.findMany({

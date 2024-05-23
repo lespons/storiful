@@ -1,4 +1,4 @@
-import { ItemStockEdit } from '@/containers/ItemStockEdit';
+import { ItemStockEdit } from '@/app/stock/_components/ItemStockEdit';
 import { getStock } from '@/app/lib/actions/stock';
 
 async function getProps() {

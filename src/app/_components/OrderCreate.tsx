@@ -3,7 +3,7 @@ import { ItemChild, ItemType } from '@prisma/client';
 import { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
-import { OrderCreateClient } from '@/containers/order/OrderCreateClient';
+import { OrderCreateClient } from '@/app/_components/OrderCreateClient';
 
 export async function OrderCreate({
   itemTypes

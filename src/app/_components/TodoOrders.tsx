@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order/todo';
-import { TodoOrdersClient } from '@/containers/order/TodoOrdersClient';
+import { TodoOrdersClient } from '@/app/_components/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
 import { auth } from '@/lib/auth';
 import { OrdersListEditCallback } from '@/components/order/OrdersList';
