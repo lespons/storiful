@@ -187,7 +187,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
-          <div className={'font-normal text-white bg-fuchsia-900 px-2 rounded-md'}>new</div>
+          <div className={'font-normal text-white bg-violet-900 px-2 rounded-md'}>new</div>
         ) : null}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <div
@@ -337,9 +337,12 @@ const CompletedOrderListItem = memo(function CompletedOrder({
   return (
     <div
       className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-      <div className="flex text-xs gap-2 mb-1 leading-none">
+      <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">✅&nbsp;{order.lastState.date.toDateString()}</div>
+        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+          <div className={'font-normal text-white bg-green-900 px-2 my-auto rounded-md'}>new</div>
+        ) : null}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <OrderClone orderId={order.id} onClone={onClone} />
       </div>
@@ -409,9 +412,12 @@ const SentOrderListItem = memo(function SentOrder({
   return (
     <div
       className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-      <div className="flex text-xs gap-2 mb-1 leading-none">
+      <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">📦&nbsp;{order.lastState.date.toDateString()}</div>
+        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+          <div className={'font-normal text-white bg-orange-900 px-2 my-auto rounded-md'}>new</div>
+        ) : null}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <OrderClone orderId={order.id} onClone={onClone} />
       </div>
