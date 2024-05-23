@@ -2,6 +2,7 @@
 import { ItemStock, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order';
 import { ItemStockElement } from '@/components/ItemStockElement';
+import { ItemStockViewClient } from '@/app/_components/ItemStockViewClient';
 
 export async function ItemStockView({
   itemStock
@@ -46,24 +47,17 @@ export async function ItemStockView({
     <div className="max-h-[80vh] flex flex-col">
       <label className="text-lg font-bold">Stock</label>
       <div
-        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/50' : 'bg-gray-700 bg-opacity-10'} px-6 py-4 rounded-md`}>
+        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/50' : 'bg-black/5'} px-6 py-4 rounded-md`}>
         {isItemsRequired ? (
           <div className={'text-red-800 rounded-md text-center pb-2'}>
             <label className="font-bold w-full">Items Required</label>
           </div>
         ) : null}
-        {sortedItemsStock.map((is, index) => (
-          <ItemStockElement
-            key={is.id}
-            name={is.ItemType.name}
-            value={is.value}
-            consumedItemsCount={consumedItemsTotalsById[is.itemTypeId]}
-            index={index}
-            image={is.ItemType.image}
-          />
-        ))}
+        <ItemStockViewClient
+          consumedItemsTotalsById={consumedItemsTotalsById}
+          sortedItemsStock={sortedItemsStock}
+        />
       </div>
     </div>
   );
 }
-//(is, consumedItemsTotalsById[is.itemTypeId], index, background)
