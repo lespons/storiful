@@ -5,10 +5,12 @@ import { startTransition, useState } from 'react';
 
 export function ItemStockViewClient({
   sortedItemsStock,
-  consumedItemsTotalsById
+  consumedItemsTotalsById,
+  onAddStock
 }: {
   sortedItemsStock: (ItemStock & { ItemType: ItemType })[];
   consumedItemsTotalsById: { [itemTypeId: string]: number };
+  onAddStock: (id: string, lockVersion: number, value: number) => Promise<void>;
 }) {
   const [filteredItemsStock, setFilteredItemsStock] = useState(sortedItemsStock);
   return (
@@ -38,6 +40,9 @@ export function ItemStockViewClient({
             index={index}
             image={is.ItemType.image}
             id={is.itemTypeId}
+            onAddStock={async (value) => {
+              await onAddStock(is.id, is.lockVersion, value);
+            }}
           />
         ))}
       </div>

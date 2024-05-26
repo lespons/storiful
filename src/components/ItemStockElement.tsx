@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Description, Dialog, DialogPanel } from '@headlessui/react';
 import Image from 'next/image';
 
@@ -29,7 +29,8 @@ export function ItemStockElement({
   image,
   index,
   name,
-  value
+  value,
+  onAddStock
 }: {
   id: string;
   name: string;
@@ -37,30 +38,31 @@ export function ItemStockElement({
   image: string | null;
   consumedItemsCount: number;
   index: number;
+  onAddStock: (value: number) => void;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [openImage, setOpenImage] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isPending, setIsPending] = useState(false);
   return (
     <div
       className={`group flex flex-col relative min-w-full rounded-md bg-white border-b-[1px] border-gray-400
             ${consumedItemsCount ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
                transition-transform duration-300
-               hover:bg-fuchsia-600/10
             `}>
-      {consumedItemsCount ? background(consumedItemsCount, value) : null}
       <div
         className={
-          'flex gap-4 min-w-full justify-between group-hover:bg-black/90 group-hover:text-white px-4 py-1 rounded-md hover:cursor-pointer'
+          'flex w-full justify-between group-hover:bg-black/90 group-hover:text-white rounded-md hover:cursor-pointer'
         }
         onClick={() => setShowDetails((v) => !v)}>
-        <div className={`font-semibold w-full z-10 `}>
+        <div className={`font-semibold w-full z-10 pl-4 py-1`}>
           <div className={'w-full'}>
             {image ? <div className={'absolute -left-2 -top-1'}>📎</div> : null}
             <div>{name}</div>
           </div>
         </div>
 
-        <div className="flex-2 z-10 flex gap-1">
+        <div className="flex-2 z-10 flex gap-1 px-4 py-1">
           <span>{value}</span>
           {consumedItemsCount > value ? (
             <span className="font-bold text-red-800 group-hover:text-white">
@@ -69,12 +71,31 @@ export function ItemStockElement({
           ) : null}
         </div>
       </div>
+
       {showDetails ? (
         <>
-          <div className={`z-10 group-hover:bg-black/10`}>
+          <div className={`z-20 bg-white group-hover:bg-white`}>
+            <div className={'flex mt-2 gap-4 items-center justify-center mx-6'}>
+              <input
+                className={'rounded-md px-4 py-1 border-[2px]'}
+                ref={inputRef}
+                type={'number'}
+                placeholder={'stock change'}
+              />
+
+              <button
+                className={`flex-1 rounded-md bg-green-100 hover:bg-green-600 hover:text-white px-4 py-1`}
+                disabled={isPending}
+                onClick={() => {
+                  setIsPending(true);
+                  onAddStock(Number(inputRef.current?.value));
+                }}>
+                {!isPending ? 'add ➕' : '...'}
+              </button>
+            </div>
             <div
               className={
-                'py-1 text-center font-semibold bg-white/80 rounded-md mx-6 hover:bg-blue-600 hover:text-white mt-2'
+                'py-1 text-center font-semibold rounded-md mx-6 bg-blue-100 hover:bg-blue-600 hover:text-white my-2'
               }>
               <a className={'flex justify-center'} href={`/itemtype/${id}`}>
                 open
@@ -114,6 +135,7 @@ export function ItemStockElement({
           </Dialog>
         </>
       ) : null}
+      {consumedItemsCount ? background(consumedItemsCount, value) : null}
     </div>
   );
 }

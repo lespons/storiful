@@ -1,8 +1,8 @@
 'use server';
 import { ItemStock, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order';
-import { ItemStockElement } from '@/components/ItemStockElement';
 import { ItemStockViewClient } from '@/app/_components/ItemStockViewClient';
+import { addStock } from '@/app/_actions/addStock';
 
 export async function ItemStockView({
   itemStock
@@ -54,8 +54,10 @@ export async function ItemStockView({
           </div>
         ) : null}
         <ItemStockViewClient
+          key={Date.now()}
           consumedItemsTotalsById={consumedItemsTotalsById}
           sortedItemsStock={sortedItemsStock}
+          onAddStock={addStock}
         />
       </div>
     </div>
