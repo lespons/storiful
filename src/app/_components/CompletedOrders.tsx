@@ -1,11 +1,10 @@
 'use server';
 import prisma from '@/lib/prisma';
-import { OrdersList } from '@/components/order/OrdersList';
 import { ItemChild, ItemType } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { cloneOrder } from '@/app/_actions/cloneOrder';
-import { getCompleted } from '@/app/_actions/getCompleted';
+import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
 import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
 
 export async function CompletedOrders({
@@ -13,7 +12,7 @@ export async function CompletedOrders({
 }: {
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
 }) {
-  const orders = await getCompleted();
+  const orders = await getActualCompleted();
 
   orders.sort(({ states: [completedState1] }, { states: [completedState2] }) => {
     return completedState2.date.getTime() - completedState1.date.getTime();
@@ -87,10 +86,13 @@ export async function CompletedOrders({
       });
     });
 
-    revalidatePath('/', 'layout');
     revalidateTag('order_find');
+    revalidatePath('/', 'layout');
+    revalidatePath('/order', 'page');
+    revalidatePath('/order/create', 'page');
   };
 
+  const expiredOrdersCount = await getExpiredCount();
   return (
     <div className="max-h-[80vh] flex flex-col">
       <div className="text-lg font-bold">Orders to complete</div>
@@ -98,6 +100,7 @@ export async function CompletedOrders({
         orders={orders}
         itemTypes={itemTypes}
         cloneOrder={cloneOrder}
+        expiredOrdersCount={expiredOrdersCount}
         onChangeState={async (orderId, state) => {
           'use server';
           if (state === 'SENT') {

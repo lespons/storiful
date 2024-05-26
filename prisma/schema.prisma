@@ -78,7 +78,7 @@ model OrderStatesHistory {
   orderId        String
   LastStateOrder Order?      @relation("LastState")
 
-  @@map(name: "orderStatesHistory")
+  @@map(name: "order_states_history")
 }
 
 model OrderItem {

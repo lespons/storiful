@@ -1,19 +1,42 @@
 import prisma from '@/lib/prisma';
-import { getItemTypes } from '@/app/lib/actions/itemType';
+import { sub } from 'date-fns';
 
-export type CompletedOrdersReturnType = UnwrapPromise<ReturnType<typeof getCompleted>>;
+export type CompletedOrdersReturnType = UnwrapPromise<ReturnType<typeof getActualCompleted>>;
 
-export async function getCompleted() {
+export async function getActualCompleted() {
   'use server';
-  return await prisma.order.findMany({
+  return prisma.order.findMany({
     where: {
-      states: {
-        some: {
-          state: {
-            in: ['COMPLETED', 'SENT']
+      OR: [
+        {
+          states: {
+            some: {
+              state: {
+                in: ['COMPLETED']
+              }
+            },
+            none: {
+              state: {
+                in: ['SENT']
+              }
+            }
+          }
+        },
+        {
+          states: {
+            some: {
+              state: {
+                in: ['SENT']
+              },
+              date: {
+                gte: sub(new Date(), {
+                  months: 3
+                })
+              }
+            }
           }
         }
-      }
+      ]
     },
 
     include: {
@@ -37,6 +60,30 @@ export async function getCompleted() {
           User: true
         }
       }
+    }
+  });
+}
+
+export async function getExpiredCount() {
+  'use server';
+  return prisma.order.count({
+    where: {
+      OR: [
+        {
+          states: {
+            some: {
+              state: {
+                in: ['SENT']
+              },
+              date: {
+                lt: sub(new Date(), {
+                  months: 3
+                })
+              }
+            }
+          }
+        }
+      ]
     }
   });
 }

@@ -1,12 +1,9 @@
 'use client';
-
-import { OrdersList, OrdersListEditCallback, OrdersListProps } from '@/components/order/OrdersList';
-import useSWR, { mutate, useSWRConfig } from 'swr';
+import { OrdersList, OrdersListProps } from '@/components/order/OrdersList';
+import { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
-import { fetcher } from '@/lib/rest_fecther';
-import { TodoOrdersResponseData } from '@/pages/api/order/todo';
-import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { CompletedOrdersReturnType } from '@/app/_actions/getCompleted';
+import { useRouter } from 'next/navigation';
 
 export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: CompletedOrdersReturnType[0],
@@ -38,22 +35,42 @@ export function CompletedOrdersClient({
   onChangeState,
   cloneOrder,
   itemTypes,
-  orders
+  orders,
+  expiredOrdersCount
 }: {
   orders: CompletedOrdersReturnType;
   cloneOrder: (id: string) => Promise<void>;
   onChangeState: (id: string, state: string) => Promise<void>;
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
+  expiredOrdersCount: number;
 }) {
   const { mutate } = useSWRConfig();
+  const router = useRouter();
   return (
-    <OrdersList
-      orders={orders.map((order) => mapOrderToListItem(order, itemTypes))}
-      onChangeState={onChangeState}
-      onClone={async (id) => {
-        await cloneOrder(id);
-        await mutate('/api/order/todo');
-      }}
-    />
+    <div className={'overflow-auto '}>
+      <OrdersList
+        orders={orders.map((order) => mapOrderToListItem(order, itemTypes))}
+        onChangeState={onChangeState}
+        onClone={async (id) => {
+          await cloneOrder(id);
+          await mutate('/api/order/todo');
+        }}
+      />
+      {expiredOrdersCount ? (
+        <div>
+          <div className={'flex gap-2 font-sm text-black/70 justify-center w-full'}>
+            {expiredOrdersCount} {expiredOrdersCount === 1 ? 'order is ' : 'orders are '}hidden from
+            the board
+          </div>
+          <button
+            className={'w-full text-blue-900 rounded-md hover:underline'}
+            onClick={() => {
+              router.push(`/order/sent`);
+            }}>
+            see all
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 }

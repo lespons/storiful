@@ -116,7 +116,10 @@ export async function TodoOrders({
       });
     });
 
+    revalidateTag('order_find');
     revalidatePath('/', 'layout');
+    revalidatePath('/order', 'page');
+    revalidatePath('/order/create', 'page');
   };
 
   const markAsCompletedType = async (orderItemId: string, completed: boolean) => {
@@ -203,6 +206,8 @@ export async function TodoOrders({
       // redisClient.publish('orders', 'new order!');
       revalidatePath('/', 'page');
       revalidateTag('order_find');
+      revalidatePath('/order', 'page');
+      revalidatePath('/order/create', 'page');
     }
   };
 
