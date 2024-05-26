@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { Description, Dialog, DialogPanel } from '@headlessui/react';
+import Image from 'next/image';
 
 function background(consumedItemsCount: number, value: number) {
   const useProgress = Math.max(Math.round((consumedItemsCount / value) * 100), 0);
@@ -22,12 +24,14 @@ function background(consumedItemsCount: number, value: number) {
 }
 
 export function ItemStockElement({
+  id,
   consumedItemsCount,
   image,
   index,
   name,
   value
 }: {
+  id: string;
   name: string;
   value: number;
   image: string | null;
@@ -35,34 +39,81 @@ export function ItemStockElement({
   index: number;
 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [openImage, setOpenImage] = useState(false);
   return (
     <div
-      className={` relative group flex flex-row relative gap-4 min-w-full justify-between px-4 py-1 rounded-md bg-white border-b-[1px] border-gray-400
+      className={`group flex flex-col relative min-w-full rounded-md bg-white border-b-[1px] border-gray-400
             ${consumedItemsCount ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
-             hover:bg-black hover:text-white transition-transform duration-300
-            `}
-      onClick={() => setShowDetails((v) => !v)}>
+               transition-transform duration-300
+               hover:bg-fuchsia-600/10
+            `}>
       {consumedItemsCount ? background(consumedItemsCount, value) : null}
-      <div className={`font-semibold flex-3 z-10`}>
-        <div>
-          {image ? <div className={'absolute -left-2 -top-1'}>📎</div> : null}
-          <div>{name}</div>
-        </div>
-        {showDetails ? (
-          <div className={``}>
-            {image ? <img alt={`image of ${name}`} src={image} className={'rounded-md'} /> : null}
+      <div
+        className={
+          'flex gap-4 min-w-full justify-between group-hover:bg-black/90 group-hover:text-white px-4 py-1 rounded-md hover:cursor-pointer'
+        }
+        onClick={() => setShowDetails((v) => !v)}>
+        <div className={`font-semibold w-full z-10 `}>
+          <div className={'w-full'}>
+            {image ? <div className={'absolute -left-2 -top-1'}>📎</div> : null}
+            <div>{name}</div>
           </div>
-        ) : null}
-      </div>
+        </div>
 
-      <div className="flex-2 z-10 flex gap-1">
-        <span>{value}</span>
-        {consumedItemsCount > value ? (
-          <span className="z-10 font-bold text-red-800 group-hover:text-white">
-            ({consumedItemsCount - value})
-          </span>
-        ) : null}
+        <div className="flex-2 z-10 flex gap-1">
+          <span>{value}</span>
+          {consumedItemsCount > value ? (
+            <span className="font-bold text-red-800 group-hover:text-white">
+              ({consumedItemsCount - value})
+            </span>
+          ) : null}
+        </div>
       </div>
+      {showDetails ? (
+        <>
+          <div className={`z-10 group-hover:bg-black/10`}>
+            <div
+              className={
+                'py-1 text-center font-semibold bg-white/80 rounded-md mx-6 hover:bg-blue-600 hover:text-white mt-2'
+              }>
+              <a className={'flex justify-center'} href={`/itemtype/${id}`}>
+                open
+              </a>
+            </div>
+            {image ? (
+              <Image
+                alt={`image of ${name}`}
+                src={image}
+                className={
+                  'mt-2 border-4 border-transparent hover:cursor-pointer brightness-95 hover:brightness-100 hover:border-blue-600/80'
+                }
+                onClick={() => setOpenImage(true)}
+                width={300}
+                height={300}
+                style={{
+                  width: '100%',
+                  height: 'auto'
+                }}
+              />
+            ) : null}
+          </div>
+          <Dialog open={openImage} onClose={() => setOpenImage(false)} className="relative z-50">
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            <div className="fixed inset-0 flex w-full h-full items-center justify-center p-4 overflow-auto">
+              <DialogPanel className="h-full w-[75vw] border bg-white p-4">
+                <Description>
+                  <img
+                    alt={'full'}
+                    src={image!}
+                    className={'w-full'}
+                    onClick={() => setOpenImage(false)}
+                  />
+                </Description>
+              </DialogPanel>
+            </div>
+          </Dialog>
+        </>
+      ) : null}
     </div>
   );
 }

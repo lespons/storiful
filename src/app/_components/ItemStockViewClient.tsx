@@ -37,6 +37,7 @@ export function ItemStockViewClient({
             consumedItemsCount={consumedItemsTotalsById[is.itemTypeId]}
             index={index}
             image={is.ItemType.image}
+            id={is.itemTypeId}
           />
         ))}
       </div>
