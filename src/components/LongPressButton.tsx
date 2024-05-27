@@ -6,13 +6,15 @@ function LongPressButton({
   title,
   className,
   defaultHoldTime,
-  bgColor
+  bgColor,
+  children
 }: {
   onLongPress: Function;
-  title: string;
+  title?: string;
   className: string;
   defaultHoldTime?: number;
   bgColor?: string;
+  children?: React.ReactNode;
 }) {
   const timerId = useRef<any>();
   const [isPressed, setIsPressed] = useState(false);
@@ -49,7 +51,7 @@ function LongPressButton({
         onMouseDown={() => setIsPressed(true)}
         onMouseLeave={() => setIsPressed(false)}
         onMouseUp={() => setIsPressed(false)}>
-        {title}
+        {title ?? children}
       </button>
       {isPressed && ( // Optional: Show progress bar only when pressed
         <div

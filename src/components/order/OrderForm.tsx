@@ -43,7 +43,7 @@ function OrderSubmit({
     <button
       type="submit"
       disabled={pending || disabled}
-      className={`px-3 py-1 rounded-md ${pending || disabled ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
+      className={`px-3 py-1 rounded-md ${pending || disabled ? 'bg-gray-900 bg-opacity-5' : 'bg-blue-600 text-white hover:bg-blue-700'} font-bold`}>
       {pending ? '...' : action.toLowerCase()}
     </button>
   );

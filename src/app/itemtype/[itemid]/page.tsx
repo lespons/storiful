@@ -6,6 +6,7 @@ import { RedirectButton } from '@/components/Button';
 import { getItemType } from '@/app/lib/actions/itemType';
 import { mapItemType } from '@/app/itemtype/page';
 import LongPressButton from '@/components/LongPressButton';
+import { TrashIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
 export const dynamicParams = false;
 
@@ -196,9 +197,9 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
       <div className="mb-4">
         <RedirectButton
           buttonElement={
-            <button className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 p-1 rounded-md font-bold">
-              <span>Close edit</span>
-              <span className="pl-2">❌</span>
+            <button className="flex gap-2 justify-center w-full bg-white bg-opacity-20 hover:bg-opacity-90 p-1 rounded-md font-bold">
+              <div>close</div>
+              <XCircleIcon className={'size-5 my-auto text-red-800'} />
             </button>
           }
           path={'/itemtype'}
@@ -215,9 +216,12 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
       <div className="pt-2 mt-2">
         <LongPressButton
           onLongPress={deleteItemType}
-          title={'delete'}
-          className={'text-gray-500 font-bold hover:text-red-700 w-full text-center'}
-        />
+          className={'group text-gray-500 font-bold hover:text-red-700 w-full text-center'}>
+          <div className={'flex gap-2 w-full justify-center '}>
+            <div>delete</div>
+            <TrashIcon className={'size-5 my-auto group-hover:animate-shake'} />
+          </div>
+        </LongPressButton>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
 import FileSelector from '@/components/FileSelector';
+import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 
 export interface ItemType {
   id: string;
@@ -41,7 +42,7 @@ function ItemTypeSubmit({ action }: { action: string }) {
     <button
       type="submit"
       disabled={pending}
-      className={`px-3 py-2 rounded-md ${pending ? 'bg-gray-900 bg-opacity-5' : 'bg-indigo-500 text-white hover:bg-indigo-700'} font-bold`}>
+      className={`mt-2 px-3 py-1 rounded-md ${pending ? 'bg-gray-900 bg-opacity-5' : 'bg-green-600 text-white hover:bg-green-500'} font-bold`}>
       {pending ? '...' : action.toLowerCase()}
     </button>
   );
@@ -141,24 +142,22 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
               value={name}
               className={({ active, checked }) =>
                 `${active ? 'ring-2 ring-fuchsia-100 ring-opacity-40' : ''}
-                  ${checked ? 'bg-fuchsia-700 bg-opacity-20 shadow-sm ' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
-                    relative flex cursor-pointer rounded-md px-4 py-2 drop-shadow-md focus:outline-none mb-2`
+                  ${checked ? 'bg-fuchsia-700 bg-opacity-20' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
+                    relative flex cursor-pointer rounded-md px-4 py-2 focus:outline-none mb-2`
               }>
               {({ active, checked }) => (
                 <div className={`flex w-full items-center justify-between`}>
                   <div className="flex flex-col">
                     <RadioGroup.Label
                       as="p"
-                      className={`font-medium  ${checked ? '' : 'text-gray-900'}`}>
+                      className={`font-semibold  ${checked ? '' : 'text-gray-900'}`}>
                       {name.toLowerCase()}
                     </RadioGroup.Label>
-                    <RadioGroup.Description
-                      as="span"
-                      className={`inline ${checked ? 'text-sky-100' : 'text-gray-500'}`}>
+                    <RadioGroup.Description as="span" className={`font-light`}>
                       {desc}
                     </RadioGroup.Description>
                   </div>
-                  {checked ? <div>✔️</div> : null}
+                  {checked ? <CheckBadgeIcon className={'size-5 text-fuchsia-950'} /> : null}
                 </div>
               )}
             </RadioGroup.Option>

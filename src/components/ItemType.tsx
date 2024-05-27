@@ -15,7 +15,7 @@ export function ItemTypeElement(props: { name: string; type: string; id: string;
       onClick={() => r.replace(`/itemtype/${props.id}`)}>
       <div className="flex-[2] font-bold">{props.name}</div>
       <div className="flex-1">{props.type.toLowerCase()}</div>
-      <div className="font-extralight w-60">{props.id}</div>
+      {/*<div className="font-extralight w-60">{props.id}</div>*/}
     </div>
   );
 }

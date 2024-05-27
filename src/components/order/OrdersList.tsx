@@ -12,6 +12,8 @@ import {
 } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import LongPressButton from '@/components/LongPressButton';
+import { CheckCircleIcon, PencilIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { ClockIcon } from '@heroicons/react/24/outline';
 
 type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
 type OrderListItem = {
@@ -113,9 +115,9 @@ export function OrdersList({
           return (
             <div key={order.id} className={'mb-2'}>
               <div
-                className="font-light bg-black text-white rounded-t-md px-3 py-0.5 font-semibold
+                className="flex gap-2 bg-black text-white rounded-t-md px-3 py-0.5 font-semibold
               ">
-                Edit of the order #{order.num}
+                <PencilIcon className={'size-5 my-auto'} />#{order.num}
               </div>
               <ItemOrderForm
                 action={'UPDATE'}
@@ -181,7 +183,7 @@ export const TodoOrderListItem = memo(function TodoOrder({
       : differenceInDays(order.deadlineAt, new Date()) <= 3;
   return (
     <div
-      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900 bg-opacity-10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
+      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
        ${deadlineSoon ? '' : ''}`}>
       <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
@@ -263,14 +265,15 @@ export const TodoOrderListItem = memo(function TodoOrder({
       ) : null}
       {order.deadlineAt ? (
         <div
-          className={`mt-2 text-sm px-2 py-1 rounded-md ${
+          className={`flex  gap-2 mt-2 text-sm px-2 py-1 rounded-md ${
             deadlineFailed
               ? 'text-white font-bold bg-red-700 bg-opacity-90'
               : deadlineSoon
                 ? 'text-white font-bold bg-orange-700 bg-opacity-90'
                 : 'font-normal'
           }`}>
-          🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
+          <ClockIcon className="size-4 my-auto" />
+          <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
           <span className={'font-light ml-1'}>
             ({formatDistanceToNow(order.deadlineAt, { addSuffix: true })})
           </span>
@@ -289,8 +292,15 @@ export const TodoOrderListItem = memo(function TodoOrder({
               onComplete?.(order.id);
             });
           }}
-          className={`group flex justify-center gap-2 w-full p-1 rounded-md font-bold ${disabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-green-300 hover:bg-green-200'}`}>
-          {order.pending ? 'updating' : 'complete'}
+          className={`group flex justify-center gap-2 text-white w-full p-1 rounded-md font-semibold ${disabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-green-600/80 hover:bg-green-600/90'}`}>
+          {order.pending ? (
+            'updating'
+          ) : (
+            <div className={'flex gap-2'}>
+              complete
+              <CheckCircleIcon className={'size-5 my-auto'} />
+            </div>
+          )}
         </button>
       </div>
     </div>
@@ -319,10 +329,11 @@ const CompletedOrderListItem = memo(function CompletedOrder({
     const withDelay = differenceInDays(order.lastState.date, order.deadlineAt) > 0;
     return (
       <div
-        className={`mt-2 text-xs py-0.5 rounded-md ${
+        className={`flex gap-1 mt-2 text-xs py-0.5 rounded-md ${
           withDelay ? 'font-bold text-red-800' : 'font-normal'
         }`}>
-        🕙 <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
+        <ClockIcon className="size-4" />
+        <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
         <span className={'font-light ml-1'}>
           {withDelay ? (
             <>
@@ -339,7 +350,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
       className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
-        <div className="font-light">✅ {format(order.lastState.date!, 'dd MMM yyyy')}</div>
+        <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
           <div className={'font-normal text-white bg-green-900 px-2 my-auto rounded-md'}>new</div>
         ) : null}
@@ -377,7 +388,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
             'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
           }>
           <button
-            className={`group flex justify-center gap-2 w-full p-1 rounded-md font-bold ${order.pending ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-300'}`}
+            className={`group flex justify-center gap-2 w-full p-1 rounded-md font-bold ${order.pending ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-500'}`}
             disabled={order.pending}
             onClick={async () => {
               startTransition(() => {
@@ -387,7 +398,8 @@ const CompletedOrderListItem = memo(function CompletedOrder({
                 onChangeState?.(order.id, 'SENT');
               });
             }}>
-            <div>send</div> <div className={'group-hover:animate-shake'}>📦</div>
+            <div>send</div>
+            <TruckIcon className="group-hover:animate-shake size-6 text-orange-900" />
           </button>
         </div>
       </div>
@@ -414,7 +426,9 @@ const SentOrderListItem = memo(function SentOrder({
       className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
-        <div className="font-light">📦&nbsp;{order.lastState.date.toDateString()}</div>
+        <div className="flex gap-0.5 font-light">
+          <div>{order.lastState.date.toDateString()}</div>
+        </div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
           <div className={'font-normal text-white bg-orange-900 px-2 my-auto rounded-md'}>new</div>
         ) : null}

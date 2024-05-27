@@ -6,6 +6,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
 import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
+import { CheckCircleIcon, TruckIcon } from '@heroicons/react/24/solid';
 
 export async function CompletedOrders({
   itemTypes
@@ -95,7 +96,10 @@ export async function CompletedOrders({
   const expiredOrdersCount = await getExpiredCount();
   return (
     <div className="max-h-[80vh] flex flex-col">
-      <div className="text-lg font-bold">Orders to complete</div>
+      <div className={'flex gap-1 justify-center w-full mb-1'}>
+        <CheckCircleIcon className={'size-6 text-green-900'} />
+        <TruckIcon className={'size-6 text-orange-900'} />
+      </div>
       <CompletedOrdersClient
         orders={orders}
         itemTypes={itemTypes}

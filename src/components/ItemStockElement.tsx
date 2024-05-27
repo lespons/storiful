@@ -3,6 +3,8 @@
 import { useRef, useState } from 'react';
 import { Description, Dialog, DialogPanel } from '@headlessui/react';
 import Image from 'next/image';
+import { PaperClipIcon } from '@heroicons/react/24/outline';
+import { FolderOpenIcon, PlusIcon } from '@heroicons/react/24/solid';
 
 function background(consumedItemsCount: number, value: number) {
   const useProgress = Math.max(Math.round((consumedItemsCount / value) * 100), 0);
@@ -10,12 +12,12 @@ function background(consumedItemsCount: number, value: number) {
   return (
     <div className="h-full w-full flex flex-row absolute z-0 left-0 top-0 rounded-md overflow-hidden">
       <div
-        className={`bg-violet-500/30 group-hover:bg-violet-700`}
+        className={`bg-violet-600/20 group-hover:bg-violet-700/50`}
         style={{
           width: `${useProgress > 100 ? existProgress : useProgress}%`
         }}></div>
       <div
-        className={`${consumedItemsCount > value ? 'bg-red-500/30 group-hover:bg-red-700' : 'bg-green-500/30 group-hover:bg-green-700'}`}
+        className={`${consumedItemsCount > value ? 'bg-red-600/30 group-hover:bg-red-600' : 'bg-green-600/15 group-hover:bg-green-700/50'}`}
         style={{
           width: `${useProgress > 100 ? 100 - existProgress : 100 - useProgress}%`
         }}></div>
@@ -57,7 +59,11 @@ export function ItemStockElement({
         onClick={() => setShowDetails((v) => !v)}>
         <div className={`font-semibold w-full z-10 pl-4 py-1`}>
           <div className={'w-full'}>
-            {image ? <div className={'absolute -left-2 -top-1'}>📎</div> : null}
+            {image ? (
+              <div className={'absolute -left-1 top-0'}>
+                <PaperClipIcon className={'size-5 text-black/90'} />
+              </div>
+            ) : null}
             <div>{name}</div>
           </div>
         </div>
@@ -90,15 +96,23 @@ export function ItemStockElement({
                   setIsPending(true);
                   onAddStock(Number(inputRef.current?.value));
                 }}>
-                {!isPending ? 'add ➕' : '...'}
+                {!isPending ? (
+                  <div className={'flex gap-1 justify-center'}>
+                    add
+                    <PlusIcon className={'size-4 my-auto'} />
+                  </div>
+                ) : (
+                  '...'
+                )}
               </button>
             </div>
             <div
               className={
                 'py-1 text-center font-semibold rounded-md mx-6 bg-blue-100 hover:bg-blue-600 hover:text-white my-2'
               }>
-              <a className={'flex justify-center'} href={`/itemtype/${id}`}>
+              <a className={'flex gap-1 justify-center'} href={`/itemtype/${id}`}>
                 open
+                <FolderOpenIcon className={'size-5 my-auto'} />
               </a>
             </div>
             {image ? (

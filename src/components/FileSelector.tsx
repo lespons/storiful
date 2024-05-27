@@ -1,6 +1,7 @@
 'use client';
 import { ChangeEvent, useState } from 'react';
 import { PUBLIC_CLOUDINARY_CLOUD } from '@/lib/cloudinary';
+import { PaperClipIcon } from '@heroicons/react/24/outline';
 
 const FileSelector = ({
   onChange,
@@ -43,12 +44,14 @@ const FileSelector = ({
   return (
     <div className="image-upload w-full mb-2">
       <input id="file" type="file" name="file" onChange={handleChange} className="hidden w-full" />
+
       <label
         htmlFor="file"
         className={
-          'flex w-full justify-center px-2 py-1 rounded-md bg-fuchsia-900 text-white hover:bg-indigo-700 font-bold'
+          'group flex gap-2 w-full justify-center px-2 py-1 rounded-md bg-fuchsia-950 text-white hover:bg-fuchsia-700 hover:cursor-pointer font-semibold'
         }>
-        upload file
+        attach file
+        <PaperClipIcon className={'size-4 my-auto group-hover:animate-shake'} />
       </label>
       {loading && <p>uploading...</p>}
       {url && (

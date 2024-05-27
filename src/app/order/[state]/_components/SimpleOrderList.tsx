@@ -9,6 +9,7 @@ import { TodoOrdersResponseData } from '@/pages/api/order/todo';
 import { fetcher } from '@/lib/rest_fecther';
 import { FindOneResponseData } from '@/pages/api/order/findOne';
 import { Paging } from '@/components/Paging';
+import { CalendarIcon } from '@heroicons/react/24/solid';
 
 export function OrderItem({
   order,
@@ -35,7 +36,7 @@ export function OrderItem({
       <div className={'flex gap-1 mt-2 text-xs'}>
         {order.lastState ? (
           <div className="flex flex-row gap-2">
-            <div className={''}>🗓️</div>
+            <CalendarIcon className={'size-3 my-auto'} />
             <div className={'font-sm font-light'}>
               {formatDate(order.lastState.date, 'dd MMMM yyyy')}
             </div>

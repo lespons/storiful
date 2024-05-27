@@ -4,6 +4,7 @@ import { formatDate } from 'date-fns';
 import prisma from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
 import { ItemType } from '@prisma/client';
+import { ClockIcon } from '@heroicons/react/24/outline';
 
 export async function generateStaticParams() {
   return [];
@@ -67,7 +68,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
         <div className={'font-semibold mb-2'}>{order.details}</div>
         {order.deadlineAt ? (
           <div className={'flex gap-2 mb-2'}>
-            <div>🕙</div>
+            <ClockIcon className={'size-5 my-auto'} />
             <div>{formatDate(order.deadlineAt, 'dd MMMM yyyy HH:mm')}</div>
           </div>
         ) : null}

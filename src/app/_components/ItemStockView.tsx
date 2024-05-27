@@ -3,6 +3,7 @@ import { ItemStock, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order';
 import { ItemStockViewClient } from '@/app/_components/ItemStockViewClient';
 import { addStock } from '@/app/_actions/addStock';
+import { Battery0Icon, Battery50Icon } from '@heroicons/react/24/solid';
 
 export async function ItemStockView({
   itemStock
@@ -45,14 +46,15 @@ export async function ItemStockView({
   const isItemsRequired = itemStock.some((is) => consumedItemsTotalsById[is.itemTypeId] > is.value);
   return (
     <div className="max-h-[80vh] flex flex-col">
-      <label className="text-lg font-bold">Stock</label>
-      <div
-        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/50' : 'bg-black/5'} px-6 py-4 rounded-md`}>
+      <div className={'flex gap-1 justify-center w-full mb-1'}>
         {isItemsRequired ? (
-          <div className={'text-red-800 rounded-md text-center pb-2'}>
-            <label className="font-bold w-full">Items Required</label>
-          </div>
-        ) : null}
+          <Battery0Icon className={'size-6 my-auto text-red-800'} />
+        ) : (
+          <Battery50Icon className={'size-6 text-black-900'} />
+        )}
+      </div>
+      <div
+        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/30' : 'bg-black/5'} px-6 py-4 rounded-md`}>
         <ItemStockViewClient
           key={Date.now()}
           consumedItemsTotalsById={consumedItemsTotalsById}

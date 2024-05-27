@@ -27,7 +27,7 @@ export function ItemStockViewClient({
             );
           });
         }}
-        className={`w-full text-center rounded-md`}
+        className={`w-full py-1 text-center rounded-md`}
         type="text"
       />
       <div className={`flex flex-col`}>
