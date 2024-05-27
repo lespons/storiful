@@ -5,6 +5,10 @@ import prisma from '@/lib/prisma';
 import { unstable_cache } from 'next/cache';
 import { ItemType } from '@prisma/client';
 
+export async function generateStaticParams() {
+  return [];
+}
+
 export default async function OrdersPage({ params: { orderId } }: { params: { orderId: string } }) {
   const itemTypes = await unstable_cache(
     async () =>
