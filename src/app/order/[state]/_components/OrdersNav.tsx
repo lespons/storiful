@@ -2,7 +2,7 @@
 
 import { Tab } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import { BriefcaseIcon, CheckCircleIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, TruckIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
 
 export default function OrdersNav({ className }: { className: string }) {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function OrdersNav({ className }: { className: string }) {
         onClick={() => {
           router.push(`/order/created`);
         }}>
-        <BriefcaseIcon className="size-5 my-auto" />
+        <WrenchScrewdriverIcon className="size-5 my-auto" />
         todo
       </Tab>
       <Tab

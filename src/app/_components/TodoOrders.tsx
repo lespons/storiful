@@ -6,7 +6,7 @@ import { TodoOrdersClient } from '@/app/_components/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
 import { auth } from '@/lib/auth';
 import { OrdersListEditCallback } from '@/components/order/OrdersList';
-import { BriefcaseIcon } from '@heroicons/react/24/solid';
+import { WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
 
 export async function TodoOrders({
   itemTypes
@@ -215,7 +215,7 @@ export async function TodoOrders({
   return (
     <div className="max-h-[80vh] flex flex-col">
       <div className={'flex justify-center w-full mb-1'}>
-        <BriefcaseIcon className={'size-6 text-fuchsia-900'} />
+        <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
       </div>
       <SWRProvider
         fallback={{

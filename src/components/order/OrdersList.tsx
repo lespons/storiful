@@ -12,8 +12,8 @@ import {
 } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import LongPressButton from '@/components/LongPressButton';
-import { CheckCircleIcon, PencilIcon, TruckIcon } from '@heroicons/react/24/solid';
-import { ClockIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
 type OrderListItem = {
@@ -185,11 +185,16 @@ export const TodoOrderListItem = memo(function TodoOrder({
     <div
       className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
        ${deadlineSoon ? '' : ''}`}>
-      <div className="flex text-xs gap-2 mb-1">
+      <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
-          <div className={'font-normal text-white bg-violet-900 px-2 rounded-md'}>new</div>
+          <div
+            className={
+              'group-hover:invisible absolute right-0 font-normal text-white bg-violet-900 px-2 rounded-md'
+            }>
+            new
+          </div>
         ) : null}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <div
@@ -348,12 +353,23 @@ const CompletedOrderListItem = memo(function CompletedOrder({
   return (
     <div
       className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-      <div className="flex text-xs gap-2 mb-1">
+      <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
-          <div className={'font-normal text-white bg-green-900 px-2 my-auto rounded-md'}>new</div>
-        ) : null}
+          <div
+            className={
+              'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-green-900 px-2 my-auto rounded-md'
+            }>
+            new
+            <CheckIcon className={'size-3 my-auto '} />
+          </div>
+        ) : (
+          <CheckCircleIcon
+            className={'group-hover:invisible absolute right-0 size-4 text-green-900'}
+          />
+        )}
+
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <OrderClone orderId={order.id} onClone={onClone} />
       </div>
@@ -424,14 +440,23 @@ const SentOrderListItem = memo(function SentOrder({
   return (
     <div
       className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-      <div className="flex text-xs gap-2 mb-1">
+      <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="flex gap-0.5 font-light">
           <div>{order.lastState.date.toDateString()}</div>
         </div>
         {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
-          <div className={'font-normal text-white bg-orange-900 px-2 my-auto rounded-md'}>new</div>
-        ) : null}
+          <div
+            className={
+              'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-orange-900 px-2 my-auto rounded-md'
+            }>
+            new <TruckIcon className={'text-white size-3 my-auto'} />
+          </div>
+        ) : (
+          <TruckIcon
+            className={'group-hover:invisible absolute right-0 text-orange-900 size-4 my-auto'}
+          />
+        )}
         <OrderOpen orderId={order.id} state={order.lastState.state} />
         <OrderClone orderId={order.id} onClone={onClone} />
       </div>
