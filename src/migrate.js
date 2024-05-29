@@ -43,7 +43,6 @@ const submitData = async () => {
     }
   });
   for (const order of orders) {
-    console.log(`Process order ${order.id}`);
     await prisma.$transaction(async (tx) => {
       if (
         (await tx.orderStatesHistory.count({
@@ -84,7 +83,6 @@ const submitData = async () => {
       orderBy: { date: 'desc' },
       select: { id: true }
     });
-    console.log(latestState, order.id);
     await prisma.order.update({
       where: {
         id: order.id

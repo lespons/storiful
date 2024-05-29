@@ -51,7 +51,6 @@ export async function cloneOrder(id: string) {
       )
     );
 
-    console.log('clone order');
     const newOrder = await tx.order.create({
       data: {
         deadlineAt: order.deadlineAt

@@ -4,6 +4,8 @@ import { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
 import { CompletedOrdersReturnType } from '@/app/_actions/getCompleted';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 
 export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: CompletedOrdersReturnType[0],
@@ -21,7 +23,8 @@ export const mapOrderToListItem = (
     completed: oi.completed,
     children: oi.ItemType.ItemChild.map((ic) => ({
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-      quantity: ic.quantity
+      quantity: ic.quantity,
+      typeId: ic.itemTypeId
     }))
   })),
   lastState: {
@@ -46,10 +49,37 @@ export function CompletedOrdersClient({
 }) {
   const { mutate } = useSWRConfig();
   const router = useRouter();
+  const highlightItem = useRef<string | null>(null);
+  const [filteredOrders, setFilteredOrders] = useState(orders);
+
+  useEffect(() => {
+    const eventHandler = (event: Event) => {
+      const itemTypeFilterId = (event as unknown as { detail: ItemTypeSelectEvent }).detail
+        .itemTypeId;
+      highlightItem.current = itemTypeFilterId;
+      setFilteredOrders(() =>
+        itemTypeFilterId
+          ? orders.filter((order) => {
+              return order.OrderItem.some(
+                (oi) =>
+                  oi.itemTypeId === itemTypeFilterId ||
+                  oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
+              );
+            })
+          : [...orders]
+      );
+    };
+    eventBus.addEventListener('ItemTypeHoverEvent', eventHandler);
+    return () => {
+      eventBus.removeEventListener('ItemTypeHoverEvent', eventHandler);
+    };
+  }, []);
+
   return (
     <div className={'overflow-auto '}>
       <OrdersList
-        orders={orders.map((order) => mapOrderToListItem(order, itemTypes))}
+        orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
+        highlightItem={highlightItem.current}
         onChangeState={onChangeState}
         onClone={async (id) => {
           await cloneOrder(id);

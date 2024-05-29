@@ -16,7 +16,6 @@ export async function addStock(id: string, lockVersion: number, value: number): 
         }
       }
     });
-    console.log('sotck added');
   } catch (e) {
     console.error(e);
   } finally {

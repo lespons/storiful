@@ -84,7 +84,6 @@ export function SimpleOrderList({
   const [pageIsLoading, setPageIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log('useEffect', orderPage, params.skip, params.skip - params.limit);
     if (!orderPage) {
       return;
     }
@@ -93,11 +92,6 @@ export function SimpleOrderList({
       orderPage.orderCountBefore <= params.skip - params.limit
     ) {
       startTransition(() => {
-        console.log(
-          'set ',
-          orderPage.orderCountBefore - (orderPage.orderCountBefore % params.limit),
-          (orderPage.orderCountBefore % params.limit) + 1
-        );
         setParams((state) => ({
           ...state,
           skip: orderPage.orderCountBefore - (orderPage.orderCountBefore % params.limit)

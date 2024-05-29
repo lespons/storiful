@@ -5,6 +5,8 @@ import useSWR, { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
 import { fetcher } from '@/lib/rest_fecther';
 import { TodoOrdersResponseData } from '@/pages/api/order/todo';
+import { useEffect, useRef, useState } from 'react';
+import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 
 export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: TodoOrdersResponseData['orders'][0],
@@ -21,6 +23,7 @@ export const mapOrderToListItem = (
     quantity: oi.quantity,
     completed: oi.completed,
     children: oi.ItemType.ItemChild.map((ic) => ({
+      typeId: ic.itemTypeId,
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
       quantity: ic.quantity
     }))
@@ -48,12 +51,40 @@ export function TodoOrdersClient({
     '/api/order/todo',
     fetcher
   );
+
+  const highlightItem = useRef<string | null>(null);
+  const [filteredOrders, setFilteredOrders] = useState(todoOrdersData!.orders);
+
+  useEffect(() => {
+    const eventHandler = (event: Event) => {
+      const itemTypeFilterId = (event as unknown as { detail: ItemTypeSelectEvent }).detail
+        .itemTypeId;
+      highlightItem.current = itemTypeFilterId;
+      setFilteredOrders(
+        itemTypeFilterId
+          ? todoOrdersData!.orders.filter((order) => {
+              return order.OrderItem.some(
+                (oi) =>
+                  oi.itemTypeId === itemTypeFilterId ||
+                  oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
+              );
+            })
+          : todoOrdersData!.orders
+      );
+    };
+    eventBus.addEventListener('ItemTypeHoverEvent', eventHandler);
+    return () => {
+      eventBus.removeEventListener('ItemTypeHoverEvent', eventHandler);
+    };
+  }, []);
+
   return (
     <OrdersList
       onComplete={async (id) => {
         await submitData(id);
         await mutate('/api/order/todo');
       }}
+      highlightItem={highlightItem.current}
       onCompleteOrderItem={async (id, completed) => {
         if (!todoOrdersData?.orders?.length) {
           console.error(`No orders to complete`);
@@ -65,9 +96,7 @@ export function TodoOrdersClient({
           .OrderItem.find((orderItem) => orderItem.id === id)!.completed = completed;
         await mutate('/api/order/todo', { ...todoOrdersData });
       }}
-      orders={(todoOrdersData ?? { orders: [] }).orders.map((order) =>
-        mapOrderToListItem(order, itemTypes)
-      )}
+      orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
       edit={{
         itemTypes: itemTypes.map(({ name, id, ItemChild }) => ({
           id,

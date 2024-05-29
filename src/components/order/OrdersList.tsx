@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo, startTransition, useOptimistic, useState } from 'react';
-import { Disclosure } from '@headlessui/react';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
 import {
   compareAsc,
@@ -12,7 +12,7 @@ import {
 } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import LongPressButton from '@/components/LongPressButton';
-import { PencilIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { PencilIcon, SparklesIcon, TruckIcon } from '@heroicons/react/24/solid';
 import { CheckCircleIcon, CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
@@ -27,7 +27,7 @@ type OrderListItem = {
     quantity: number;
     name: string;
     completed: boolean;
-    children: { name: string; quantity: number }[];
+    children: { typeId: string; name: string; quantity: number }[];
   }[];
   pending?: boolean;
   edit?: boolean;
@@ -45,6 +45,7 @@ export type OrdersListEditCallback = (
 
 export type OrdersListProps = {
   orders: OrderListItem[];
+  highlightItem?: string | null;
   onComplete?: (id: string) => void;
   onChangeState?: (id: string, state: OrderState) => void;
   onClone?: (id: string) => void;
@@ -57,6 +58,7 @@ export type OrdersListProps = {
 
 export function OrdersList({
   orders,
+  highlightItem,
   onComplete,
   onCompleteOrderItem,
   edit,
@@ -93,9 +95,14 @@ export function OrdersList({
   });
 
   const someInEdit = orders.some(({ edit }) => edit);
+
   return (
     <div className="overflow-auto pr-0.5">
-      {!orders.length ? <div>-</div> : null}
+      {!orders.length ? (
+        <div className={'flex justify-center gap-2 text-xl text-black/50 my-2'}>
+          nothing found <SparklesIcon className={'size-7 my-auto'} />
+        </div>
+      ) : null}
       {optimisticOrders.map((order) => {
         if (order.lastState.state === 'COMPLETED')
           return (
@@ -105,11 +112,19 @@ export function OrdersList({
               onChangeState={onChangeState}
               setOptimisticOrder={setOptimisticOrder}
               onClone={onClone}
+              highlightItem={highlightItem}
             />
           );
 
         if (order.lastState.state === 'SENT')
-          return <SentOrderListItem key={order.id} order={order} onClone={onClone} />;
+          return (
+            <SentOrderListItem
+              key={order.id}
+              order={order}
+              onClone={onClone}
+              highlightItem={highlightItem}
+            />
+          );
 
         if (order.edit && edit) {
           return (
@@ -149,6 +164,7 @@ export function OrdersList({
             onCompleteOrderItem={onCompleteOrderItem}
             onComplete={onComplete}
             blurred={someInEdit}
+            highlightItem={highlightItem}
           />
         );
       })}
@@ -161,15 +177,14 @@ export const TodoOrderListItem = memo(function TodoOrder({
   setOptimisticOrder,
   onComplete,
   onCompleteOrderItem,
-  blurred
-}: {
+  blurred,
+  highlightItem
+}: Pick<OrdersListProps, 'onCompleteOrderItem' | 'onComplete' | 'highlightItem'> & {
   order: OrdersListProps['orders'][0];
   setOptimisticOrder: (action: {
     order: OrdersListProps['orders'][0];
     orderItem?: { id: string; checked: boolean } | undefined;
   }) => void;
-  onCompleteOrderItem: OrdersListProps['onCompleteOrderItem'];
-  onComplete: OrdersListProps['onComplete'];
   blurred?: boolean;
   key?: string;
 }) {
@@ -245,7 +260,10 @@ export const TodoOrderListItem = memo(function TodoOrder({
                   }}
                 />
               </div>
-              <div className={`font-bold pl-2`}>{oi.name}</div>
+              <div
+                className={`font-bold pl-2  ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                {oi.name}
+              </div>
               <div className="text-xs my-auto">(+{oi.quantity})</div>
             </div>
             <div>
@@ -253,7 +271,10 @@ export const TodoOrderListItem = memo(function TodoOrder({
                 <div
                   key={oic.name}
                   className={`text-red-700 text-xs font-normal flex flex-row gap-1 pl-6`}>
-                  <div className="font-bold">{oic.name}</div>
+                  <div
+                    className={`font-bold ${highlightItem === oic.typeId ? 'bg-yellow-300' : ''}`}>
+                    {oic.name}
+                  </div>
                   <div className="text-xs">(-{oic.quantity * oi.quantity})</div>
                 </div>
               ))}
@@ -314,13 +335,12 @@ export const TodoOrderListItem = memo(function TodoOrder({
 
 const CompletedOrderListItem = memo(function CompletedOrder({
   order,
+  highlightItem,
   onChangeState,
   setOptimisticOrder,
   onClone
-}: {
+}: Pick<OrdersListProps, 'highlightItem' | 'onChangeState' | 'onClone'> & {
   order: OrdersListProps['orders'][0];
-  onChangeState: OrdersListProps['onChangeState'];
-  onClone: OrdersListProps['onClone'];
   setOptimisticOrder: (action: {
     order: OrdersListProps['orders'][0];
     orderItem?: { id: string; checked: boolean } | undefined;
@@ -376,29 +396,44 @@ const CompletedOrderListItem = memo(function CompletedOrder({
       <div className="text-xs text-gray-600">Completed by {order.lastState.userName}</div>
       <div
         className={`group bg-white mt-2 hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-50 pointer-events-auto`}>
-        {order.items.map((oi) => (
-          <Disclosure key={oi.id} defaultOpen={false}>
-            <Disclosure.Button as="div" className="py-0 text-blue-900">
-              <div
-                className={`flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700`}>
-                <div className={`font-bold text-sm`}>{oi.name}</div>
-                <div className="text-xs my-auto">(+{oi.quantity})</div>
-              </div>
-            </Disclosure.Button>
-            <Disclosure.Panel>
-              <div className={'pl-2 text-xs text-gray-600 max-w-60 font-bold'}>
-                {oi.children?.map((oic) => (
-                  <div
-                    key={oic.name}
-                    className={`text-red-700 text-xs font-normal flex flex-row gap-1`}>
-                    <div className="font-bold">{oic.name}</div>
-                    <div className="text-xs">(-{oic.quantity * oi.quantity})</div>
-                  </div>
-                ))}
-              </div>
-            </Disclosure.Panel>
-          </Disclosure>
-        ))}
+        {order.items.map((oi) => {
+          const childIsHighlight = oi.children.some((c) => c.typeId === highlightItem);
+          return (
+            <Disclosure key={oi.id} defaultOpen={false}>
+              {({ open }) => (
+                <>
+                  <DisclosureButton as="div" className="py-0 text-blue-900">
+                    <div
+                      className={`flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700`}>
+                      <div
+                        className={`transition-all ease-in duration-500 font-bold text-sm ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                        {oi.name}
+                      </div>
+                      <div className="text-xs my-auto">(+{oi.quantity})</div>
+                    </div>
+                  </DisclosureButton>
+                  {(open || childIsHighlight) && (
+                    <DisclosurePanel static>
+                      <div className={'pl-2 text-xs text-gray-600 max-w-60 font-bold'}>
+                        {oi.children?.map((oic) => (
+                          <div
+                            key={oic.name}
+                            className={`text-red-700 text-xs font-normal flex flex-row gap-1`}>
+                            <div
+                              className={`font-bold  ${highlightItem === oic.typeId ? 'bg-yellow-300' : ''}`}>
+                              {oic.name}
+                            </div>
+                            <div className="text-xs">(-{oic.quantity * oi.quantity})</div>
+                          </div>
+                        ))}
+                      </div>
+                    </DisclosurePanel>
+                  )}
+                </>
+              )}
+            </Disclosure>
+          );
+        })}
         <div
           className={
             'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
@@ -432,8 +467,9 @@ const CompletedOrderListItem = memo(function CompletedOrder({
 
 const SentOrderListItem = memo(function SentOrder({
   order,
-  onClone
-}: {
+  onClone,
+  highlightItem
+}: Pick<OrdersListProps, 'highlightItem' | 'onClone'> & {
   order: OrdersListProps['orders'][0];
   onClone: OrdersListProps['onClone'];
 }) {
@@ -462,14 +498,19 @@ const SentOrderListItem = memo(function SentOrder({
       </div>
       <div className="text-xs text-gray-600">Sent by {order.lastState.userName}</div>
       <div className={`mt-2`}>
-        {order.items.map((oi) => (
-          <div key={oi.id}>
-            <div className={`flex flex-row gap-1 text-gray-800 font-normal hover:text-gray-950`}>
-              <div className={`font-bold text-sm`}>{oi.name}</div>
-              <div className="text-xs my-auto">({oi.quantity})</div>
+        {order.items.map((oi) => {
+          return (
+            <div key={oi.id}>
+              <div className={`flex flex-row gap-1 text-gray-800 font-normal hover:text-gray-950`}>
+                <div
+                  className={`font-bold text-sm ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                  {oi.name}
+                </div>
+                <div className="text-xs my-auto">({oi.quantity})</div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {order.details ? (
         <div

@@ -45,7 +45,7 @@ export async function ItemStockView({
 
   const isItemsRequired = itemStock.some((is) => consumedItemsTotalsById[is.itemTypeId] > is.value);
   return (
-    <div className="max-h-[80vh] flex flex-col">
+    <div className="max-h-[80vh] flex flex-col overflow-x-hidden">
       <div className={'flex gap-1 justify-center w-full mb-1'}>
         {isItemsRequired ? (
           <Battery0Icon className={'size-6 my-auto text-red-800'} />
@@ -54,7 +54,7 @@ export async function ItemStockView({
         )}
       </div>
       <div
-        className={`flex flex-col gap-0.5 overflow-y-auto  ${isItemsRequired ? 'bg-red-100/30' : 'bg-black/5'} px-6 py-4 rounded-md`}>
+        className={`flex flex-col gap-0.5 ${isItemsRequired ? 'bg-red-100/30' : 'bg-black/5'} px-6 py-4 rounded-md overflow-y-auto overflow-x-hidden`}>
         <ItemStockViewClient
           key={Date.now()}
           consumedItemsTotalsById={consumedItemsTotalsById}

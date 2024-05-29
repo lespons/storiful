@@ -1,10 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Description, Dialog, DialogPanel } from '@headlessui/react';
 import Image from 'next/image';
 import { PaperClipIcon } from '@heroicons/react/24/outline';
-import { FolderOpenIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { FolderOpenIcon, PlusIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
 function background(consumedItemsCount: number, value: number) {
   const useProgress = Math.max(Math.round((consumedItemsCount / value) * 100), 0);
@@ -32,7 +32,9 @@ export function ItemStockElement({
   index,
   name,
   value,
-  onAddStock
+  isSelected,
+  onAddStock,
+  hoverCallback
 }: {
   id: string;
   name: string;
@@ -40,23 +42,38 @@ export function ItemStockElement({
   image: string | null;
   consumedItemsCount: number;
   index: number;
+  isSelected?: boolean;
   onAddStock: (value: number) => void;
+  hoverCallback: (id: string | null) => void;
 }) {
-  const [showDetails, setShowDetails] = useState(false);
   const [openImage, setOpenImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isPending, setIsPending] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isSelected) {
+      ref.current?.scrollIntoView();
+    }
+  }, [isSelected, ref]);
   return (
     <div
+      id={`itemstock_${id}`}
+      ref={ref}
       className={`group flex flex-col relative min-w-full rounded-md bg-white border-b-[1px] border-gray-400
             ${consumedItemsCount ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
                transition-transform duration-300
-            `}>
+               ${isSelected ? 'ring-2' : ''}
+             scroll-mt-16
+            `}
+      data-id={`${id}`}>
       <div
         className={
           'flex w-full justify-between group-hover:bg-black/90 group-hover:text-white rounded-md hover:cursor-pointer'
         }
-        onClick={() => setShowDetails((v) => !v)}>
+        onClick={() => {
+          hoverCallback(id);
+        }}>
         <div className={`font-semibold w-full z-10 pl-4 py-1`}>
           <div className={'w-full'}>
             {image ? (
@@ -65,6 +82,13 @@ export function ItemStockElement({
               </div>
             ) : null}
             <div>{name}</div>
+            {isSelected && (
+              <XCircleIcon
+                className={
+                  'absolute size-7 my-auto top-0 -right-0 translate-x-[65%] text-red-900 bg-white rounded-full hover:scale-125'
+                }
+              />
+            )}
           </div>
         </div>
 
@@ -78,9 +102,9 @@ export function ItemStockElement({
         </div>
       </div>
 
-      {showDetails ? (
+      {isSelected ? (
         <>
-          <div className={`z-20 bg-white group-hover:bg-white`}>
+          <div className={`z-10 bg-white group-hover:bg-white rounded-b-md`}>
             <div className={'flex mt-2 gap-4 items-center justify-center mx-6'}>
               <input
                 className={'rounded-md px-4 py-1 border-[2px]'}
@@ -92,9 +116,10 @@ export function ItemStockElement({
               <button
                 className={`flex-1 rounded-md bg-green-100 hover:bg-green-600 hover:text-white px-4 py-1`}
                 disabled={isPending}
-                onClick={() => {
+                onClick={(e) => {
                   setIsPending(true);
                   onAddStock(Number(inputRef.current?.value));
+                  hoverCallback(null);
                 }}>
                 {!isPending ? (
                   <div className={'flex gap-1 justify-center'}>
@@ -120,15 +145,15 @@ export function ItemStockElement({
                 alt={`image of ${name}`}
                 src={image}
                 className={
-                  'mt-2 border-4 border-transparent hover:cursor-pointer brightness-95 hover:brightness-100 hover:border-blue-600/80'
+                  'mt-2 border-4 border-transparent hover:cursor-pointer brightness-95 hover:brightness-100 hover:border-blue-600/80 mx-auto'
                 }
-                onClick={() => setOpenImage(true)}
-                width={300}
-                height={300}
-                style={{
-                  width: '100%',
-                  height: 'auto'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setOpenImage(true);
                 }}
+                width={200}
+                height={300}
               />
             ) : null}
           </div>
