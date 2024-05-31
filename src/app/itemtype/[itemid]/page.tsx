@@ -1,12 +1,14 @@
-import ItemTypeForm, { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
+import ItemTypeForm from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { unstable_cache } from 'next/cache';
 import { RedirectButton } from '@/components/Button';
 import { getItemType } from '@/app/lib/actions/itemType';
 import LongPressButton from '@/components/LongPressButton';
-import { TrashIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { DocumentDuplicateIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { mapItemType } from '@/app/itemtype/_lib/mappers';
+import { createAsNewItemType } from '@/app/itemtype/_actions/createAsNewItemType';
+import { deleteItemType } from '@/app/itemtype/_actions/deleteItemType';
+import { updateItemType } from '@/app/itemtype/_actions/updateItemType';
 
 export const dynamicParams = false;
 
@@ -54,141 +56,6 @@ async function getProps(itemid: string) {
 
 export default async function ItemTypeEditPage({ params }: { params: { itemid: string } }) {
   const { itemType, itemTypes } = await getProps(params.itemid);
-  const submitData = async (
-    { itemType: prevItemType2 }: ItemTypeFormValuesType,
-    { itemType }: ItemTypeFormValuesType
-  ): Promise<ItemTypeFormValuesType> => {
-    'use server';
-    try {
-      await prisma.$transaction(async (tx) => {
-        const prevItemType = await tx.itemType.findUniqueOrThrow({
-          where: {
-            id: itemType.id
-          },
-          include: {
-            ItemChild: true
-          }
-        });
-
-        const childrenToDelete = prevItemType.ItemChild.filter((prevItemChild) => {
-          return !itemType.children.some(
-            ({ id: actualChildId }) => prevItemChild.id === actualChildId
-          );
-        });
-        const childrenToUpdate = itemType.children.filter((actualChild) => {
-          return prevItemType.ItemChild.some(
-            ({ id: prevChildId }) => actualChild.id === prevChildId
-          );
-        });
-
-        const childrenToAdd = itemType.children.filter((actualChild) => !actualChild.id);
-        await tx.itemType.update({
-          where: {
-            id: itemType.id
-          },
-          data: {
-            name: itemType.name,
-            type: itemType.type,
-            image: itemType.image,
-            unit: itemType.unit,
-            ItemChild: {
-              deleteMany: {
-                id: { in: childrenToDelete.map(({ id }) => id) }
-              },
-              createMany: {
-                data: childrenToAdd.map((c) => ({
-                  itemTypeId: c.itemTypeId,
-                  quantity: Number(c.quantity)
-                }))
-              }
-            }
-          }
-        });
-
-        for (const cu of childrenToUpdate) {
-          await tx.itemChild.update({
-            where: {
-              id: cu.id
-            },
-            data: {
-              quantity: Number(cu.quantity)
-            }
-          });
-        }
-      });
-
-      const newItemType = await getItemType(itemType.id);
-
-      if (!newItemType) {
-        throw Error('Item is not found');
-      }
-
-      return {
-        success: true,
-        itemType: mapItemType(itemTypes, {
-          id: newItemType.id,
-          type: newItemType.type,
-          name: newItemType.name,
-          image: newItemType.image,
-          ItemChild: newItemType.ItemChild,
-          unit: newItemType.unit
-        })
-      };
-    } catch (error) {
-      console.error(error);
-
-      return {
-        error:
-          'message' in (error as { message: string })
-            ? ((error as { message: string }).message as string)
-            : 'unknown error',
-        itemType
-      };
-    } finally {
-      revalidateTag('item_types_edit');
-      revalidatePath('/', 'layout');
-    }
-  };
-
-  const deleteItemType = async (): Promise<{ error?: string; success?: boolean }> => {
-    'use server';
-    try {
-      await prisma.$transaction(async (tx) => {
-        await tx.itemStock.deleteMany({
-          where: {
-            itemTypeId: params.itemid
-          }
-        });
-
-        await tx.itemChild.deleteMany({
-          where: {
-            parentTypeId: params.itemid
-          }
-        });
-
-        await tx.itemChild.deleteMany({
-          where: {
-            itemTypeId: params.itemid
-          }
-        });
-
-        await tx.itemType.deleteMany({
-          where: {
-            id: params.itemid
-          }
-        });
-      });
-
-      return { success: true };
-    } catch (error) {
-      console.error(error);
-      return { error: 'Failed' };
-    } finally {
-      revalidateTag('item_types_edit');
-      revalidatePath('/itemtype', 'layout');
-      redirect('/itemtype');
-    }
-  };
 
   if (!itemType) {
     return <div>404</div>;
@@ -210,14 +77,36 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
 
       <ItemTypeForm
         action={'UPDATE'}
-        onSubmit={submitData}
+        onSubmit={async function (prev, newdata) {
+          'use server';
+          return await updateItemType(prev, newdata, itemTypes);
+        }}
         itemsList={itemTypes.map((itemType) => mapItemType(itemTypes, itemType))}
         itemType={mapItemType(itemTypes, itemType)}
       />
 
       <div className="pt-2 mt-2">
         <LongPressButton
-          onLongPress={deleteItemType}
+          className={'group text-blue-900 font-bold hover:text-blue-950 w-full text-center'}
+          bgColor={'bg-blue-200'}
+          defaultHoldTime={1000}
+          onLongPress={async function () {
+            'use server';
+            await createAsNewItemType(itemType.id);
+          }}>
+          <div className={'flex gap-2 w-full justify-center'}>
+            <div>create as new</div>
+            <DocumentDuplicateIcon className={'size-5 my-auto group-hover:animate-shake'} />
+          </div>
+        </LongPressButton>
+      </div>
+
+      <div className="pt-2 mt-2">
+        <LongPressButton
+          onLongPress={async function () {
+            'use server';
+            await deleteItemType(itemType.id);
+          }}
           className={'group text-gray-500 font-bold hover:text-red-700 w-full text-center'}>
           <div className={'flex gap-2 w-full justify-center '}>
             <div>delete</div>
