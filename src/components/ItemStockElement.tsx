@@ -26,21 +26,21 @@ function background(consumedItemsCount: number, value: number) {
 }
 
 export function ItemStockElement({
-  id,
-  consumedItemsCount,
-  image,
+  item: { id, consumedItemsCount, image, name, value, unit },
   index,
-  name,
-  value,
   isSelected,
   onAddStock,
   hoverCallback
 }: {
-  id: string;
-  name: string;
-  value: number;
-  image: string | null;
-  consumedItemsCount: number;
+  item: {
+    id: string;
+    name: string;
+    value: number;
+    image: string | null;
+    consumedItemsCount: number;
+    unit?: string | null;
+  };
+
   index: number;
   isSelected?: boolean;
   onAddStock: (value: number) => void;
@@ -82,6 +82,7 @@ export function ItemStockElement({
               </div>
             ) : null}
             <div>{name}</div>
+
             {isSelected && (
               <XCircleIcon
                 className={
@@ -94,6 +95,7 @@ export function ItemStockElement({
 
         <div className="flex-2 z-10 flex gap-1 px-4 py-1">
           <span>{value}</span>
+          <span>{unit}</span>
           {consumedItemsCount > value ? (
             <span className="font-bold text-red-800 group-hover:text-white">
               ({consumedItemsCount - value})

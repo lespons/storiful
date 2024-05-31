@@ -50,7 +50,7 @@ function LongPressButton({
   return (
     <div className={className} style={{ position: 'relative' }}>
       <button
-        className={'relative z-[100] w-full'}
+        className={'relative z-10 w-full'}
         onMouseDown={() => setIsPressed(true)}
         onMouseLeave={() => setIsPressed(false)}
         onMouseUp={() => setIsPressed(false)}>

@@ -8,11 +8,43 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import FileSelector from '@/components/FileSelector';
 import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 
+export const ItemTypeUnits = {
+  distance: {
+    mm: [0, 'millimeter'],
+    cm: [1, 'centimeter'],
+    m: [2, 'meter'],
+    km: [3, 'kilometer']
+  },
+  counts: {
+    pcs: [4, 'pieces']
+  },
+  volume: {
+    ml: [5, 'milliliter'],
+    l: [6, 'liter'],
+    m_3: [7, 'm³']
+  }
+};
+
+export const ItemTypeUnitsNames: { [key: string]: string } = Object.values(ItemTypeUnits)
+  .map((unit) =>
+    Object.entries(unit).map(([key, value]) => {
+      return [key, value[0]];
+    })
+  )
+  .flat()
+  .reduce(
+    (result, curr) => {
+      result[String(curr[1])] = String(curr[0]);
+      return result;
+    },
+    {} as { [key: string]: string }
+  );
 export interface ItemType {
   id: string;
   name: string;
   type: 'INVENTORY' | 'PRODUCT';
   image?: string | null;
+  unit?: number | null;
   children: {
     id?: string;
     name: string;
@@ -54,7 +86,6 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
     control,
     handleSubmit,
     setValue,
-    reset,
     formState: { errors, defaultValues }
   } = useForm<ItemTypeFormValuesType>({
     defaultValues: {
@@ -96,15 +127,16 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
       }
     }
   });
-  const [state, formAction] = useFormState(onSubmit, defaultValues as ItemTypeFormValuesType);
-  // useEffect(() => {
-  //   if (state.success) {
-  //     reset({
-  //       itemType: state.itemType
-  //     });
-  //   }
-  // }, [state.success]);
 
+  const unitItems = Object.values(ItemTypeUnits)
+    .map((value) => {
+      return Object.entries(value).map(([key, value]) => ({
+        id: String(value[0]),
+        name: `${value[1]}  (${key})`
+      }));
+    })
+    .flat();
+  const [state, formAction] = useFormState(onSubmit, defaultValues as ItemTypeFormValuesType);
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
@@ -163,6 +195,30 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             </RadioGroup.Option>
           ))}
         </RadioGroup>
+      </div>
+      <div className="mb-4">
+        <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
+          Unit
+        </label>
+        <SelectBox
+          items={unitItems ?? []}
+          showDisplayValue={true}
+          initialItem={
+            itemType?.unit
+              ? {
+                  id: String(itemType.unit),
+                  name: unitItems.find(({ id }) => Number(id) === itemType.unit)!.name
+                }
+              : null
+          }
+          onSelect={(unit) => {
+            if (!unit) {
+              return;
+            }
+
+            setValue('itemType.unit', Number(unit.id));
+          }}
+        />
       </div>
       {/* Add child item form fields here (nested or separate components) */}
       <div className="mb-4">

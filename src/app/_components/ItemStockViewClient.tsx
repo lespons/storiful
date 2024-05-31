@@ -3,6 +3,7 @@ import { ItemStock, ItemType } from '@prisma/client';
 import { ItemStockElement } from '@/components/ItemStockElement';
 import { KeyboardEvent, startTransition, useCallback, useEffect, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
+import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 
 export function ItemStockViewClient({
   sortedItemsStock,
@@ -91,12 +92,15 @@ export function ItemStockViewClient({
         {filteredItemsStock.map((is, index) => (
           <ItemStockElement
             key={is.id + is.lockVersion}
-            name={is.ItemType.name}
-            value={is.value}
-            consumedItemsCount={consumedItemsTotalsById[is.itemTypeId]}
+            item={{
+              id: is.itemTypeId,
+              name: is.ItemType.name,
+              value: is.value,
+              image: is.ItemType.image,
+              consumedItemsCount: consumedItemsTotalsById[is.itemTypeId],
+              unit: ItemTypeUnitsNames[String(is.ItemType.unit)]
+            }}
             index={index}
-            image={is.ItemType.image}
-            id={is.itemTypeId}
             onAddStock={async (value) => {
               await onAddStock(is.id, is.lockVersion, value);
             }}

@@ -4,9 +4,9 @@ import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { RedirectButton } from '@/components/Button';
 import { getItemType } from '@/app/lib/actions/itemType';
-import { mapItemType } from '@/app/itemtype/page';
 import LongPressButton from '@/components/LongPressButton';
 import { TrashIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { mapItemType } from '@/app/itemtype/_lib/mappers';
 
 export const dynamicParams = false;
 
@@ -90,6 +90,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
             name: itemType.name,
             type: itemType.type,
             image: itemType.image,
+            unit: itemType.unit,
             ItemChild: {
               deleteMany: {
                 id: { in: childrenToDelete.map(({ id }) => id) }
@@ -129,7 +130,8 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           type: newItemType.type,
           name: newItemType.name,
           image: newItemType.image,
-          ItemChild: newItemType.ItemChild
+          ItemChild: newItemType.ItemChild,
+          unit: newItemType.unit
         })
       };
     } catch (error) {

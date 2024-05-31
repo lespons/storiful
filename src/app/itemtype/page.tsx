@@ -2,7 +2,8 @@ import React from 'react';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache';
 import ItemTypeForm, { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
-import { getItemTypes, ItemTypesReturnType } from '@/app/lib/actions/itemType';
+import { getItemTypes } from '@/app/lib/actions/itemType';
+import { mapItemType } from '@/app/itemtype/_lib/mappers';
 
 async function getProps() {
   const itemTypes = await unstable_cache(() => getItemTypes(), ['item_types_edit'], {
@@ -10,28 +11,6 @@ async function getProps() {
   })();
   return {
     itemTypes
-  };
-}
-
-export function mapItemType(
-  itemTypes: ItemTypesReturnType,
-  { id, name, type, ItemChild, image }: ItemTypesReturnType[0]
-) {
-  return {
-    id: id!,
-    name,
-    type: type,
-    image,
-    children: ItemChild.map((ch) => {
-      const it = itemTypes.find((it) => it.id === ch.itemTypeId)!;
-
-      return {
-        id: ch.id,
-        name: it.name,
-        itemTypeId: ch.itemTypeId,
-        quantity: ch.quantity
-      };
-    })
   };
 }
 
@@ -49,6 +28,7 @@ export default async function ItemTypeCreatePage() {
           name: itemType.name,
           type: itemType.type,
           image: itemType.image,
+          unit: itemType.unit,
           ItemChild: {
             createMany: {
               data: itemType.children.map((c) => ({

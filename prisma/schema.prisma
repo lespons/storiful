@@ -30,6 +30,7 @@ model ItemType {
   ItemStock ItemStock?
   OrderItem OrderItem[]
   image     String?
+  unit      Int?
 
   @@map(name: "item_types")
 }
