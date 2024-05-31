@@ -72,19 +72,16 @@ export async function OrderCreate({
   };
 
   return (
-    <div>
-      {/*<div className="text-lg font-bold">Create an order:</div>*/}
-      <OrderCreateClient
-        itemTypes={itemTypes.map(({ name, id, ItemChild }) => ({
-          id,
-          name,
-          children: ItemChild.map((ic) => ({
-            quantity: ic.quantity,
-            name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name
-          }))
-        }))}
-        onSubmit={submitData as unknown as OrderFormProps['onSubmit']}
-      />
-    </div>
+    <OrderCreateClient
+      itemTypes={itemTypes.map(({ name, id, ItemChild }) => ({
+        id,
+        name,
+        children: ItemChild.map((ic) => ({
+          quantity: ic.quantity,
+          name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name
+        }))
+      }))}
+      onSubmit={submitData as unknown as OrderFormProps['onSubmit']}
+    />
   );
 }

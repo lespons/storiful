@@ -45,7 +45,7 @@ export async function ItemStockView({
 
   const isItemsRequired = itemStock.some((is) => consumedItemsTotalsById[is.itemTypeId] > is.value);
   return (
-    <div className="max-h-[80vh] flex flex-col overflow-x-hidden">
+    <div className="max-h-[90vh] flex flex-col overflow-x-hidden">
       <div className={'flex gap-1 justify-center w-full mb-1'}>
         {isItemsRequired ? (
           <Battery0Icon className={'size-6 my-auto text-red-800'} />

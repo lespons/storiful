@@ -95,7 +95,7 @@ export async function CompletedOrders({
 
   const expiredOrdersCount = await getExpiredCount();
   return (
-    <div className="max-h-[80vh] flex flex-col">
+    <div className="max-h-[90vh] flex flex-col">
       <div className={'flex gap-1 justify-center w-full mb-1'}>
         <CheckCircleIcon className={'size-6 text-green-900'} />
         <TruckIcon className={'size-6 text-orange-900'} />

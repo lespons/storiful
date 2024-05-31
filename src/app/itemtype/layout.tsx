@@ -30,7 +30,7 @@ export default async function WarehouseLayout({ children }: { children: React.Re
   const { itemTypes } = await getProps();
   return (
     <div className="w-fit">
-      <div className="flex flex-row gap-6 mt-4">
+      <div className="flex flex-row gap-6 mt-6">
         <div className="bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md w-fit max-h-[80vh] overflow-auto">
           {children}
         </div>

@@ -2,6 +2,11 @@
 
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import {
+  HomeModernIcon,
+  RectangleGroupIcon,
+  RectangleStackIcon
+} from '@heroicons/react/24/outline';
 
 export function AppNav({ username }: { username?: string | null }) {
   const pathname = usePathname();
@@ -15,31 +20,30 @@ export function AppNav({ username }: { username?: string | null }) {
         onClick={() => signOut()}>
         {username}
       </div>
-      <div
-        className={`flex flex-row min-w-full place-content-center text-3xl pb-5 ${pathname === '/' ? 'underline underline-offset-8' : ''}`}>
-        <a href="/">Home</a>
-      </div>
-      <div className="flex flex-row min-w-full font-light text-2xl">
-        <div className="basis-1/3">
+      <div className="flex gap-4 w-fit text-xl text-black/90">
+        <div className="basis-1/3 bg-gray-200  hover:bg-gray-300 rounded-md">
+          <a href="/">
+            <button
+              className={`flex gap-2 px-3 ${pathname === '/' ? 'underline underline-offset-8' : ''}`}>
+              <RectangleGroupIcon className={'size-6 my-auto'} />
+              Dashboard
+            </button>
+          </a>
+        </div>
+        <div className="basis-1/3 bg-blue-100  hover:bg-blue-200 rounded-md">
           <a href="/order">
             <button
-              className={`min-w-full text-right p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname?.startsWith('/order') ? 'underline underline-offset-8' : ''}`}>
+              className={`flex gap-2 px-3 ${pathname?.startsWith('/order') ? 'underline underline-offset-8' : ''}`}>
+              <RectangleStackIcon className={'size-6 my-auto'} />
               Orders
             </button>
           </a>
         </div>
-        <div className="basis-1/3">
-          <a href="/stock">
-            <button
-              className={`min-w-full p-3 bg-fuchsia-700  hover:bg-opacity-15 bg-opacity-5 ${pathname === '/stock' ? 'underline underline-offset-8' : ''}`}>
-              Stock
-            </button>
-          </a>
-        </div>
-        <div className="basis-1/3">
+        <div className="basis-1/3 bg-amber-100 hover:bg-amber-200 rounded-md">
           <a href="/itemtype">
             <button
-              className={`min-w-full text-left p-3 bg-fuchsia-700 hover:bg-opacity-15 bg-opacity-5 ${pathname?.startsWith('/itemtype') ? 'underline underline-offset-8' : ''}`}>
+              className={`flex gap-2 px-3 ${pathname?.startsWith('/itemtype') ? 'underline underline-offset-8' : ''}`}>
+              <HomeModernIcon className={'size-6 my-auto'} />
               Warehouse
             </button>
           </a>

@@ -213,7 +213,7 @@ export async function TodoOrders({
   };
 
   return (
-    <div className="max-h-[80vh] flex flex-col">
+    <div className="max-h-[90vh] flex flex-col">
       <div className={'flex justify-center w-full mb-1'}>
         <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
       </div>
