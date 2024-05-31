@@ -166,7 +166,7 @@ export async function TodoOrders({
             id: values.order.id
           },
           data: {
-            deadlineAt: values.order.deadline && new Date(values.order.deadline),
+            deadlineAt: values.order.deadline ? new Date(values.order.deadline) : null,
             details: values.order.details
           }
         });

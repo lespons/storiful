@@ -92,6 +92,6 @@ export async function cloneOrder(id: string) {
     });
   });
 
-  revalidatePath('/', 'page');
   revalidateTag('order_find');
+  revalidatePath('/', 'page');
 }

@@ -1,7 +1,7 @@
 'use client';
 import { ItemStock, ItemType } from '@prisma/client';
 import { ItemStockElement } from '@/components/ItemStockElement';
-import { KeyboardEvent, startTransition, useCallback, useState } from 'react';
+import { KeyboardEvent, startTransition, useCallback, useEffect, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 
 export function ItemStockViewClient({
@@ -16,6 +16,9 @@ export function ItemStockViewClient({
   const [filteredItemsStock, setFilteredItemsStock] = useState(sortedItemsStock);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
+  useEffect(() => {
+    setFilteredItemsStock(sortedItemsStock);
+  }, [sortedItemsStock]);
   function sendSelectEvent(itemTypeId: string | null) {
     setSelectedItem((sitem) => {
       const toSelect = itemTypeId === sitem ? null : itemTypeId;
@@ -39,7 +42,6 @@ export function ItemStockViewClient({
 
   const handleKeyDown = (event: KeyboardEvent) => {
     // Prevent default scrolling behavior
-
     switch (event.key) {
       case 'ArrowUp':
         event.preventDefault();
@@ -88,7 +90,7 @@ export function ItemStockViewClient({
       <div className={`flex flex-col gap-0.5 scroll-mt-5`}>
         {filteredItemsStock.map((is, index) => (
           <ItemStockElement
-            key={is.id}
+            key={is.id + is.lockVersion}
             name={is.ItemType.name}
             value={is.value}
             consumedItemsCount={consumedItemsTotalsById[is.itemTypeId]}

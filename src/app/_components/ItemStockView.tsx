@@ -56,7 +56,6 @@ export async function ItemStockView({
       <div
         className={`flex flex-col gap-0.5 ${isItemsRequired ? 'bg-red-100/30' : 'bg-black/5'} px-6 py-4 rounded-md overflow-y-auto overflow-x-hidden`}>
         <ItemStockViewClient
-          key={Date.now()}
           consumedItemsTotalsById={consumedItemsTotalsById}
           sortedItemsStock={sortedItemsStock}
           onAddStock={addStock}

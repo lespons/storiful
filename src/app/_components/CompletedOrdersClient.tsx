@@ -52,22 +52,30 @@ export function CompletedOrdersClient({
   const highlightItem = useRef<string | null>(null);
   const [filteredOrders, setFilteredOrders] = useState(orders);
 
+  function filterOutOrders(data: typeof orders, itemTypeFilterId: string | null) {
+    setFilteredOrders(
+      itemTypeFilterId
+        ? data.filter((order) => {
+            return order.OrderItem.some(
+              (oi) =>
+                oi.itemTypeId === itemTypeFilterId ||
+                oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
+            );
+          })
+        : data
+    );
+  }
+
+  useEffect(() => {
+    filterOutOrders(orders, highlightItem.current);
+  }, [orders]);
+
   useEffect(() => {
     const eventHandler = (event: Event) => {
       const itemTypeFilterId = (event as unknown as { detail: ItemTypeSelectEvent }).detail
         .itemTypeId;
       highlightItem.current = itemTypeFilterId;
-      setFilteredOrders(() =>
-        itemTypeFilterId
-          ? orders.filter((order) => {
-              return order.OrderItem.some(
-                (oi) =>
-                  oi.itemTypeId === itemTypeFilterId ||
-                  oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
-              );
-            })
-          : [...orders]
-      );
+      filterOutOrders(orders, highlightItem.current);
     };
     eventBus.addEventListener('ItemTypeHoverEvent', eventHandler);
     return () => {

@@ -47,30 +47,39 @@ export function TodoOrdersClient({
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
 }) {
   const { mutate } = useSWRConfig();
+  const highlightItem = useRef<string | null>(null);
   const { data: todoOrdersData, isLoading } = useSWR<TodoOrdersResponseData>(
     '/api/order/todo',
-    fetcher
+    fetcher,
+    {
+      onSuccess: (data) => {
+        filterOutOrders(data, highlightItem.current);
+      }
+    }
   );
 
-  const highlightItem = useRef<string | null>(null);
   const [filteredOrders, setFilteredOrders] = useState(todoOrdersData!.orders);
+
+  function filterOutOrders(data: typeof todoOrdersData, itemTypeFilterId: string | null) {
+    setFilteredOrders(
+      itemTypeFilterId
+        ? data!.orders.filter((order) => {
+            return order.OrderItem.some(
+              (oi) =>
+                oi.itemTypeId === itemTypeFilterId ||
+                oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
+            );
+          })
+        : data!.orders
+    );
+  }
 
   useEffect(() => {
     const eventHandler = (event: Event) => {
       const itemTypeFilterId = (event as unknown as { detail: ItemTypeSelectEvent }).detail
         .itemTypeId;
       highlightItem.current = itemTypeFilterId;
-      setFilteredOrders(
-        itemTypeFilterId
-          ? todoOrdersData!.orders.filter((order) => {
-              return order.OrderItem.some(
-                (oi) =>
-                  oi.itemTypeId === itemTypeFilterId ||
-                  oi.ItemType.ItemChild.some((oich) => oich.itemTypeId === itemTypeFilterId)
-              );
-            })
-          : todoOrdersData!.orders
-      );
+      filterOutOrders(todoOrdersData, itemTypeFilterId);
     };
     eventBus.addEventListener('ItemTypeHoverEvent', eventHandler);
     return () => {
@@ -107,8 +116,10 @@ export function TodoOrdersClient({
           }))
         })),
         onEditOrder: async (prev, next) => {
-          const oldOrderData = todoOrdersData!.orders.find((order) => order.id === next.order.id);
           const result = await updateOrder(prev, next);
+
+          const oldOrderData = todoOrdersData!.orders.find((order) => order.id === next.order.id);
+
           if (oldOrderData) {
             oldOrderData.OrderItem.forEach((orderItem) => {
               orderItem.quantity = Number(
@@ -116,6 +127,7 @@ export function TodoOrdersClient({
               );
             });
             oldOrderData.details = next.order.details!;
+            oldOrderData.deadlineAt = next.order.deadline ? new Date(next.order.deadline) : null;
           }
 
           await mutate('/api/order/todo', { ...todoOrdersData });

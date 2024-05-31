@@ -117,9 +117,10 @@ export function ItemStockElement({
                 className={`flex-1 rounded-md bg-green-100 hover:bg-green-600 hover:text-white px-4 py-1`}
                 disabled={isPending}
                 onClick={(e) => {
-                  setIsPending(true);
-                  onAddStock(Number(inputRef.current?.value));
-                  hoverCallback(null);
+                  if (inputRef.current?.value) {
+                    setIsPending(true);
+                    onAddStock(Number(inputRef.current?.value));
+                  }
                 }}>
                 {!isPending ? (
                   <div className={'flex gap-1 justify-center'}>

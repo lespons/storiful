@@ -12,7 +12,7 @@ export async function addStock(id: string, lockVersion: number, value: number): 
           increment: value
         },
         lockVersion: {
-          increment: lockVersion
+          increment: 1
         }
       }
     });

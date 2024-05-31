@@ -30,7 +30,10 @@ function LongPressButton({
           if (holdTime >= holdtime) {
             clearInterval(timerId.current);
             timerId.current = null;
-            onLongPress(); // Call your action function
+            setTimeout(() => {
+              onLongPress();
+            });
+            // Call your action function
             setIsPressed(false);
             return 0;
           }
