@@ -58,7 +58,7 @@ function LongPressButton({
       </button>
       {isPressed && ( // Optional: Show progress bar only when pressed
         <div
-          className={`absolute h-full top-0 rounded-md ${bgColor ? bgColor : 'bg-red-700/20'}`}
+          className={`left-0 absolute h-full top-0 rounded-md ${bgColor ? bgColor : 'bg-red-700/20'}`}
           style={{
             width: `${(holdTime / holdtime) * 100}%`,
             transition: 'width 0.05s ease-in-out' // Optional: Smooth animation

@@ -8,11 +8,13 @@ import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 export function ItemStockViewClient({
   sortedItemsStock,
   consumedItemsTotalsById,
-  onAddStock
+  onAddStock,
+  onSetStock
 }: {
   sortedItemsStock: (ItemStock & { ItemType: ItemType })[];
   consumedItemsTotalsById: { [itemTypeId: string]: number };
   onAddStock: (id: string, lockVersion: number, value: number) => Promise<void>;
+  onSetStock: (id: string, lockVersion: number, value: number) => Promise<void>;
 }) {
   const [filteredItemsStock, setFilteredItemsStock] = useState(sortedItemsStock);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -101,8 +103,13 @@ export function ItemStockViewClient({
               unit: ItemTypeUnitsNames[String(is.ItemType.unit)]
             }}
             index={index}
-            onAddStock={async (value) => {
-              await onAddStock(is.id, is.lockVersion, value);
+            onAddStock={async (value, action) => {
+              if (action === 'CHANGE') {
+                await onAddStock(is.id, is.lockVersion, value);
+              }
+              if (action === 'SET') {
+                await onSetStock(is.id, is.lockVersion, value);
+              }
             }}
             hoverCallback={hoverCallback}
             isSelected={is.itemTypeId === selectedItem}

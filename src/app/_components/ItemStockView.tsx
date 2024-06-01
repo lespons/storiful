@@ -4,6 +4,7 @@ import { getTodoOrders } from '@/app/lib/actions/order';
 import { ItemStockViewClient } from '@/app/_components/ItemStockViewClient';
 import { addStock } from '@/app/_actions/addStock';
 import { Battery0Icon, Battery50Icon } from '@heroicons/react/24/solid';
+import { setStock } from '@/app/_actions/setStock';
 
 export async function ItemStockView({
   itemStock
@@ -59,6 +60,7 @@ export async function ItemStockView({
           consumedItemsTotalsById={consumedItemsTotalsById}
           sortedItemsStock={sortedItemsStock}
           onAddStock={addStock}
+          onSetStock={setStock}
         />
       </div>
     </div>

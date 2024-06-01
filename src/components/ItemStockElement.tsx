@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Description, Dialog, DialogPanel } from '@headlessui/react';
 import Image from 'next/image';
 import { PaperClipIcon } from '@heroicons/react/24/outline';
-import { FolderOpenIcon, PlusIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import {
+  ArrowRightEndOnRectangleIcon,
+  FolderOpenIcon,
+  PlusIcon,
+  XCircleIcon
+} from '@heroicons/react/24/solid';
+import LongPressButton from '@/components/LongPressButton';
 
 function background(consumedItemsCount: number, value: number) {
   const useProgress = Math.max(Math.round((consumedItemsCount / value) * 100), 0);
@@ -43,7 +49,7 @@ export function ItemStockElement({
 
   index: number;
   isSelected?: boolean;
-  onAddStock: (value: number) => void;
+  onAddStock: (value: number, action: 'SET' | 'CHANGE') => void;
   hoverCallback: (id: string | null) => void;
 }) {
   const [openImage, setOpenImage] = useState(false);
@@ -121,7 +127,7 @@ export function ItemStockElement({
                 onClick={(e) => {
                   if (inputRef.current?.value) {
                     setIsPending(true);
-                    onAddStock(Number(inputRef.current?.value));
+                    onAddStock(Number(inputRef.current?.value), 'CHANGE');
                   }
                 }}>
                 {!isPending ? (
@@ -133,6 +139,25 @@ export function ItemStockElement({
                   '...'
                 )}
               </button>
+              <LongPressButton
+                onLongPress={() => {
+                  if (inputRef.current?.value) {
+                    setIsPending(true);
+                    onAddStock(Number(inputRef.current?.value), 'SET');
+                  }
+                }}
+                defaultHoldTime={1000}
+                className={`flex-1 rounded-md bg-pink-100 hover:bg-pink-400 hover:text-white px-4 py-1`}
+                bgColor={'bg-pink-500'}>
+                {!isPending ? (
+                  <div className={'flex gap-1 justify-center w-full'}>
+                    set
+                    <ArrowRightEndOnRectangleIcon className={'size-4 my-auto'} />
+                  </div>
+                ) : (
+                  '...'
+                )}
+              </LongPressButton>
             </div>
             <div
               className={
