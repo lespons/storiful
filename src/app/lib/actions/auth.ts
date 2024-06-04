@@ -2,8 +2,9 @@
 
 import { signIn } from '@/lib/auth';
 import { AuthError } from 'next-auth';
+import { redirect } from 'next/navigation';
 
-export async function authenticate(prevState: string | undefined, formData: FormData) {
+export async function authenticate(_: string | undefined, formData: FormData) {
   try {
     await signIn('credentials', formData);
   } catch (error) {
@@ -16,5 +17,7 @@ export async function authenticate(prevState: string | undefined, formData: Form
       }
     }
     throw error;
+  } finally {
+    redirect('/');
   }
 }

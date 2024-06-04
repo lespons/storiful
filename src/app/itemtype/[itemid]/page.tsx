@@ -103,6 +103,7 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
 
       <div className="pt-2 mt-2">
         <LongPressButton
+          defaultHoldTime={2000}
           onLongPress={async function () {
             'use server';
             await deleteItemType(itemType.id);

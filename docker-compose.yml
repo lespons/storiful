@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - ./test.env
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=test
+    ports:
+      - '5432:5432'

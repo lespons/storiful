@@ -1,15 +1,20 @@
 import prisma from '@/lib/prisma';
 
-export const getItemTypes = async () =>
-  prisma.itemType.findMany({
+export const getItemTypes = async () => {
+  'use server';
+
+  return prisma.itemType.findMany({
     include: {
       ItemChild: true
     }
   });
+};
+
 export type ItemTypesReturnType = UnwrapPromise<ReturnType<typeof getItemTypes>>;
 
-export const getItemType = async (itemId: string) =>
-  prisma.itemType.findUnique({
+export const getItemType = async (itemId: string) => {
+  'use server';
+  return prisma.itemType.findUnique({
     where: {
       id: itemId
     },
@@ -18,4 +23,6 @@ export const getItemType = async (itemId: string) =>
       ItemStock: true
     }
   });
+};
+
 export type ItemTypeReturnType = UnwrapPromise<ReturnType<typeof getItemType>>;

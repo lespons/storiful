@@ -13,8 +13,10 @@ export function SelectBox({
   items,
   showDisplayValue,
   onSelect,
-  initialItem
+  initialItem,
+  id
 }: {
+  id?: string;
   items: Item[];
   initialItem?: Item | null;
   showDisplayValue?: boolean;
@@ -33,7 +35,7 @@ export function SelectBox({
 
   const [selectedValue, setSelectedValue] = useState(initialItem);
   return (
-    <div className="relative">
+    <div id={id} className="relative">
       <Combobox
         value={showDisplayValue ? selectedValue : null}
         onChange={(value: Item) => {

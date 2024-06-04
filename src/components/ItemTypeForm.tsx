@@ -201,6 +201,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           Unit
         </label>
         <SelectBox
+          id={'itemTypeUnit'}
           items={unitItems ?? []}
           showDisplayValue={true}
           initialItem={
@@ -226,6 +227,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           Children selector
         </label>
         <SelectBox
+          id={'itemTypeChild'}
           items={
             itemsList
               .filter((item) => !children.some(({ itemTypeId }) => itemTypeId === item.id))
@@ -253,9 +255,10 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           </div>
           {children.map((v, index) => (
             <div key={v.itemTypeId} className="text-xs font-bold">
-              <div>- {v.name}</div>
+              <label htmlFor={v.itemTypeId}>- {v.name}</label>
               <div className="flex flex-row gap-2">
                 <input
+                  id={v.itemTypeId}
                   type="number"
                   {...register(`itemType.children.${index}.quantity`)}
                   className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}

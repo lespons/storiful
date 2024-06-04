@@ -24,7 +24,7 @@ export function AppNav({ username }: { username?: string | null }) {
         <div className="basis-1/3 bg-gray-200  hover:bg-gray-300 rounded-md">
           <a href="/">
             <button
-              className={`flex gap-2 px-3 ${pathname === '/' ? 'underline underline-offset-8' : ''}`}>
+              className={`flex gap-2 px-3 ${['/', '/dashboard'].includes(pathname!) ? 'underline underline-offset-8' : ''}`}>
               <RectangleGroupIcon className={'size-6 my-auto'} />
               Dashboard
             </button>
