@@ -19,6 +19,7 @@ export class PlaywrightBasePage {
   }
 
   async loginAsDefaultUser() {
+    await this.page.goto('/login');
     await this.emailInput.fill(PlaywrightBasePage.BASE_USER_EMAIL);
     await this.passwordInput.fill(PlaywrightBasePage.BASE_USER_PASSWORD);
 

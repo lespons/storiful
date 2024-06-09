@@ -16,7 +16,7 @@ dotenv.config({ path: path.resolve(__dirname, 'test.env') });
 export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -83,6 +83,7 @@ export default defineConfig({
     // },
   ],
 
+  timeout: 120_000,
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npx prisma migrate deploy && npx prisma generate && npm run build && npm run start',

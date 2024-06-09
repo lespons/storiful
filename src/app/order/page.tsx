@@ -20,5 +20,8 @@ export default async function _() {
       id: true
     }
   });
+  if (!order) {
+    return redirect(`/order/created`);
+  }
   return redirect(`/order/created/${order?.id}`);
 }

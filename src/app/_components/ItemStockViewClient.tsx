@@ -90,7 +90,7 @@ export function ItemStockViewClient({
           type="text"
         />
       </div>
-      <div className={`flex flex-col gap-0.5 scroll-mt-5`}>
+      <div className={`flex flex-col gap-0.5 scroll-mt-5`} data-testid="stock_view">
         {filteredItemsStock.map((is, index) => (
           <ItemStockElement
             key={is.id + is.lockVersion}

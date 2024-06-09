@@ -65,6 +65,7 @@ export function ItemStockElement({
   return (
     <div
       id={`itemstock_${id}`}
+      data-testid={`itemtype_${name}`}
       ref={ref}
       className={`group flex flex-col relative min-w-full rounded-md bg-white border-b-[1px] border-gray-400
             ${consumedItemsCount ? 'bg-opacity-100' : index % 2 === 0 ? 'bg-gray-100' : ''}
@@ -99,7 +100,7 @@ export function ItemStockElement({
           </div>
         </div>
 
-        <div className="flex-2 z-10 flex gap-1 px-4 py-1">
+        <div className="flex-2 z-10 flex gap-1 px-4 py-1" role={'contentinfo'}>
           <span>{value}</span>
           <span>{unit}</span>
           {consumedItemsCount > value ? (

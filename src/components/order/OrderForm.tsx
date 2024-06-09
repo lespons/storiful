@@ -123,6 +123,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
           Item selector
         </label>
         <SelectBox
+          id={'orderItemType'}
           items={
             itemTypes
               .filter((item) => !orderItems.some(({ itemId }) => itemId === item.id))
@@ -150,6 +151,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
+                data-testid={`orderitem_${orderItem.name}`}
                 className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30">
                 <div className={'text-base text-green-800'}>{orderItem.name}</div>
 
