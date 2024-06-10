@@ -114,7 +114,7 @@ export function ItemStockElement({
                 className={'w-32 rounded-md px-4 py-1 border-[2px]'}
                 ref={inputRef}
                 type={'number'}
-                placeholder={''}
+                placeholder={'stock change'}
               />
 
               <button

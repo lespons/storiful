@@ -228,7 +228,7 @@ test.describe('base orders flow', () => {
     const itemStockSize = itemStockView.getByRole('contentinfo');
     await expect(itemStockSize).toHaveText('0');
 
-    await itemStockSize.click();
+    await itemStockView.click();
 
     const stockInput = itemStockView.locator("input[placeholder='stock change']");
     await stockInput.fill('10');
@@ -259,7 +259,7 @@ test.describe('base orders flow', () => {
     const itemStockSize = itemStockView.getByRole('contentinfo');
     await expect(itemStockSize).toHaveText('0');
 
-    await itemStockSize.click();
+    await itemStockView.click();
 
     const stockInput = itemStockView.locator("input[placeholder='stock change']");
     await stockInput.fill('10');
