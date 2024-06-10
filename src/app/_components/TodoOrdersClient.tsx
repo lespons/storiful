@@ -23,7 +23,7 @@ export const mapOrderToListItem = (
     quantity: oi.quantity,
     completed: oi.completed,
     children: oi.ItemType.ItemChild.map((ic) => ({
-      typeId: ic.itemTypeId,
+      itemTypeId: ic.itemTypeId,
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
       quantity: ic.quantity
     }))
@@ -111,6 +111,7 @@ export function TodoOrdersClient({
           id,
           name,
           children: ItemChild.map((ic) => ({
+            itemTypeId: ic.itemTypeId,
             quantity: ic.quantity,
             name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name
           }))

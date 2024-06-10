@@ -117,7 +117,7 @@ export const TodoOrderCard = memo(function TodoOrder({
                   role={'listitem'}
                   data-testid={`order_item_${oi.name}_children_${oic.name}`}>
                   <div
-                    className={`font-bold ${highlightItem === oic.typeId ? 'bg-yellow-300' : ''}`}>
+                    className={`font-bold ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
                     {oic.name}
                   </div>
                   <div className="text-xs" data-testid={`order_item_${oi.name}_children_quantity`}>

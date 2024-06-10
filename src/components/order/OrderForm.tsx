@@ -16,12 +16,16 @@ export type OrderFormValue = {
     itemId: string;
     name: string;
     quantity: number;
-    children: { name: string; quantity: number }[];
+    children: { name: string; quantity: number; itemTypeId: string }[];
   }[];
 };
 
 export interface OrderFormProps {
-  itemTypes: { id: string; name: string; children: { name: string; quantity: number }[] }[];
+  itemTypes: {
+    id: string;
+    name: string;
+    children: { name: string; quantity: number; itemTypeId: string }[];
+  }[];
   onSubmit: (
     prevstate: { order: OrderFormValue },
     state: { order: OrderFormValue }
@@ -29,6 +33,7 @@ export interface OrderFormProps {
   onReset?: () => void;
   order?: OrderFormValue;
   action: 'CREATE' | 'UPDATE';
+  itemStockById?: { [id: string]: number };
 }
 
 function OrderSubmit({
@@ -49,7 +54,14 @@ function OrderSubmit({
   );
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, order, action }) => {
+const OrderForm: React.FC<OrderFormProps> = ({
+  onSubmit,
+  onReset,
+  itemTypes,
+  order,
+  action,
+  itemStockById
+}) => {
   const {
     register,
     control,
@@ -89,6 +101,18 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
       items: []
     }
   });
+
+  const calcMaxToCreate = (orderItem: (typeof orderItems)[0]) => {
+    let min = Number.MAX_SAFE_INTEGER;
+
+    for (const children of orderItem.children) {
+      min = Math.min(
+        min,
+        Math.floor((itemStockById?.[children.itemTypeId] ?? 0) / children.quantity)
+      );
+    }
+    return min > 0 ? min : 0;
+  };
 
   const error = errors.order?.items?.root?.message;
   return (
@@ -155,6 +179,11 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
                 className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30">
                 <div className={'text-base text-green-800'}>{orderItem.name}</div>
 
+                {orderItem.children?.length ? (
+                  <div className={'font-normal'}>
+                    you may create <b>({calcMaxToCreate(orderItem)})</b>
+                  </div>
+                ) : null}
                 <div className="flex flex-row gap-2 mt-1">
                   <input
                     type="number"
@@ -179,9 +208,14 @@ const OrderForm: React.FC<OrderFormProps> = ({ onSubmit, onReset, itemTypes, ord
                 {orderItem.children?.length ? (
                   <div className="pt-2 font-normal text-xs">
                     {orderItem.children.map((c) => (
-                      <div key={c.name} className="flex  gap-1 text-red-700 font-bold">
+                      <div
+                        key={c.name}
+                        className={`flex gap-1 ${(itemStockById?.[c.itemTypeId] ?? 0) < orderItem.quantity * c.quantity ? 'text-red-700' : ''} font-bold`}>
                         <div>{c.name}</div>
                         <div className={'font-normal'}>(- {orderItem.quantity * c.quantity})</div>
+                        <div className={'text-black font-normal'}>
+                          /{itemStockById?.[c.itemTypeId] ?? 0}
+                        </div>
                       </div>
                     ))}
                   </div>

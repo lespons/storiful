@@ -205,8 +205,8 @@ export async function TodoOrders({
       return { error: (e as { message: string }).message, order: { items: [] } };
     } finally {
       // redisClient.publish('orders', 'new order!');
-      revalidatePath('/', 'page');
       revalidateTag('order_find');
+      revalidatePath('/', 'page');
       revalidatePath('/order', 'page');
       revalidatePath('/order/create', 'page');
     }

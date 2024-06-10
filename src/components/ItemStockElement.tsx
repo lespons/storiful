@@ -4,12 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Description, Dialog, DialogPanel } from '@headlessui/react';
 import Image from 'next/image';
 import { PaperClipIcon } from '@heroicons/react/24/outline';
-import {
-  ArrowRightEndOnRectangleIcon,
-  FolderOpenIcon,
-  PlusIcon,
-  XCircleIcon
-} from '@heroicons/react/24/solid';
+import { ArrowRightEndOnRectangleIcon, FolderOpenIcon, PlusIcon } from '@heroicons/react/24/solid';
 import LongPressButton from '@/components/LongPressButton';
 
 function background(consumedItemsCount: number, value: number) {
@@ -90,13 +85,13 @@ export function ItemStockElement({
             ) : null}
             <div>{name}</div>
 
-            {isSelected && (
-              <XCircleIcon
-                className={
-                  'absolute size-7 my-auto top-0 -right-0 translate-x-[65%] text-red-900 bg-white rounded-full hover:scale-125'
-                }
-              />
-            )}
+            {/*{isSelected && (*/}
+            {/*  <XCircleIcon*/}
+            {/*    className={*/}
+            {/*      'absolute size-7 my-auto top-0 -right-0 translate-x-[65%] text-red-900 bg-white rounded-full hover:scale-125'*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*)}*/}
           </div>
         </div>
 
@@ -116,10 +111,10 @@ export function ItemStockElement({
           <div className={`z-10 bg-white group-hover:bg-white rounded-b-md`}>
             <div className={'flex mt-2 gap-4 items-center justify-center mx-6'}>
               <input
-                className={'rounded-md px-4 py-1 border-[2px]'}
+                className={'w-32 rounded-md px-4 py-1 border-[2px]'}
                 ref={inputRef}
                 type={'number'}
-                placeholder={'stock change'}
+                placeholder={''}
               />
 
               <button

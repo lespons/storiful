@@ -5,8 +5,9 @@ import { useRef, useState } from 'react';
 
 export function OrderCreateClient({
   itemTypes,
-  onSubmit
-}: Pick<OrderFormProps, 'onSubmit' | 'itemTypes'>) {
+  onSubmit,
+  itemStockById
+}: Pick<OrderFormProps, 'onSubmit' | 'itemTypes' | 'itemStockById'>) {
   const animationTime = 450;
   const timer = useRef<number | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -50,6 +51,7 @@ export function OrderCreateClient({
         <OrderForm
           action={'CREATE'}
           itemTypes={itemTypes}
+          itemStockById={itemStockById}
           onSubmit={async (prev, next) => {
             const result = await onSubmit(prev, next);
             await mutate('/api/order/todo');

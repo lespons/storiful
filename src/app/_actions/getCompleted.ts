@@ -30,7 +30,7 @@ export async function getActualCompleted() {
               },
               date: {
                 gte: sub(new Date(), {
-                  months: 3
+                  months: 1
                 })
               }
             }
@@ -77,7 +77,7 @@ export async function getExpiredCount() {
               },
               date: {
                 lt: sub(new Date(), {
-                  months: 3
+                  months: 1
                 })
               }
             }

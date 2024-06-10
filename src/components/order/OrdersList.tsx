@@ -21,7 +21,7 @@ type OrderListItem = {
     quantity: number;
     name: string;
     completed: boolean;
-    children: { typeId: string; name: string; quantity: number }[];
+    children: { itemTypeId: string; name: string; quantity: number }[];
   }[];
   pending?: boolean;
   edit?: boolean;
@@ -231,7 +231,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
       <div
         className={`group bg-white mt-2 hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-50 pointer-events-auto`}>
         {order.items.map((oi) => {
-          const childIsHighlight = oi.children.some((c) => c.typeId === highlightItem);
+          const childIsHighlight = oi.children.some((c) => c.itemTypeId === highlightItem);
           return (
             <Disclosure key={oi.id} defaultOpen={false}>
               {({ open }) => (
@@ -254,7 +254,7 @@ const CompletedOrderListItem = memo(function CompletedOrder({
                             key={oic.name}
                             className={`text-red-700 text-xs font-normal flex flex-row gap-1`}>
                             <div
-                              className={`font-bold  ${highlightItem === oic.typeId ? 'bg-yellow-300' : ''}`}>
+                              className={`font-bold  ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
                               {oic.name}
                             </div>
                             <div className="text-xs">(-{oic.quantity * oi.quantity})</div>

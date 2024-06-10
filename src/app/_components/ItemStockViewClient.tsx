@@ -22,6 +22,7 @@ export function ItemStockViewClient({
   useEffect(() => {
     setFilteredItemsStock(sortedItemsStock);
   }, [sortedItemsStock]);
+
   function sendSelectEvent(itemTypeId: string | null) {
     setSelectedItem((sitem) => {
       const toSelect = itemTypeId === sitem ? null : itemTypeId;

@@ -4,7 +4,7 @@ import { useSWRConfig } from 'swr';
 import { ItemChild, ItemType } from '@prisma/client';
 import { CompletedOrdersReturnType } from '@/app/_actions/getCompleted';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 
 export const mapOrderToListItem = (
@@ -24,7 +24,7 @@ export const mapOrderToListItem = (
     children: oi.ItemType.ItemChild.map((ic) => ({
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
       quantity: ic.quantity,
-      typeId: ic.itemTypeId
+      itemTypeId: ic.itemTypeId
     }))
   })),
   lastState: {
@@ -52,7 +52,10 @@ export function CompletedOrdersClient({
   const highlightItem = useRef<string | null>(null);
   const [filteredOrders, setFilteredOrders] = useState(orders);
 
-  function filterOutOrders(data: typeof orders, itemTypeFilterId: string | null) {
+  const filterOutOrders = useCallback(function (
+    data: typeof orders,
+    itemTypeFilterId: string | null
+  ) {
     setFilteredOrders(
       itemTypeFilterId
         ? data.filter((order) => {
@@ -64,11 +67,11 @@ export function CompletedOrdersClient({
           })
         : data
     );
-  }
+  }, []);
 
   useEffect(() => {
     filterOutOrders(orders, highlightItem.current);
-  }, [orders]);
+  }, [filterOutOrders, orders]);
 
   useEffect(() => {
     const eventHandler = (event: Event) => {
@@ -81,7 +84,7 @@ export function CompletedOrdersClient({
     return () => {
       eventBus.removeEventListener('ItemTypeHoverEvent', eventHandler);
     };
-  }, []);
+  }, [orders, filterOutOrders]);
 
   return (
     <div className={'overflow-auto '}>
