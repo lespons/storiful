@@ -118,7 +118,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
-      className="flex flex-col bg-fuchsia-900 bg-opacity-10 px-5 py-4 rounded-b-md min-w-64">
+      className="flex flex-col bg-fuchsia-900 bg-opacity-10 px-5 py-4 rounded-b-md min-w-80">
       <div className="mb-2">
         <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
           Deadline
@@ -169,21 +169,15 @@ const OrderForm: React.FC<OrderFormProps> = ({
             });
           }}
         />
-        {/*{orderItems.length ? <div className="text-sm mt-2">Items to complete:</div> : null}*/}
         {orderItems.length ? (
           <div className="mt-2">
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
                 data-testid={`orderitem_${orderItem.name}`}
-                className="font-bold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30">
+                className="font-semibold not-first:mt-2 rounded-md py-2 px-4 text-sm bg-white bg-opacity-30">
                 <div className={'text-base text-green-800'}>{orderItem.name}</div>
 
-                {orderItem.children?.length ? (
-                  <div className={'font-normal'}>
-                    you may create <b>({calcMaxToCreate(orderItem)})</b>
-                  </div>
-                ) : null}
                 <div className="flex flex-row gap-2 mt-1">
                   <input
                     type="number"
@@ -205,21 +199,32 @@ const OrderForm: React.FC<OrderFormProps> = ({
                     🗑
                   </button>
                 </div>
-                {orderItem.children?.length ? (
-                  <div className="pt-2 font-normal text-xs">
-                    {orderItem.children.map((c) => (
-                      <div
-                        key={c.name}
-                        className={`flex gap-1 ${(itemStockById?.[c.itemTypeId] ?? 0) < orderItem.quantity * c.quantity ? 'text-red-700' : ''} font-bold`}>
-                        <div>{c.name}</div>
-                        <div className={'font-normal'}>(- {orderItem.quantity * c.quantity})</div>
-                        <div className={'text-black font-normal'}>
-                          /{itemStockById?.[c.itemTypeId] ?? 0}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
+                <table className={'table-auto border-collapse text-xs w-full mt-2'}>
+                  {orderItem.children?.length && itemStockById ? (
+                    <caption className={'font-normal caption-top mb-1'}>
+                      you may create <b>({calcMaxToCreate(orderItem)})</b> from:
+                    </caption>
+                  ) : null}
+                  {orderItem.children?.length ? (
+                    <tbody>
+                      {orderItem.children.map((c) => (
+                        <tr
+                          key={c.name}
+                          className={`table-row odd:bg-white/70 ${(itemStockById?.[c.itemTypeId] ?? 0) < orderItem.quantity * c.quantity ? 'text-red-700' : ''}`}>
+                          <td className={'table-cell border-black/70 px-1'}>{c.name}</td>
+                          <td className={'table-cell whitespace-nowrap px-1 border'}>
+                            -{orderItem.quantity * c.quantity}
+                          </td>
+                          {itemStockById && (
+                            <td className={'table-cell whitespace-nowrap px-1'}>
+                              {itemStockById?.[c.itemTypeId] ?? 0}
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  ) : null}
+                </table>
               </div>
             ))}
           </div>

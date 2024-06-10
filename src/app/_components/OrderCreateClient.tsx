@@ -31,7 +31,7 @@ export function OrderCreateClient({
     <div className={'relative'}>
       <button
         className={
-          'ease duration-[450ms] overflow-hidden transition-[width, opacity, transform] px-1 text-white  font-bold  min-w-10 ' +
+          'ease duration-[350ms] overflow-hidden transition-[width, opacity, transform] px-1 text-white  font-bold  min-w-10 ' +
           (showCreate
             ? 'bg-gray-950 bg-opacity-100 hover:bg-opacity-90 w-full rounded-t-md'
             : 'bg-fuchsia-900 bg-opacity-40 hover:bg-opacity-100 w-10 rounded-md')
@@ -46,7 +46,7 @@ export function OrderCreateClient({
         </div>
       </button>
       <div
-        className={`transition-[max-width] ease duration-[450ms] ${showCreate ? 'max-w-64' : 'max-w-0'}
+        className={`will-change-transform transition-[max-width] ease duration-[350ms] ${showCreate ? 'max-w-80' : 'max-w-0'}
          ${overflowHidden ? 'overflow-hidden' : 'overflow-initial'}`}>
         <OrderForm
           action={'CREATE'}
