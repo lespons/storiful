@@ -7,6 +7,7 @@ import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
 import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
 import { CheckCircleIcon, TruckIcon } from '@heroicons/react/24/solid';
+import { sendOrder } from '@/app/_actions/sendOrder';
 
 export async function CompletedOrders({
   itemTypes
@@ -19,69 +20,31 @@ export async function CompletedOrders({
     return completedState2.date.getTime() - completedState1.date.getTime();
   });
 
-  const sendOrder = async (id: string) => {
+  const changeOrderItemValue = async (orderItemId: string, value: number) => {
     'use server';
-
     const session = await auth();
 
     await prisma.$transaction(async (tx) => {
-      const order = await tx.order.findFirst({
+      const orderItem = await tx.orderItem.findUniqueOrThrow({
         where: {
-          id,
-          lastState: {
-            state: { in: ['COMPLETED'] }
-          }
-        },
-        include: {
-          OrderItem: {
-            include: {
-              ItemType: true
-            }
-          }
+          id: orderItemId
         }
       });
-
-      if (!order) {
-        throw Error(`Order is not found with id ${id}`);
-      }
-
-      await Promise.all(
-        order.OrderItem.map((oi) =>
-          tx.itemStock.update({
-            where: {
-              itemTypeId: oi.itemTypeId
-            },
-            data: {
-              value: {
-                decrement: oi.quantity
-              },
-              lockVersion: {
-                increment: 1
-              }
-            }
-          })
-        )
-      );
-
-      await tx.order.update({
+      await tx.orderItem.update({
         where: {
-          id
+          id: orderItemId
         },
         data: {
-          lastState: {
-            create: {
-              state: 'SENT',
-              User: {
-                connect: {
-                  id: session!.user!.id!
-                }
-              },
-              Order: {
-                connect: {
-                  id
-                }
-              }
-            }
+          newQuantity: value
+        }
+      });
+      await tx.itemStock.update({
+        where: {
+          itemTypeId: orderItem.itemTypeId
+        },
+        data: {
+          value: {
+            increment: value - (orderItem.newQuantity ?? orderItem.quantity)
           }
         }
       });
@@ -105,6 +68,7 @@ export async function CompletedOrders({
         itemTypes={itemTypes}
         cloneOrder={cloneOrder}
         expiredOrdersCount={expiredOrdersCount}
+        onChangeItemValue={changeOrderItemValue}
         onChangeState={async (orderId, state) => {
           'use server';
           if (state === 'SENT') {

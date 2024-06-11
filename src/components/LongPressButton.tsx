@@ -6,6 +6,7 @@ function LongPressButton({
   title,
   className,
   defaultHoldTime,
+  disabled,
   bgColor,
   children
 }: {
@@ -14,6 +15,7 @@ function LongPressButton({
   className: string;
   defaultHoldTime?: number;
   bgColor?: string;
+  disabled?: boolean;
   children?: React.ReactNode;
 }) {
   const timerId = useRef<any>();
@@ -50,6 +52,7 @@ function LongPressButton({
   return (
     <div className={className} style={{ position: 'relative' }}>
       <button
+        disabled={disabled}
         className={'relative z-10 w-full'}
         onMouseDown={() => setIsPressed(true)}
         onMouseLeave={() => setIsPressed(false)}

@@ -49,7 +49,9 @@ export const TodoOrderCard = memo(function TodoOrder({
             new
           </div>
         ) : null}
-        <OrderOpen orderId={order.id} state={order.lastState.state} />
+        <div className={'flex flex-1 justify-end gap-2'}>
+          <OrderOpen orderId={order.id} state={order.lastState.state} />
+        </div>
         <div
           data-testid="order_edit"
           className={

@@ -9,7 +9,7 @@ export function OrderOpen({ orderId, state }: { orderId: string; state: string }
     <div
       data-testid="order_open"
       className={
-        'invisible group-hover:visible flex-1 text-right hover:underline hover:cursor-pointer font-bold'
+        'invisible group-hover:visible text-right hover:underline hover:cursor-pointer font-bold'
       }
       onClick={(e) => {
         e.preventDefault();

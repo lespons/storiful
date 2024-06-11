@@ -20,6 +20,7 @@ export const mapOrderToListItem = (
     itemId: oi.ItemType.id,
     name: oi.ItemType.name,
     quantity: oi.quantity,
+    newQuantity: oi.newQuantity,
     completed: oi.completed,
     children: oi.ItemType.ItemChild.map((ic) => ({
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
@@ -37,6 +38,7 @@ export const mapOrderToListItem = (
 export function CompletedOrdersClient({
   onChangeState,
   cloneOrder,
+  onChangeItemValue,
   itemTypes,
   orders,
   expiredOrdersCount
@@ -44,6 +46,7 @@ export function CompletedOrdersClient({
   orders: CompletedOrdersReturnType;
   cloneOrder: (id: string) => Promise<void>;
   onChangeState: (id: string, state: string) => Promise<void>;
+  onChangeItemValue: (orderItemId: string, newvalue: number) => Promise<void>;
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
   expiredOrdersCount: number;
 }) {
@@ -92,6 +95,7 @@ export function CompletedOrdersClient({
         orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
         highlightItem={highlightItem.current}
         onChangeState={onChangeState}
+        onChangeItemValue={onChangeItemValue}
         onClone={async (id) => {
           await cloneOrder(id);
           await mutate('/api/order/todo');
