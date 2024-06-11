@@ -49,7 +49,9 @@ function CompletedItem({
                   ) : null}
                 </div>
               </div>
-              <div className={`flex gap-2 text-gray-800 font-semibold`}>
+              <div
+                data-testid={`completed-item-edit-${orderItem.name}`}
+                className={`flex gap-2 text-gray-800 font-semibold`}>
                 {edit ? (
                   <>
                     <input
@@ -77,6 +79,7 @@ function CompletedItem({
                   </>
                 ) : (
                   <div
+                    data-testid={orderItem.name + '_edit'}
                     className="absolute right-1 invisible group-hover:visible text-xs hover:underline hover:cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();

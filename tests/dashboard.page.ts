@@ -64,7 +64,7 @@ export class PlaywrightDashboardPage {
 
     const buttonCreate = this.page.getByRole('button', { name: 'create' });
     const responsePromise = this.page.waitForResponse(
-      (response) => response.url().includes('/order/todo') && response.status() === 200
+      (response) => response.url().includes('/') && response.status() === 200
     );
     await buttonCreate.click();
     await responsePromise;

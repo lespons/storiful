@@ -157,7 +157,9 @@ test.describe('base orders flow', () => {
     await expect(itemStockSize).toHaveText('20');
 
     await completedCard.hover();
-    await completedCard.getByRole('button', { name: 'send' }).click();
+    await completedCard.getByRole('button', { name: 'send' }).click({
+      delay: 3000
+    });
 
     const sentCard = await dashboardPage.getOrderCard('sent', orderDetails);
     await expect(sentCard).toBeVisible();
@@ -205,6 +207,67 @@ test.describe('base orders flow', () => {
     await page.reload();
     const completedCard = await dashboardPage.getOrderCard('todo', orderDetails);
     await expect(completedCard).toHaveCount(0);
+  });
+
+  test('should complete an order and change initial value of item', async ({ page }) => {
+    const playwrightItemTypePage = new PlaywrightItemTypePage(page);
+
+    await playwrightItemTypePage.createItemType({
+      name: 'order5_item1_child1',
+      type: 'inventory'
+    });
+    await playwrightItemTypePage.createItemType({
+      name: 'order5_item1',
+      type: 'product',
+      children: [{ name: 'order5_item1_child1', value: 10 }]
+    });
+    await page.waitForTimeout(100);
+    await page.goto('/');
+
+    const dashboardPage = new PlaywrightDashboardPage(page);
+    const orderDetails = 'detail#5';
+    await dashboardPage.createOrder(orderDetails, 10, [{ name: 'order5_item1', value: 20 }]);
+
+    const orderCard = await dashboardPage.getOrderCard('todo', orderDetails);
+    await expect(orderCard).toBeVisible();
+
+    const orderItem1Div = orderCard.getByTestId('order_item_' + 'order5_item1');
+    await orderItem1Div.filter({ hasText: 'order5_item1(+20)' }).click();
+    await page.waitForResponse(
+      (response) => response.url().includes('/order/todo') && response.status() === 200
+    );
+    await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: true });
+
+    await orderCard.hover();
+
+    const completeResponsePromise = page.waitForResponse(
+      (response) => response.url().includes('/order/todo') && response.status() === 200
+    );
+    await orderCard.getByRole('button', { name: 'complete' }).click();
+
+    await completeResponsePromise;
+
+    await page.reload();
+
+    const itemStockSize = page
+      .getByTestId('stock_view')
+      .getByTestId(`itemtype_${'order5_item1'}`)
+      .getByRole('contentinfo');
+    await expect(itemStockSize).toHaveText('20');
+    const completedCard = await dashboardPage.getOrderCard('completed', orderDetails);
+    await expect(completedCard).toBeVisible();
+    await completedCard.hover({ timeout: 1000 });
+
+    await completedCard.getByTestId('order5_item1_edit').click();
+    await completedCard
+      .getByTestId('completed-item-edit-order5_item1')
+      .getByRole('textbox')
+      .fill('1');
+    await completedCard.getByTestId('completed-item-edit-order5_item1').getByRole('button').click();
+
+    await expect(itemStockSize).toHaveText('1');
+
+    await page.waitForTimeout(100);
   });
 
   test('should not create the order with no children and 0 values', async ({ page }) => {});
@@ -286,6 +349,7 @@ test.describe('base orders flow', () => {
 
 // RUN in ONLY MODE
 test.describe.skip('concurrency test', () => {
+  test.setTimeout(1200_000);
   test.describe.configure({ mode: 'parallel' });
   test.beforeEach(async ({ page }) => {
     const playwrightDev = new PlaywrightBasePage(page);
@@ -325,8 +389,8 @@ test.describe.skip('concurrency test', () => {
       const orderDetails = 'pack_detail#' + i;
       const orderCard = await dashboardPage.getOrderCard('todo', orderDetails);
       const orderItem1Div = orderCard.getByTestId('order_item_' + 'order3_item1');
-      let responsePromise = page.waitForResponse(
-        (response) => response.url().includes('/order/todo') && response.status() === 200
+      const responsePromise = page.waitForResponse(
+        (response) => response.url().includes('/') && response.status() === 200
       );
       await orderItem1Div.filter({ hasText: 'order3_item1(+20)' }).click();
       await responsePromise;
@@ -334,12 +398,14 @@ test.describe.skip('concurrency test', () => {
 
       await orderCard.hover({ timeout: 2000 });
 
-      responsePromise = page.waitForResponse(
-        (response) => response.url().includes('/order/todo') && response.status() === 200
+      const completeResponsePromise = page.waitForResponse(
+        (response) => response.url().includes('/') && response.status() === 200
       );
       await orderCard.getByRole('button', { name: 'complete' }).click();
 
-      await responsePromise;
+      await completeResponsePromise;
+      await page.waitForTimeout(100);
+      await page.reload();
     }
     await page.waitForTimeout(100);
   });
@@ -359,24 +425,11 @@ test.describe.skip('concurrency test', () => {
       const responsePromise = page.waitForResponse(
         (response) => response.url().includes('/') && response.status() === 200
       );
-      await completedCard.getByRole('button', { name: 'send' }).click();
+      await completedCard.getByRole('button', { name: 'send' }).click({ delay: 3000 });
 
       await responsePromise;
       await page.reload();
-      // const sentCard = await dashboardPage.getOrderCard('sent', orderDetails);
-      // await expect(sentCard).toBeVisible();
     }
-    // const itemStockSize = page
-    //   .getByTestId('stock_view')
-    //   .getByTestId(`itemtype_${'order2_item1'}`)
-    //   .getByRole('contentinfo');
-    // await expect(itemStockSize).toHaveText('0');
-    // const itemChildStockSize = page
-    //   .getByTestId('stock_view')
-    //   .getByTestId(`itemtype_${'order2_item1_child1'}`)
-    //   .getByRole('contentinfo');
-    // await expect(itemStockSize).toHaveText('0');
-    // await expect(itemChildStockSize).toHaveText('0(200)');
 
     await page.waitForTimeout(100);
   });

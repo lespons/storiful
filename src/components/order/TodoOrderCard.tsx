@@ -115,7 +115,7 @@ export const TodoOrderCard = memo(function TodoOrder({
               {oi.children?.map((oic) => (
                 <div
                   key={oic.name}
-                  className={`text-red-700 text-xs font-normal flex flex-row gap-1 pl-6`}
+                  className={`text-xs font-normal flex flex-row gap-1 pl-6`}
                   role={'listitem'}
                   data-testid={`order_item_${oi.name}_children_${oic.name}`}>
                   <div
