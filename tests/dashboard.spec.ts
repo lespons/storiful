@@ -11,7 +11,8 @@ test.describe('base orders flow', () => {
     await playwrightDev.loginAsDefaultUser();
   });
 
-  test.afterEach(async ({ page }) => {});
+  test.afterEach(async ({ page }) => {
+  });
 
   test.afterAll(async () => {
     await prisma.orderItem.deleteMany({});
@@ -171,8 +172,8 @@ test.describe('base orders flow', () => {
   });
 
   test('should complete an order and the order should not stay in column TODO after page refresh', async ({
-    page
-  }) => {
+                                                                                                            page
+                                                                                                          }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
 
     await playwrightItemTypePage.createItemType({
@@ -209,7 +210,7 @@ test.describe('base orders flow', () => {
     await expect(completedCard).toHaveCount(0);
   });
 
-  test('should complete an order and change initial value of item', async ({ page }) => {
+  test('should change initial value of item', async ({ page }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
 
     await playwrightItemTypePage.createItemType({
@@ -249,11 +250,6 @@ test.describe('base orders flow', () => {
 
     await page.reload();
 
-    const itemStockSize = page
-      .getByTestId('stock_view')
-      .getByTestId(`itemtype_${'order5_item1'}`)
-      .getByRole('contentinfo');
-    await expect(itemStockSize).toHaveText('20');
     const completedCard = await dashboardPage.getOrderCard('completed', orderDetails);
     await expect(completedCard).toBeVisible();
     await completedCard.hover({ timeout: 1000 });
@@ -261,19 +257,28 @@ test.describe('base orders flow', () => {
     await completedCard.getByTestId('order5_item1_edit').click();
     await completedCard
       .getByTestId('completed-item-edit-order5_item1')
-      .getByRole('textbox')
+      .getByTestId('newvalue')
       .fill('1');
+
+    const changeValueResponsePromise = page.waitForResponse(
+      (response) => response.url().includes('/') && response.status() === 200
+    );
     await completedCard.getByTestId('completed-item-edit-order5_item1').getByRole('button').click();
-
-    await expect(itemStockSize).toHaveText('1');
-
+    await changeValueResponsePromise;
+    await expect(completedCard.getByText('(1/ 20)')).toBeVisible()
     await page.waitForTimeout(100);
+
+    await expect(completedCard.getByRole('button', { name: 'send' })).toBeDisabled();
   });
 
-  test('should not create the order with no children and 0 values', async ({ page }) => {});
-  test('should clone the order', async ({ page }) => {});
-  test('should open the order', async ({ page }) => {});
-  test('should see the messages about hidden order', async ({ page }) => {});
+  test('should not create the order with no children and 0 values', async ({ page }) => {
+  });
+  test('should clone the order', async ({ page }) => {
+  });
+  test('should open the order', async ({ page }) => {
+  });
+  test('should see the messages about hidden order', async ({ page }) => {
+  });
 
   test('should change stock from editor', async ({ page }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
@@ -293,7 +298,7 @@ test.describe('base orders flow', () => {
 
     await itemStockView.click();
 
-    const stockInput = itemStockView.locator("input[placeholder='stock change']");
+    const stockInput = itemStockView.locator('input[placeholder=\'stock change\']');
     await stockInput.fill('10');
 
     const addButton = itemStockView.getByRole('button', { name: 'add' });
@@ -324,7 +329,7 @@ test.describe('base orders flow', () => {
 
     await itemStockView.click();
 
-    const stockInput = itemStockView.locator("input[placeholder='stock change']");
+    const stockInput = itemStockView.locator('input[placeholder=\'stock change\']');
     await stockInput.fill('10');
 
     const setButton = itemStockView.getByRole('button', { name: 'set' });
@@ -344,7 +349,8 @@ test.describe('base orders flow', () => {
     await expect(itemStockSize).toHaveText('130');
   });
 
-  test('should search in stock view', async ({ page }) => {});
+  test('should search in stock view', async ({ page }) => {
+  });
 });
 
 // RUN in ONLY MODE

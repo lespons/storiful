@@ -34,14 +34,14 @@ function CompletedItem({
                   {orderItem.name}
                 </div>
                 <div className="flex gap-1 text-xs my-auto">
-                  {orderItem.newQuantity && orderItem.quantity !== orderItem.newQuantity ? (
+                  {orderItem.newQuantity ? (
                     <span>
                       (<b>{orderItem.newQuantity}</b>/ {orderItem.quantity})
                     </span>
                   ) : (
                     <>({orderItem.quantity})</>
                   )}
-                  {orderItem.newQuantity && orderItem.quantity !== orderItem.newQuantity ? (
+                  {orderItem.newQuantity ? (
                     <ExclamationTriangleIcon
                       className="size-4 text-orange-600"
                       title={`you have new value of items`}
@@ -55,8 +55,11 @@ function CompletedItem({
                 {edit ? (
                   <>
                     <input
+                      data-testid="newvalue"
                       ref={inputref}
+                      type={'number'}
                       placeholder={'new value'}
+                      max={orderItem.quantity}
                       className="flex-1 text-xs bg-green-100 rounded-md px-2 w-20 my-auto py-1"
                       defaultValue={orderItem.quantity}
                     />
@@ -154,6 +157,8 @@ export const CompletedOrder = memo(function CompletedOrder({
       </div>
     );
   };
+
+  const sendDisabled = order.pending || order.items.some((oi) => oi.newQuantity);
   return (
     <div
       data-testid={`completed_order_${order.details}`}
@@ -200,8 +205,8 @@ export const CompletedOrder = memo(function CompletedOrder({
             'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
           }>
           <LongPressButton
-            className={`group w-full p-1 rounded-md font-bold ${order.pending ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-500'}`}
-            disabled={order.pending}
+            className={`group w-full p-1 rounded-md font-bold ${sendDisabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-500'}`}
+            disabled={sendDisabled}
             defaultHoldTime={1500}
             onLongPress={async () => {
               startTransition(() => {
@@ -213,7 +218,9 @@ export const CompletedOrder = memo(function CompletedOrder({
             }}>
             <div className={'flex gap-2 justify-center'}>
               <div>send</div>
-              <TruckIcon className="group-hover:animate-shake size-6 text-orange-900" />
+              <TruckIcon
+                className={`size-6 ${sendDisabled ? 'text-gray-800' : 'text-orange-900 group-hover:animate-shake'}`}
+              />
             </div>
           </LongPressButton>
         </div>

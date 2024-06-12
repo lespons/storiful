@@ -1,7 +1,6 @@
 'use server';
 import prisma from '@/lib/prisma';
 import { ItemChild, ItemType } from '@prisma/client';
-import { auth } from '@/lib/auth';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
@@ -22,8 +21,6 @@ export async function CompletedOrders({
 
   const changeOrderItemValue = async (orderItemId: string, value: number) => {
     'use server';
-    const session = await auth();
-
     await prisma.$transaction(async (tx) => {
       const orderItem = await tx.orderItem.findUniqueOrThrow({
         where: {
@@ -35,17 +32,7 @@ export async function CompletedOrders({
           id: orderItemId
         },
         data: {
-          newQuantity: value
-        }
-      });
-      await tx.itemStock.update({
-        where: {
-          itemTypeId: orderItem.itemTypeId
-        },
-        data: {
-          value: {
-            increment: value - (orderItem.newQuantity ?? orderItem.quantity)
-          }
+          newQuantity: value >= orderItem.quantity ? null : value
         }
       });
     });
