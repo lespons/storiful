@@ -66,8 +66,8 @@ export function SelectBox({
               key={item.id}
               value={item}
               className={({ selected }) =>
-                `relative select-none py-1 px-4 font-semibold  hover:cursor-pointer hover:bg-violet-600 ${
-                  selected ? 'bg-violet-600 text-white' : 'odd:bg-gray-200 hover:text-white'
+                `relative select-none py-1 px-4 font-semibold  hover:cursor-pointer hover:bg-gray-600 ${
+                  selected ? 'bg-gray-600 text-white' : 'odd:bg-gray-200 hover:text-white'
                 }`
               }>
               {item.name}

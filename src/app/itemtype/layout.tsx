@@ -31,18 +31,20 @@ export default async function WarehouseLayout({ children }: { children: React.Re
   return (
     <div className="w-fit">
       <div className="flex flex-row gap-6 mt-6">
-        <div className="bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md w-fit max-h-[80vh] overflow-auto">
+        <div className="bg-gray-300/25 px-6 py-4 rounded-md w-fit h-[90vh] overflow-auto">
           {children}
         </div>
-        <div className="flex-[2] bg-fuchsia-700 bg-opacity-5 px-6 py-4 rounded-md max-h-[calc(80vh)] overflow-auto  max-w-[45vw]">
-          <div className="flex flex-row font-bold gap-5 border-b-0 mb-2">
-            <label className="flex-1 text-sm">Name</label>
-            <label className="text-sm">Type</label>
-            {/*<label className="text-sm">ID</label>*/}
-          </div>
-          <div className="flex flex-col gap-2">
+        <div className="flex-[2] bg-gray-300/25 px-6 py-4 rounded-md max-h-[calc(90vh)] overflow-auto w-full">
+          <div className="flex flex-col gap-1">
             {itemTypes.map((it, index) => (
-              <ItemTypeElement key={it.id} type={it.type} name={it.name} id={it.id} index={index} />
+              <ItemTypeElement
+                key={it.id}
+                type={it.type}
+                name={it.name}
+                id={it.id}
+                childrenCount={it.ItemChild.length}
+                index={index}
+              />
             ))}
           </div>
         </div>

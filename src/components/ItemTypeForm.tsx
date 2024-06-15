@@ -6,7 +6,7 @@ import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
 import FileSelector from '@/components/FileSelector';
-import { CheckBadgeIcon } from '@heroicons/react/24/solid';
+import { CheckBadgeIcon, ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
 
 export const ItemTypeUnits = {
   distance: {
@@ -74,7 +74,7 @@ function ItemTypeSubmit({ action }: { action: string }) {
     <button
       type="submit"
       disabled={pending}
-      className={`mt-2 px-3 py-1 rounded-md ${pending ? 'bg-gray-900 bg-opacity-5' : 'bg-green-600 text-white hover:bg-green-500'} font-bold`}>
+      className={`mt-2 px-3 py-1 rounded-md ${pending ? 'bg-gray-900/5' : 'bg-amber-300 hover:bg-amber-400'} font-bold`}>
       {pending ? '...' : action.toLowerCase()}
     </button>
   );
@@ -140,21 +140,48 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
-      className="flex flex-col max-w-52">
-      <div className="mb-4">
-        <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
-          Name:
-        </label>
-        <input
-          type="text"
-          {...register(`itemType.name`)}
-          id="name"
-          placeholder="Enter item type name"
-          className={`w-full px-3 py-2 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
-            errors.itemType?.name ? 'border-red-500' : ''
-          }`}
-        />
-        {/*<ErrorMessage name="name" component="div" className="text-red-700 font-bold text-xs" />*/}
+      className="flex flex-col w-96">
+      <div className={'flex gap-2'}>
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
+            Name:
+          </label>
+          <input
+            type="text"
+            {...register(`itemType.name`)}
+            id="name"
+            placeholder="item type name"
+            className={`w-full px-3 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+              errors.itemType?.name ? 'border-red-500' : ''
+            }`}
+          />
+          {/*<ErrorMessage name="name" component="div" className="text-red-700 font-bold text-xs" />*/}
+        </div>
+        <div className="mb-4">
+          <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
+            Unit
+          </label>
+          <SelectBox
+            id={'itemTypeUnit'}
+            items={unitItems ?? []}
+            showDisplayValue={true}
+            initialItem={
+              itemType?.unit
+                ? {
+                    id: String(itemType.unit),
+                    name: unitItems.find(({ id }) => Number(id) === itemType.unit)!.name
+                  }
+                : null
+            }
+            onSelect={(unit) => {
+              if (!unit) {
+                return;
+              }
+
+              setValue('itemType.unit', Number(unit.id));
+            }}
+          />
+        </div>
       </div>
       <div className="mb-4">
         <RadioGroup
@@ -166,15 +193,23 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             Type
           </RadioGroup.Label>
           {[
-            { name: 'INVENTORY', desc: 'what you buy' },
-            { name: 'PRODUCT', desc: 'what you produce' }
-          ].map(({ name, desc }) => (
+            {
+              name: 'INVENTORY',
+              desc: 'what you buy',
+              icon: <ShoppingBagIcon className={'size-5'} />
+            },
+            {
+              name: 'PRODUCT',
+              desc: 'what you produce',
+              icon: <WrenchScrewdriverIcon className={'size-5'} />
+            }
+          ].map(({ name, desc, icon }) => (
             <RadioGroup.Option
               key={name}
               value={name}
               className={({ active, checked }) =>
-                `${active ? 'ring-2 ring-fuchsia-100 ring-opacity-40' : ''}
-                  ${checked ? 'bg-fuchsia-700 bg-opacity-20' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
+                `${active ? 'ring-2 ring-amber-900 ring-opacity-40' : ''}
+                  ${checked ? 'bg-amber-200' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
                     relative flex cursor-pointer rounded-md px-4 py-2 focus:outline-none mb-2`
               }>
               {({ active, checked }) => (
@@ -182,45 +217,21 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
                   <div className="flex flex-col">
                     <RadioGroup.Label
                       as="p"
-                      className={`font-semibold  ${checked ? '' : 'text-gray-900'}`}>
-                      {name.toLowerCase()}
+                      className={`flex gap-2 font-semibold  ${checked ? '' : 'text-gray-900'}`}>
+                      {name.toLowerCase()} {icon}
                     </RadioGroup.Label>
                     <RadioGroup.Description as="span" className={`font-light`}>
                       {desc}
                     </RadioGroup.Description>
                   </div>
-                  {checked ? <CheckBadgeIcon className={'size-5 text-fuchsia-950'} /> : null}
+                  {checked ? <CheckBadgeIcon className={'size-5 text-amber-950'} /> : null}
                 </div>
               )}
             </RadioGroup.Option>
           ))}
         </RadioGroup>
       </div>
-      <div className="mb-4">
-        <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
-          Unit
-        </label>
-        <SelectBox
-          id={'itemTypeUnit'}
-          items={unitItems ?? []}
-          showDisplayValue={true}
-          initialItem={
-            itemType?.unit
-              ? {
-                  id: String(itemType.unit),
-                  name: unitItems.find(({ id }) => Number(id) === itemType.unit)!.name
-                }
-              : null
-          }
-          onSelect={(unit) => {
-            if (!unit) {
-              return;
-            }
 
-            setValue('itemType.unit', Number(unit.id));
-          }}
-        />
-      </div>
       {/* Add child item form fields here (nested or separate components) */}
       <div className="mb-4">
         <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">

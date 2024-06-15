@@ -48,7 +48,7 @@ const FileSelector = ({
       <label
         htmlFor="file"
         className={
-          'group flex gap-2 w-full justify-center px-2 py-1 rounded-md bg-fuchsia-950 text-white hover:bg-fuchsia-700 hover:cursor-pointer font-semibold'
+          'group flex gap-2 w-full justify-center px-2 py-1 rounded-md bg-blue-300 hover:bg-blue-400 hover:cursor-pointer font-semibold'
         }>
         attach file
         <PaperClipIcon className={'size-4 my-auto group-hover:animate-shake'} />
@@ -56,7 +56,7 @@ const FileSelector = ({
       {loading && <p>uploading...</p>}
       {url && (
         <div className={'rounded-md my-2 overflow-hidden'}>
-          <img src={url} alt="Uploaded" style={{ width: '300px' }} />
+          <img src={url} alt="Uploaded" style={{ width: '100%' }} />
         </div>
       )}
     </div>
