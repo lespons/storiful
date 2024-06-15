@@ -118,7 +118,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
   return (
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
-      className="flex flex-col bg-fuchsia-900 bg-opacity-10 px-5 py-4 rounded-b-md min-w-80">
+      className="bg-fuchsia-900/10 flex flex-col px-5 py-4 rounded-b-md min-w-96">
       <div className="mb-2">
         <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
           Deadline

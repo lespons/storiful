@@ -1,6 +1,5 @@
 'use server';
 import prisma from '@/lib/prisma';
-import { OrderCreate } from '@/app/_components/OrderCreate';
 import { TodoOrders } from '@/app/_components/TodoOrders';
 import { CompletedOrders } from '@/app/_components/CompletedOrders';
 import { ItemStockView } from '@/app/_components/ItemStockView';
@@ -35,9 +34,6 @@ export default async function OrderHome() {
   const { itemTypes, itemStock } = await getProps();
   return (
     <div className="flex flex-row gap-4 mt-6">
-      <div className="">
-        <OrderCreate itemTypes={itemTypes} />
-      </div>
       <div className="flex-[3]">
         <TodoOrders itemTypes={itemTypes} />
       </div>
