@@ -9,7 +9,7 @@ export class PlaywrightDashboardPage {
   constructor(page: Page) {
     this.page = page;
 
-    const openCreateOrderButton = page.getByRole('button', { name: '+' });
+    const openCreateOrderButton = page.getByRole('button', { name: 'create' }).first();
 
     const inputDeadline = page.getByRole('textbox', { name: 'Deadline Details' });
 
@@ -62,7 +62,7 @@ export class PlaywrightDashboardPage {
       await inputOrderItemsQuantity.fill(String(value));
     }
 
-    const buttonCreate = this.page.getByRole('button', { name: 'create' });
+    const buttonCreate = this.page.getByRole('button', { name: 'create' }).last();
     const responsePromise = this.page.waitForResponse(
       (response) => response.url().includes('/') && response.status() === 200
     );

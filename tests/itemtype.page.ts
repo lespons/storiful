@@ -103,10 +103,7 @@ export class PlaywrightItemTypePage {
 
     await this.locators.buttonCreate.click();
 
-    const divTestItem2 = this.page
-      .locator("xpath=//div[contains(@class, 'max-w-[45vw]')]")
-      .getByText(name)
-      .first();
+    const divTestItem2 = this.page.getByTestId('item-types-list').getByText(name).first();
 
     await expect(divTestItem2).toBeVisible();
   }
