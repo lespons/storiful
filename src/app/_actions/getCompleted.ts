@@ -17,7 +17,7 @@ export async function getActualCompleted() {
             },
             none: {
               state: {
-                in: ['SENT']
+                in: ['SENT', 'ARCHIVE']
               }
             }
           }
@@ -26,7 +26,7 @@ export async function getActualCompleted() {
           states: {
             some: {
               state: {
-                in: ['SENT']
+                in: ['SENT', 'ARCHIVE']
               },
               date: {
                 gte: sub(new Date(), {

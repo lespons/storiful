@@ -20,6 +20,7 @@ enum OrderStates {
   INPROGRESS
   COMPLETED
   SENT
+  ARCHIVE
 }
 
 model ItemType {

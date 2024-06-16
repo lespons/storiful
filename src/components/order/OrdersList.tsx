@@ -7,8 +7,9 @@ import { PencilIcon, SparklesIcon, TruckIcon } from '@heroicons/react/24/solid';
 import { TodoOrderCard } from '@/components/order/TodoOrderCard';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { CompletedOrder } from '@/components/order/CompletedOrderCard';
+import { ArchivedOrderCard } from '@/components/order/ArchivedOrderCard';
 
-type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS';
+type OrderState = 'COMPLETED' | 'CREATED' | 'SENT' | 'INPROGRESS' | 'ARCHIVE';
 type OrderListItem = {
   id: string;
   num: number;
@@ -113,6 +114,16 @@ export function OrdersList({
             />
           );
 
+        if (order.lastState.state === 'ARCHIVE') {
+          return (
+            <ArchivedOrderCard
+              key={order.id}
+              order={order}
+              onClone={onClone}
+              highlightItem={highlightItem}
+            />
+          );
+        }
         if (order.lastState.state === 'SENT')
           return (
             <SentOrderListItem

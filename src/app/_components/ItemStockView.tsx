@@ -16,7 +16,7 @@ export async function ItemStockView({
   //TODO use db aggregation when prisma is support
   const consumedItemsTotalsById = orders.reduce(
     (result, order) => {
-      order.OrderItem.forEach((orderItem) => {
+      order.OrderItem.filter((orderItem) => !orderItem.completed).forEach((orderItem) => {
         orderItem.ItemType.ItemChild.forEach((itemChild) => {
           result[itemChild.itemTypeId] =
             (result[itemChild.itemTypeId] ?? 0) + itemChild.quantity * orderItem.quantity;

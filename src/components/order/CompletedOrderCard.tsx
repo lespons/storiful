@@ -3,7 +3,12 @@ import { differenceInDays, format, formatDistance } from 'date-fns';
 import { CheckCircleIcon, CheckIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { ExclamationTriangleIcon, PencilSquareIcon, TruckIcon } from '@heroicons/react/24/solid';
+import {
+  ArchiveBoxArrowDownIcon,
+  ExclamationTriangleIcon,
+  PencilSquareIcon,
+  TruckIcon
+} from '@heroicons/react/24/solid';
 import { OrdersListProps } from '@/components/order/OrdersList';
 import LongPressButton from '@/components/LongPressButton';
 
@@ -200,29 +205,54 @@ export const CompletedOrder = memo(function CompletedOrder({
             />
           );
         })}
-        <div
-          className={
-            'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
-          }>
-          <LongPressButton
-            className={`group w-full p-1 rounded-md font-bold ${sendDisabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-500'}`}
-            disabled={sendDisabled}
-            defaultHoldTime={1500}
-            onLongPress={async () => {
-              startTransition(() => {
-                setOptimisticOrder({
-                  order: { ...order, pending: true }
+        <div className={'flex w-full gap-1'}>
+          <div
+            className={
+              'flex-1 overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
+            }>
+            <LongPressButton
+              className={`group w-full p-1 rounded-md font-bold ${sendDisabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-yellow-400 hover:bg-yellow-500'}`}
+              disabled={sendDisabled}
+              defaultHoldTime={1500}
+              onLongPress={async () => {
+                startTransition(() => {
+                  setOptimisticOrder({
+                    order: { ...order, pending: true }
+                  });
+                  onChangeState?.(order.id, 'SENT');
                 });
-                onChangeState?.(order.id, 'SENT');
-              });
-            }}>
-            <div className={'flex gap-2 justify-center'}>
-              <div>send</div>
-              <TruckIcon
-                className={`size-6 ${sendDisabled ? 'text-gray-800' : 'text-orange-900 group-hover:animate-shake'}`}
-              />
-            </div>
-          </LongPressButton>
+              }}>
+              <div className={'flex gap-2 justify-center px-2'}>
+                <div>send</div>
+                <TruckIcon
+                  className={`size-6 my-auto ${sendDisabled ? 'text-gray-800' : 'text-orange-900 group-hover:animate-shake'}`}
+                />
+              </div>
+            </LongPressButton>
+          </div>
+          <div
+            className={
+              'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
+            }>
+            <LongPressButton
+              className={`group w-full p-1 rounded-md font-bold ${sendDisabled ? 'text-gray-300 hover:text-gray-300' : 'bg-gray-200 hover:bg-gray-300'}`}
+              disabled={sendDisabled}
+              bgColor={'bg-gray-400'}
+              defaultHoldTime={1500}
+              onLongPress={async () => {
+                startTransition(() => {
+                  setOptimisticOrder({
+                    order: { ...order, pending: true }
+                  });
+                  onChangeState?.(order.id, 'ARCHIVE');
+                });
+              }}>
+              <div className={'flex gap-2 justify-center px-2'}>
+                <div>archive</div>
+                <ArchiveBoxArrowDownIcon className={`size-5 my-auto`} />
+              </div>
+            </LongPressButton>
+          </div>
         </div>
       </div>
       {order.details ? (

@@ -25,7 +25,7 @@ export default async function _({ params: { state } }: { params: { state: string
     }
   });
   if (!order) {
-    return redirect(`/order/${state}`);
+    return null;
   }
   return redirect(`/order/${state}/${order?.id}`);
 }
