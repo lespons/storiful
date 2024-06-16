@@ -1,12 +1,11 @@
 'use server';
-import prisma from '@/lib/prisma';
 import { ItemChild, ItemType } from '@prisma/client';
-import { revalidatePath, revalidateTag } from 'next/cache';
 import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
 import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
 import { CheckCircleIcon, TruckIcon } from '@heroicons/react/24/solid';
 import { sendOrder } from '@/app/_actions/sendOrder';
+import { changeOrderItemValue } from '@/app/_actions/changeOrderItemValue';
 
 export async function CompletedOrders({
   itemTypes
@@ -18,30 +17,6 @@ export async function CompletedOrders({
   orders.sort(({ states: [completedState1] }, { states: [completedState2] }) => {
     return completedState2.date.getTime() - completedState1.date.getTime();
   });
-
-  const changeOrderItemValue = async (orderItemId: string, value: number) => {
-    'use server';
-    await prisma.$transaction(async (tx) => {
-      const orderItem = await tx.orderItem.findUniqueOrThrow({
-        where: {
-          id: orderItemId
-        }
-      });
-      await tx.orderItem.update({
-        where: {
-          id: orderItemId
-        },
-        data: {
-          newQuantity: value >= orderItem.quantity ? null : value
-        }
-      });
-    });
-
-    revalidateTag('order_find');
-    revalidatePath('/', 'layout');
-    revalidatePath('/order', 'page');
-    revalidatePath('/order/create', 'page');
-  };
 
   const expiredOrdersCount = await getExpiredCount();
   return (

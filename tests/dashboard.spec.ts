@@ -11,8 +11,7 @@ test.describe('base orders flow', () => {
     await playwrightDev.loginAsDefaultUser();
   });
 
-  test.afterEach(async ({ page }) => {
-  });
+  test.afterEach(async ({ page }) => {});
 
   test.afterAll(async () => {
     await prisma.orderItem.deleteMany({});
@@ -126,13 +125,6 @@ test.describe('base orders flow', () => {
     const orderCard = await dashboardPage.getOrderCard('todo', orderDetails);
     await expect(orderCard).toBeVisible();
 
-    const orderItem1Div = orderCard.getByTestId('order_item_' + 'order2_item1');
-    await orderItem1Div.filter({ hasText: 'order2_item1(+20)' }).click();
-    await page.waitForResponse(
-      (response) => response.url().includes('/order/todo') && response.status() === 200
-    );
-    await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: true });
-
     const itemStockSize = page
       .getByTestId('stock_view')
       .getByTestId(`itemtype_${'order2_item1'}`)
@@ -145,6 +137,15 @@ test.describe('base orders flow', () => {
     await expect(itemStockSize).toHaveText('0');
     await expect(itemChildStockSize).toHaveText('0(200)');
 
+    const orderItem1Div = orderCard.getByTestId('order_item_' + 'order2_item1');
+    await orderItem1Div.filter({ hasText: 'order2_item1(+20)' }).click();
+    await page.waitForResponse(
+      (response) => response.url().includes('/order/todo') && response.status() === 200
+    );
+    await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: true });
+
+    await expect(itemStockSize).toHaveText('20');
+
     await orderCard.hover();
     await orderCard.getByRole('button', { name: 'complete' }).click();
 
@@ -154,8 +155,6 @@ test.describe('base orders flow', () => {
 
     const completedCard = await dashboardPage.getOrderCard('completed', orderDetails);
     await expect(completedCard).toBeVisible();
-
-    await expect(itemStockSize).toHaveText('20');
 
     await completedCard.hover();
     await completedCard.getByRole('button', { name: 'send' }).click({
@@ -172,8 +171,8 @@ test.describe('base orders flow', () => {
   });
 
   test('should complete an order and the order should not stay in column TODO after page refresh', async ({
-                                                                                                            page
-                                                                                                          }) => {
+    page
+  }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
 
     await playwrightItemTypePage.createItemType({
@@ -265,20 +264,16 @@ test.describe('base orders flow', () => {
     );
     await completedCard.getByTestId('completed-item-edit-order5_item1').getByRole('button').click();
     await changeValueResponsePromise;
-    await expect(completedCard.getByText('(1/ 20)')).toBeVisible()
+    await expect(completedCard.getByText('(1/ 20)')).toBeVisible();
     await page.waitForTimeout(100);
 
     await expect(completedCard.getByRole('button', { name: 'send' })).toBeDisabled();
   });
 
-  test('should not create the order with no children and 0 values', async ({ page }) => {
-  });
-  test('should clone the order', async ({ page }) => {
-  });
-  test('should open the order', async ({ page }) => {
-  });
-  test('should see the messages about hidden order', async ({ page }) => {
-  });
+  test('should not create the order with no children and 0 values', async ({ page }) => {});
+  test('should clone the order', async ({ page }) => {});
+  test('should open the order', async ({ page }) => {});
+  test('should see the messages about hidden order', async ({ page }) => {});
 
   test('should change stock from editor', async ({ page }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
@@ -298,7 +293,7 @@ test.describe('base orders flow', () => {
 
     await itemStockView.click();
 
-    const stockInput = itemStockView.locator('input[placeholder=\'stock change\']');
+    const stockInput = itemStockView.locator("input[placeholder='stock change']");
     await stockInput.fill('10');
 
     const addButton = itemStockView.getByRole('button', { name: 'add' });
@@ -329,7 +324,7 @@ test.describe('base orders flow', () => {
 
     await itemStockView.click();
 
-    const stockInput = itemStockView.locator('input[placeholder=\'stock change\']');
+    const stockInput = itemStockView.locator("input[placeholder='stock change']");
     await stockInput.fill('10');
 
     const setButton = itemStockView.getByRole('button', { name: 'set' });
@@ -349,8 +344,7 @@ test.describe('base orders flow', () => {
     await expect(itemStockSize).toHaveText('130');
   });
 
-  test('should search in stock view', async ({ page }) => {
-  });
+  test('should search in stock view', async ({ page }) => {});
 });
 
 // RUN in ONLY MODE

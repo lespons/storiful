@@ -76,7 +76,7 @@ export const TodoOrderCard = memo(function TodoOrder({
         {order.items.map((oi) => (
           <div key={oi.id} className="" data-testid={`order_item_${oi.name}`} role={'listitem'}>
             <div
-              className={`flex flex-row gap-1 text-green-800 font-normal cursor-pointer hover:text-green-700`}
+              className={`flex flex-row gap-1 font-normal ${oi.completed ? 'text-green-800' : 'text-green-800  cursor-pointer hover:text-green-700'}`}
               onClick={(e) => {
                 e.preventDefault();
                 startTransition(() => {
@@ -89,9 +89,10 @@ export const TodoOrderCard = memo(function TodoOrder({
               }}>
               <div className={'flex'}>
                 <input
-                  className="cursor-pointer"
+                  className={!oi.completed ? 'hover:cursor-pointer' : ''}
                   type="checkbox"
                   checked={oi.completed ?? false}
+                  disabled={oi.completed ?? false}
                   onChange={({ target: { checked } }) => {
                     startTransition(() => {
                       setOptimisticOrder({

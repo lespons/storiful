@@ -85,7 +85,7 @@ export function TodoOrdersClient({
     return () => {
       eventBus.removeEventListener('ItemTypeHoverEvent', eventHandler);
     };
-  }, []);
+  }, [todoOrdersData]);
 
   return (
     <OrdersList

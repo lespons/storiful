@@ -33,24 +33,6 @@ export async function cloneOrder(id: string) {
       throw Error(`Order is not found with id ${id}`);
     }
 
-    await Promise.all(
-      order.OrderItem.map((oi) =>
-        tx.itemStock.update({
-          where: {
-            itemTypeId: oi.itemTypeId
-          },
-          data: {
-            value: {
-              decrement: oi.quantity
-            },
-            lockVersion: {
-              increment: 1
-            }
-          }
-        })
-      )
-    );
-
     const newOrder = await tx.order.create({
       data: {
         deadlineAt: order.deadlineAt
