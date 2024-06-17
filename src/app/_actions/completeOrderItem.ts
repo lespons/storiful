@@ -71,4 +71,5 @@ export const completeOrderItem = async (orderItemId: string, completed: boolean)
 
   revalidateTag('order_find');
   revalidatePath('/', 'layout');
+  revalidatePath('/', 'page');
 };

@@ -8,18 +8,12 @@ export const archiveOrder = async (id: string) => {
   const session = await auth();
 
   await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUniqueOrThrow({
+    await tx.order.update({
       where: {
         id,
         lastState: {
           state: { in: ['COMPLETED'] }
         }
-      }
-    });
-
-    await tx.order.update({
-      where: {
-        id
       },
       data: {
         lastState: {
@@ -43,6 +37,7 @@ export const archiveOrder = async (id: string) => {
 
   revalidateTag('order_find');
   revalidatePath('/', 'layout');
+  revalidatePath('/', 'page');
   revalidatePath('/order', 'page');
   revalidatePath('/order/create', 'page');
 };
