@@ -8,7 +8,7 @@ export const completeOrderItem = async (orderItemId: string, completed: boolean)
     const orderItem = await tx.orderItem.findFirstOrThrow({
       where: {
         id: orderItemId,
-        completed: false
+        completed: !completed
       },
       include: {
         ItemType: {
@@ -42,9 +42,13 @@ export const completeOrderItem = async (orderItemId: string, completed: boolean)
             itemTypeId: oi.itemTypeId
           },
           data: {
-            value: {
-              increment: oi.quantity
-            },
+            value: completed
+              ? {
+                  increment: oi.quantity
+                }
+              : {
+                  decrement: oi.quantity
+                },
             lockVersion: {
               increment: 1
             }
@@ -60,9 +64,13 @@ export const completeOrderItem = async (orderItemId: string, completed: boolean)
             itemTypeId: itc.itemTypeId
           },
           data: {
-            value: {
-              decrement: itc.quantity
-            }
+            value: completed
+              ? {
+                  decrement: itc.quantity
+                }
+              : {
+                  increment: itc.quantity
+                }
           }
         })
       )
