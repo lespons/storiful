@@ -74,38 +74,32 @@ export const TodoOrderCard = memo(function TodoOrder({
       <div
         className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
-          <div key={oi.id} className="" data-testid={`order_item_${oi.name}`} role={'listitem'}>
-            <div
-              className={`flex flex-row gap-1 font-normal text-green-800 cursor-pointer hover:text-green-700`}
-              onClick={(e) => {
-                e.preventDefault();
-                startTransition(() => {
-                  setOptimisticOrder({
-                    order: { ...order, pending: true },
-                    orderItem: { id: oi.id, checked: !oi.completed }
-                  });
-                  onCompleteOrderItem?.(oi.id, !oi.completed);
+          <div
+            key={oi.id}
+            className={`group/item hover:cursor-pointer`}
+            data-testid={`order_item_${oi.name}`}
+            role={'listitem'}
+            onClick={(e) => {
+              e.preventDefault();
+              startTransition(() => {
+                setOptimisticOrder({
+                  order: { ...order, pending: true },
+                  orderItem: { id: oi.id, checked: !oi.completed }
                 });
-              }}>
+                onCompleteOrderItem?.(oi.id, !oi.completed);
+              });
+            }}>
+            <div className={`flex flex-row gap-1 font-normal text-green-800`}>
               <div className={'flex'}>
                 <input
                   className={!disabled ? 'hover:cursor-pointer' : ''}
                   type="checkbox"
                   checked={oi.completed ?? false}
-                  disabled={disabled}
-                  onChange={({ target: { checked } }) => {
-                    startTransition(() => {
-                      setOptimisticOrder({
-                        order: { ...order, pending: true },
-                        orderItem: { id: oi.id, checked }
-                      });
-                      onCompleteOrderItem?.(oi.id, checked);
-                    });
-                  }}
+                  disabled={order.pending}
                 />
               </div>
               <div
-                className={`font-bold pl-2 ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                className={`font-bold ${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} pl-2 ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
                 {oi.name}
               </div>
               <div className="text-xs my-auto" date-testid="order_item_quantity">
