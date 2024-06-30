@@ -22,6 +22,7 @@ export const mapOrderToListItem = (
     name: oi.ItemType.name,
     quantity: oi.quantity,
     completed: oi.completed,
+    fromStock: oi.fromStock,
     children: oi.ItemType.ItemChild.map((ic) => ({
       itemTypeId: ic.itemTypeId,
       name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
@@ -42,7 +43,11 @@ export function TodoOrdersClient({
   updateOrder
 }: {
   submitData: (id: string) => Promise<void>;
-  completedOrderItem: (orderItemId: string, completed: boolean) => Promise<void>;
+  completedOrderItem: (
+    orderItemId: string,
+    completed: boolean,
+    fromStock: boolean
+  ) => Promise<void>;
   updateOrder: OrdersListEditCallback;
   itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
 }) {
@@ -94,12 +99,12 @@ export function TodoOrdersClient({
         await mutate('/api/order/todo');
       }}
       highlightItem={highlightItem.current}
-      onCompleteOrderItem={async (id, completed) => {
+      onCompleteOrderItem={async (id, completed, fromStock) => {
         if (!todoOrdersData?.orders?.length) {
           console.error(`No orders to complete`);
           return;
         }
-        await completedOrderItem(id, completed);
+        await completedOrderItem(id, completed, fromStock);
         todoOrdersData.orders
           .find((order) => order.OrderItem.some((orderItem) => orderItem.id === id))!
           .OrderItem.find((orderItem) => orderItem.id === id)!.completed = completed;

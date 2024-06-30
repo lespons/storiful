@@ -91,6 +91,7 @@ model OrderItem {
   quantity    Int
   newQuantity Int?
   completed   Boolean @default(false)
+  fromStock   Boolean @default(false)
 
   Order    Order    @relation(fields: [orderId], references: [id])
   ItemType ItemType @relation(fields: [itemTypeId], references: [id])

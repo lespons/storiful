@@ -1,6 +1,10 @@
 import React, { memo, startTransition } from 'react';
 import { compareAsc, differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
-import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import {
+  CheckCircleIcon,
+  ClockIcon,
+  HomeModernIcon as HomeModernOutlineIcon
+} from '@heroicons/react/24/outline';
 import { OrdersListProps } from '@/components/order/OrdersList';
 import { OrderOpen } from '@/components/order/OrderCardBase';
 
@@ -72,40 +76,71 @@ export const TodoOrderCard = memo(function TodoOrder({
         Created by {order.lastState.userName}
       </div>
       <div
-        className={`bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
+        className={`relative bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
           <div
+            className={'group/rootitem'}
             key={oi.id}
-            className={`group/item hover:cursor-pointer`}
             data-testid={`order_item_${oi.name}`}
-            role={'listitem'}
-            onClick={(e) => {
-              e.preventDefault();
-              startTransition(() => {
-                setOptimisticOrder({
-                  order: { ...order, pending: true },
-                  orderItem: { id: oi.id, checked: !oi.completed }
+            role={'listitem'}>
+            <div
+              className={`group/item hover:cursor-pointer flex flex-row gap-1 font-normal text-green-800`}
+              onClick={(e) => {
+                e.preventDefault();
+                startTransition(() => {
+                  setOptimisticOrder({
+                    order: { ...order, pending: true },
+                    orderItem: { id: oi.id, checked: !oi.completed }
+                  });
+                  onCompleteOrderItem?.(oi.id, !oi.completed, false);
                 });
-                onCompleteOrderItem?.(oi.id, !oi.completed);
-              });
-            }}>
-            <div className={`flex flex-row gap-1 font-normal text-green-800`}>
+              }}>
               <div className={'flex'}>
-                <input
-                  className={!disabled ? 'hover:cursor-pointer' : ''}
-                  type="checkbox"
-                  checked={oi.completed ?? false}
-                  disabled={order.pending}
-                />
+                {oi.completed && oi.fromStock ? (
+                  <HomeModernOutlineIcon
+                    className={'size-4 my-auto text-blue-600 group-hover/item:text-red-500'}
+                  />
+                ) : (
+                  <input
+                    className={!disabled ? 'hover:cursor-pointer' : ''}
+                    type="checkbox"
+                    checked={oi.completed ?? false}
+                    disabled={order.pending}
+                  />
+                )}
               </div>
               <div
                 className={`font-bold ${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} pl-2 ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
                 {oi.name}
               </div>
-              <div className="text-xs my-auto" date-testid="order_item_quantity">
+              <div
+                className={`${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} text-xs my-auto`}
+                date-testid="order_item_quantity">
                 (+{oi.quantity})
               </div>
+              {oi.completed ? null : (
+                <div
+                  className={
+                    'absolute flex gap-2 invisible group-hover/item:visible text-sm bg-amber-100 text-amber-900 ' +
+                    'shadow-md z-[20] right-2 px-2 py-1 rounded-md hover:underline hover:bg-amber-300 font-semibold'
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    startTransition(() => {
+                      setOptimisticOrder({
+                        order: { ...order, pending: true },
+                        orderItem: { id: oi.id, checked: !oi.completed }
+                      });
+                      onCompleteOrderItem?.(oi.id, !oi.completed, true);
+                    });
+                  }}>
+                  use stock
+                  <HomeModernOutlineIcon className={'size-4 my-auto'} />
+                </div>
+              )}
             </div>
+
             <div data-testid={`order_item_${oi.name}_children`}>
               {oi.children?.map((oic) => (
                 <div
@@ -137,7 +172,7 @@ export const TodoOrderCard = memo(function TodoOrder({
       {order.deadlineAt ? (
         <div
           data-testid={`order_deadline`}
-          className={`flex  gap-2 mt-2 text-sm px-2 py-1 rounded-md ${
+          className={`flex gap-2 mt-2 text-sm px-2 py-1 rounded-md ${
             deadlineFailed
               ? 'text-white font-bold bg-red-700 bg-opacity-90'
               : deadlineSoon

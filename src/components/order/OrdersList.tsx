@@ -22,6 +22,7 @@ type OrderListItem = {
     newQuantity?: number | null;
     name: string;
     completed: boolean;
+    fromStock?: boolean;
     children: { itemTypeId: string; name: string; quantity: number }[];
   }[];
   pending?: boolean;
@@ -45,7 +46,7 @@ export type OrdersListProps = {
   onChangeState?: (id: string, state: OrderState) => void;
   onChangeItemValue?: (orderItemId: string, newvalue: number) => void;
   onClone?: (id: string) => void;
-  onCompleteOrderItem?: (orderItemId: string, completed: boolean) => void;
+  onCompleteOrderItem?: (orderItemId: string, completed: boolean, fromStock: boolean) => void;
   edit?: {
     itemTypes: OrderFormProps['itemTypes'];
     onEditOrder: OrdersListEditCallback;

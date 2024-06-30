@@ -163,7 +163,7 @@ export const CompletedOrder = memo(function CompletedOrder({
     );
   };
 
-  const sendDisabled = order.pending || order.items.some((oi) => oi.newQuantity);
+  const sendDisabled = order.pending;
   return (
     <div
       data-testid={`completed_order_${order.details}`}
@@ -235,7 +235,7 @@ export const CompletedOrder = memo(function CompletedOrder({
               'overflow-hidden max-h-0 group-hover:max-h-10 group-hover:mt-2 transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100'
             }>
             <LongPressButton
-              className={`group w-full p-1 rounded-md font-bold ${sendDisabled ? 'text-gray-300 hover:text-gray-300' : 'bg-gray-200 hover:bg-gray-300'}`}
+              className={`group w-full rounded-md p-1 font-bold ${sendDisabled ? 'text-gray-300 hover:text-gray-300' : 'bg-gray-200 hover:bg-gray-300'}`}
               disabled={sendDisabled}
               bgColor={'bg-gray-400'}
               defaultHoldTime={1500}
