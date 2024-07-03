@@ -1,5 +1,5 @@
 import React, { memo, startTransition, useRef, useState } from 'react';
-import { differenceInDays, format, formatDistance } from 'date-fns';
+import { differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
 import { CheckCircleIcon, CheckIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
@@ -164,14 +164,15 @@ export const CompletedOrder = memo(function CompletedOrder({
   };
 
   const sendDisabled = order.pending;
+  const today = startOfDay(Date.now());
   return (
     <div
       data-testid={`completed_order_${order.details}`}
       className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
-        <div className="font-light">{format(order.lastState.date!, 'dd MMM yyyy')}</div>
-        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+        <div className="font-light">{format(order.lastState.date, 'dd MMM yyyy')}</div>
+        {differenceInDays(today, order.lastState.date) < 1 ? (
           <div
             className={
               'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-green-900 px-2 my-auto rounded-md'

@@ -2,7 +2,7 @@
 
 import React, { memo, startTransition, useOptimistic } from 'react';
 import ItemOrderForm, { OrderFormProps, OrderFormValue } from '@/components/order/OrderForm';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays, format, startOfDay } from 'date-fns';
 import { PencilIcon, SparklesIcon, TruckIcon } from '@heroicons/react/24/solid';
 import { TodoOrderCard } from '@/components/order/TodoOrderCard';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
@@ -189,6 +189,7 @@ const SentOrderListItem = memo(function SentOrder({
   order: OrdersListProps['orders'][0];
   onClone: OrdersListProps['onClone'];
 }) {
+  const today = startOfDay(Date.now());
   return (
     <div
       data-testid={`sent_order_${order.details}`}
@@ -196,9 +197,9 @@ const SentOrderListItem = memo(function SentOrder({
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="flex gap-0.5 font-light">
-          <div>{order.lastState.date.toDateString()}</div>
+          <div>{format(order.lastState.date, 'dd MMM yyyy')}</div>
         </div>
-        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+        {differenceInDays(today, order.lastState.date!) < 1 ? (
           <div
             className={
               'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-orange-900 px-2 my-auto rounded-md'

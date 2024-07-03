@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, format, startOfDay } from 'date-fns';
 import { ArchiveBoxIcon } from '@heroicons/react/24/solid';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { OrdersListProps } from '@/components/order/OrdersList';
@@ -12,6 +12,7 @@ export const ArchivedOrderCard = memo(function ArchivedOrderCard({
   order: OrdersListProps['orders'][0];
   onClone: OrdersListProps['onClone'];
 }) {
+  const today = startOfDay(Date.now());
   return (
     <div
       data-testid={`archived_order_${order.details}`}
@@ -19,9 +20,9 @@ export const ArchivedOrderCard = memo(function ArchivedOrderCard({
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="flex gap-0.5 font-light">
-          <div>{order.lastState.date.toDateString()}</div>
+          <div>{format(order.lastState.date, 'dd MMM yyyy')}</div>
         </div>
-        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
+        {differenceInDays(today, order.lastState.date) < 1 ? (
           <div
             className={
               'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-gray-900 px-2 my-auto rounded-md'
