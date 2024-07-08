@@ -19,8 +19,8 @@ export const changeOrderItemValue = async (orderItemId: string, value: number) =
     });
   });
 
+  revalidateTag('item_stock');
   revalidateTag('order_find');
   revalidatePath('/', 'layout');
   revalidatePath('/order', 'page');
-  revalidatePath('/order/create', 'page');
 };

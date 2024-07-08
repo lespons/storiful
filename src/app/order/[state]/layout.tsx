@@ -26,7 +26,8 @@ export default async function OrdersLayout({
   const colorsMap: { [color: string]: string } = {
     created: 'bg-violet-500/10',
     completed: 'bg-green-500/10',
-    sent: 'bg-orange-500/10'
+    sent: 'bg-orange-500/10',
+    archive: 'bg-gray-500/10'
   };
   const tabBaseStyle = 'rounded-t-md py-1 px-3 font-semibold outline-0  data-[selected]:text-black';
   return (
@@ -47,7 +48,7 @@ export default async function OrdersLayout({
                 }
               }}>
               <SimpleOrderList
-                className={`h-[70vh]`}
+                className={`h-[80vh]`}
                 rightSection={children}
                 orders={orders}
                 defaultParams={listParams}

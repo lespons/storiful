@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function setStock(id: string, lockVersion: number, value: number): Promise<void> {
   'use server';
@@ -17,6 +17,8 @@ export async function setStock(id: string, lockVersion: number, value: number): 
   } catch (e) {
     console.error(e);
   } finally {
+    revalidateTag('item_stock');
+    revalidatePath('/order', 'page');
     revalidatePath('/', 'page');
   }
 }

@@ -39,7 +39,7 @@ export const ArchivedOrderCard = memo(function ArchivedOrderCard({
           <OrderClone orderId={order.id} onClone={onClone} />
         </div>
       </div>
-      <div className="text-xs text-gray-600">Sent by {order.lastState.userName}</div>
+      <div className="text-xs text-gray-600">Archived by {order.lastState.userName}</div>
       <div className={`mt-2`}>
         {order.items.map((oi) => {
           return (

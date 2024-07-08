@@ -2,7 +2,12 @@
 
 import { Tab } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import { CheckCircleIcon, TruckIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
+import {
+  ArchiveBoxIcon,
+  CheckCircleIcon,
+  TruckIcon,
+  WrenchScrewdriverIcon
+} from '@heroicons/react/24/solid';
 
 export default function OrdersNav({ className }: { className: string }) {
   const router = useRouter();
@@ -32,6 +37,14 @@ export default function OrdersNav({ className }: { className: string }) {
         }}>
         <TruckIcon className={'size-5 my-auto'} />
         sent
+      </Tab>
+      <Tab
+        className={`${className} flex gap-1 text-gray-900 data-[selected]:bg-gray-500/10 data-[selected]:text-black hover:bg-gray-800/10`}
+        onClick={() => {
+          router.push(`/order/archive`);
+        }}>
+        <ArchiveBoxIcon className={'size-5 my-auto'} />
+        archive
       </Tab>
     </>
   );

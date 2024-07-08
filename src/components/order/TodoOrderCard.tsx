@@ -104,13 +104,14 @@ export const TodoOrderCard = memo(function TodoOrder({
                   <input
                     className={!disabled ? 'hover:cursor-pointer' : ''}
                     type="checkbox"
+                    defaultChecked={oi.completed ?? false}
                     checked={oi.completed ?? false}
                     disabled={order.pending}
                   />
                 )}
               </div>
               <div
-                className={`font-bold ${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} pl-2 ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                className={`flex font-bold ${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} pl-2 ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
                 {oi.name}
               </div>
               <div
@@ -140,12 +141,11 @@ export const TodoOrderCard = memo(function TodoOrder({
                 </div>
               )}
             </div>
-
             <div data-testid={`order_item_${oi.name}_children`}>
               {oi.children?.map((oic) => (
                 <div
                   key={oic.name}
-                  className={`text-red-900 text-xs font-normal flex flex-row gap-1 pl-6`}
+                  className={`text-red-900 text-xs font-normal flex flex-row gap-1 pl-6 ${!oi.completed || highlightItem === oic.itemTypeId ? ' visible' : ' group/rootitem-hover:hidden'}`}
                   role={'listitem'}
                   data-testid={`order_item_${oi.name}_children_${oic.name}`}>
                   <div
