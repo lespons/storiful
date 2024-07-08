@@ -182,7 +182,7 @@ export const TodoOrderCard = memo(function TodoOrder({
           <ClockIcon className="size-4 my-auto" />
           <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
           <span className={'font-light ml-1'}>
-            ({formatDistance(startOfDay(new Date()), order.deadlineAt, { addSuffix: true })})
+            ({formatDistance(order.deadlineAt, startOfDay(Date.now()), { addSuffix: true })})
           </span>
         </div>
       ) : null}
