@@ -95,7 +95,7 @@ test.describe('base orders flow', () => {
 
     await expect(orderCard.getByTestId('order_details')).toHaveText(orderDetails);
     await expect(orderCard.getByTestId('order_deadline')).toHaveText(
-      `${formatDate(addDays(new Date(), 10), 'dd MMM EE')}(${10} days ago)`
+      `${formatDate(addDays(new Date(), 10), 'dd MMM EE')}(in ${10} days)`
     );
 
     await orderCard.hover();
