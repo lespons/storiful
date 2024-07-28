@@ -344,6 +344,9 @@ test.describe('base orders flow', () => {
     await expect(itemStockSize).toHaveText('130');
   });
 
+  test.skip('should calc how much stock will be used to produce the items in order', async ({
+    page
+  }) => {});
   test('should search in stock view', async ({ page }) => {});
 });
 

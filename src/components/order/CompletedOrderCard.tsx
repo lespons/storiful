@@ -1,4 +1,4 @@
-import React, { memo, startTransition, useRef, useState } from 'react';
+import React, { startTransition, useRef, useState } from 'react';
 import { differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
 import { CheckCircleIcon, CheckIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
@@ -112,7 +112,10 @@ function CompletedItem({
                       className={`font-bold  ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
                       {oic.name}
                     </div>
-                    <div className="text-xs">(-{oic.quantity * orderItem.quantity})</div>
+                    <div className="text-xs">
+                      (-{oic.quantity * orderItem.quantity}
+                      {oic.unit})
+                    </div>
                   </div>
                 ))}
               </div>
@@ -124,7 +127,7 @@ function CompletedItem({
   );
 }
 
-export const CompletedOrder = memo(function CompletedOrder({
+export const CompletedOrderCard = function CompletedOrder({
   order,
   highlightItem,
   onChangeState,
@@ -142,7 +145,6 @@ export const CompletedOrder = memo(function CompletedOrder({
     if (!order.deadlineAt) {
       return null;
     }
-
     const withDelay = differenceInDays(order.lastState.date, order.deadlineAt) > 0;
     return (
       <div
@@ -265,4 +267,4 @@ export const CompletedOrder = memo(function CompletedOrder({
       {deadLine()}
     </div>
   );
-});
+};

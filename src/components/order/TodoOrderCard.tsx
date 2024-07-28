@@ -1,4 +1,4 @@
-import React, { memo, startTransition } from 'react';
+import React, { startTransition } from 'react';
 import { compareAsc, differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
 import {
   CheckCircleIcon,
@@ -8,7 +8,7 @@ import {
 import { OrdersListProps } from '@/components/order/OrdersList';
 import { OrderOpen } from '@/components/order/OrderCardBase';
 
-export const TodoOrderCard = memo(function TodoOrder({
+export const TodoOrderCard = function TodoOrder({
   order,
   setOptimisticOrder,
   onComplete,
@@ -25,7 +25,6 @@ export const TodoOrderCard = memo(function TodoOrder({
   key?: string;
 }) {
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
-
   const deadlineFailed = order.deadlineAt ? compareAsc(new Date(), order.deadlineAt) > 0 : false;
 
   const deadlineSoon =
@@ -107,6 +106,7 @@ export const TodoOrderCard = memo(function TodoOrder({
                     defaultChecked={oi.completed ?? false}
                     checked={oi.completed ?? false}
                     disabled={order.pending}
+                    onChange={(e) => e.preventDefault()}
                   />
                 )}
               </div>
@@ -153,7 +153,8 @@ export const TodoOrderCard = memo(function TodoOrder({
                     {oic.name}
                   </div>
                   <div className="text-xs" data-testid={`order_item_${oi.name}_children_quantity`}>
-                    (-{oic.quantity * oi.quantity})
+                    (-{oic.quantity * oi.quantity}
+                    {oic.unit})
                   </div>
                 </div>
               ))}
@@ -212,4 +213,4 @@ export const TodoOrderCard = memo(function TodoOrder({
       </div>
     </div>
   );
-});
+};

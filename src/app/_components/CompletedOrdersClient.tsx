@@ -6,10 +6,11 @@ import { CompletedOrdersReturnType } from '@/app/_actions/getCompleted';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
+import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 
 export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: CompletedOrdersReturnType[0],
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
+  itemTypes: { [itemId: string]: ItemType & { ItemChild: ItemChild[] } }
 ): OrdersListProps['orders'][0] => ({
   id,
   num,
@@ -23,9 +24,10 @@ export const mapOrderToListItem = (
     newQuantity: oi.newQuantity,
     completed: oi.completed,
     children: oi.ItemType.ItemChild.map((ic) => ({
-      name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
+      name: itemTypes[ic.itemTypeId]?.name,
       quantity: ic.quantity,
-      itemTypeId: ic.itemTypeId
+      itemTypeId: ic.itemTypeId,
+      unit: itemTypes[ic.itemTypeId]?.unit ? ItemTypeUnitsNames[itemTypes[ic.itemTypeId].unit!] : ''
     }))
   })),
   lastState: {
@@ -89,10 +91,17 @@ export function CompletedOrdersClient({
     };
   }, [orders, filterOutOrders]);
 
+  const itemTypesById = itemTypes.reduce(
+    (result, itemType) => {
+      result[itemType.id] = itemType;
+      return result;
+    },
+    {} as { [itemid: string]: (typeof itemTypes)[0] }
+  );
   return (
     <div className={'overflow-auto '}>
       <OrdersList
-        orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
+        orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypesById))}
         highlightItem={highlightItem.current}
         onChangeState={onChangeState}
         onChangeItemValue={onChangeItemValue}

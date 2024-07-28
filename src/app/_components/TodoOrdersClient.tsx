@@ -7,10 +7,11 @@ import { fetcher } from '@/lib/rest_fecther';
 import { TodoOrdersResponseData } from '@/pages/api/order/todo';
 import { useEffect, useRef, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
+import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 
 export const mapOrderToListItem = (
   { num, id, deadlineAt, OrderItem, details, lastState }: TodoOrdersResponseData['orders'][0],
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[]
+  itemTypes: { [itemId: string]: ItemType & { ItemChild: ItemChild[] } }
 ): OrdersListProps['orders'][0] => ({
   id,
   num,
@@ -25,8 +26,9 @@ export const mapOrderToListItem = (
     fromStock: oi.fromStock,
     children: oi.ItemType.ItemChild.map((ic) => ({
       itemTypeId: ic.itemTypeId,
-      name: itemTypes.find(({ id }) => id === ic.itemTypeId)!.name,
-      quantity: ic.quantity
+      name: itemTypes[ic.itemTypeId]?.name,
+      quantity: ic.quantity,
+      unit: itemTypes[ic.itemTypeId]?.unit ? ItemTypeUnitsNames[itemTypes[ic.itemTypeId].unit!] : ''
     }))
   })),
   lastState: {
@@ -92,6 +94,14 @@ export function TodoOrdersClient({
     };
   }, [todoOrdersData]);
 
+  const itemTypesById = itemTypes.reduce(
+    (result, itemType) => {
+      result[itemType.id] = itemType;
+      return result;
+    },
+    {} as { [itemid: string]: (typeof itemTypes)[0] }
+  );
+
   return (
     <OrdersList
       onComplete={async (id) => {
@@ -110,7 +120,7 @@ export function TodoOrdersClient({
           .OrderItem.find((orderItem) => orderItem.id === id)!.completed = completed;
         await mutate('/api/order/todo', { ...todoOrdersData });
       }}
-      orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
+      orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypesById))}
       edit={{
         itemTypes: itemTypes.map(({ name, id, ItemChild, type }) => ({
           id,
@@ -119,7 +129,10 @@ export function TodoOrdersClient({
           children: ItemChild.map((ic) => ({
             itemTypeId: ic.itemTypeId,
             quantity: ic.quantity,
-            name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name
+            name: itemTypesById[ic.id]?.name,
+            unit: itemTypesById[ic.itemTypeId]?.unit
+              ? ItemTypeUnitsNames[itemTypesById[ic.itemTypeId].unit!]
+              : ''
           }))
         })),
         onEditOrder: async (prev, next) => {
