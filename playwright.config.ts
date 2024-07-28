@@ -15,6 +15,8 @@ dotenv.config({ path: path.resolve(__dirname, 'test.env') });
 
 export default defineConfig({
   testDir: './tests',
+
+  timeout: 120_000,
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -88,6 +90,7 @@ export default defineConfig({
     command: 'npx prisma migrate deploy && npx prisma generate && npm run build && npm run start',
     // command: 'next dev',
     url: 'http://127.0.0.1:3000',
-    reuseExistingServer: !process.env.CI
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000
   }
 });

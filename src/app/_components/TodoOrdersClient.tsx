@@ -112,9 +112,10 @@ export function TodoOrdersClient({
       }}
       orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypes))}
       edit={{
-        itemTypes: itemTypes.map(({ name, id, ItemChild }) => ({
+        itemTypes: itemTypes.map(({ name, id, ItemChild, type }) => ({
           id,
           name,
+          type,
           children: ItemChild.map((ic) => ({
             itemTypeId: ic.itemTypeId,
             quantity: ic.quantity,

@@ -19,6 +19,7 @@ export const ItemTypeUnits = {
     pcs: [4, 'pieces']
   },
   volume: {
+    g: [8, 'gram'],
     ml: [5, 'milliliter'],
     l: [6, 'liter'],
     m_3: [7, 'm³']

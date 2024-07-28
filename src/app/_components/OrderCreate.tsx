@@ -28,9 +28,10 @@ export async function OrderCreate({
   );
   return (
     <OrderCreateClient
-      itemTypes={itemTypes.map(({ name, id, ItemChild }) => ({
+      itemTypes={itemTypes.map(({ name, id, type, ItemChild }) => ({
         id,
         name,
+        type,
         children: ItemChild.map((ic) => ({
           quantity: ic.quantity,
           name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name,

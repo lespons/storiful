@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { startTransition, useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
-import { SelectBox } from '@/components/SelectBox';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 export type OrderFormValue = {
@@ -25,6 +24,7 @@ export interface OrderFormProps {
     id: string;
     name: string;
     children: { name: string; quantity: number; itemTypeId: string }[];
+    type: 'INVENTORY' | 'PRODUCT';
   }[];
   onSubmit: (
     prevstate: { order: OrderFormValue },
@@ -102,7 +102,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
     }
   });
 
-  const calcMaxToCreate = (orderItem: (typeof orderItems)[0]) => {
+  const calcMaxToCreate = (orderItem: (typeof orderItems)[0] | (typeof itemTypes)[0]) => {
     let min = Number.MAX_SAFE_INTEGER;
 
     for (const children of orderItem.children) {
@@ -119,44 +119,39 @@ const OrderForm: React.FC<OrderFormProps> = ({
     <form
       action={handleSubmit(formAction) as unknown as (formData: FormData) => void}
       className="bg-fuchsia-900/10 flex flex-col px-5 py-4 rounded-b-md min-w-96">
-      <div className="mb-2">
-        <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
-          Deadline
-        </label>
-        <input
-          id={'deadline'}
-          {...register(`order.deadline`, {
-            valueAsDate: false
-          })}
-          type={'date'}
-          className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-        />
+      <div className="mb-2 flex flex-col">
+        <div>
+          <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
+            Deadline
+          </label>
+          <input
+            id={'deadline'}
+            {...register(`order.deadline`, {
+              valueAsDate: false
+            })}
+            type={'date'}
+            className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          />
+        </div>
+        <div>
+          <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
+            Details
+          </label>
+          <textarea
+            id={'details'}
+            {...register(`order.details`)}
+            rows={2}
+            className={`w-full px-2 py-1 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
+          />
+        </div>
       </div>
-      <div className="mb-2">
-        <label htmlFor={'deadline'} className="block text-gray-700 text-sm font-bold mb-2">
-          Details
-        </label>
-        <textarea
-          id={'details'}
-          {...register(`order.details`)}
-          className={`w-full px-2 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`}
-        />
-      </div>
-      <div className="mb-2">
-        <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
-          Item selector
-        </label>
-        <SelectBox
-          id={'orderItemType'}
-          items={
-            itemTypes
-              .filter((item) => !orderItems.some(({ itemId }) => itemId === item.id))
-              .map(({ name, id, children }) => ({
-                name,
-                id,
-                children
-              })) ?? []
-          }
+
+      <div className="flex flex-col mb-2">
+        <OrderItemSelector
+          calcMaxToCreate={calcMaxToCreate}
+          itemTypes={itemTypes
+            .filter((item) => !orderItems.some(({ itemId }) => itemId === item.id))
+            .sort((it1, it2) => it2.type.localeCompare(it1.type))}
           onSelect={(item) => {
             if (!item) {
               return;
@@ -170,7 +165,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
           }}
         />
         {orderItems.length ? (
-          <div className="mt-2">
+          <div className="mt-2 overflow-auto max-h-60">
             {orderItems.map((orderItem, index) => (
               <div
                 key={orderItem.itemId}
@@ -254,3 +249,52 @@ const OrderForm: React.FC<OrderFormProps> = ({
 };
 
 export default OrderForm;
+
+const OrderItemSelector = ({
+  itemTypes,
+  onSelect,
+  calcMaxToCreate
+}: Pick<OrderFormProps, 'itemStockById' | 'itemTypes'> & {
+  onSelect: (item: (typeof itemTypes)[0]) => void;
+  calcMaxToCreate: (orderItem: (typeof itemTypes)[0]) => number;
+}) => {
+  const [search, setSearch] = useState<string | null>(null);
+  return (
+    <div>
+      <div className={'flex gap-2 py-2'}>
+        <label htmlFor="children" className="block text-gray-700 text-sm font-bold text-nowrap">
+          Item selector
+        </label>
+        <input
+          id={'children'}
+          type={'text'}
+          className={'rounded-md px-2 w-full'}
+          placeholder={'search'}
+          onChange={(element) => {
+            startTransition(() => {
+              setSearch(element.target.value);
+            });
+          }}
+        />
+      </div>
+      <div id="orderItemType" className={'max-h-28 overflow-auto flex flex-col gap-1'}>
+        {itemTypes
+          .filter((it) =>
+            search ? it.name.toLowerCase().indexOf(search.toLowerCase()) >= 0 : true
+          )
+          .map((it) => (
+            <div
+              key={it.id}
+              data-testid={it.name}
+              className={
+                'group/children flex justify-between px-4 py-1 bg-white rounded-md hover:cursor-pointer hover:bg-green-100'
+              }
+              onClick={() => onSelect(it)}>
+              <div>{it.name}</div>
+              {it.type === 'PRODUCT' ? <div>{calcMaxToCreate(it)}</div> : null}
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+};

@@ -55,8 +55,7 @@ export class PlaywrightDashboardPage {
     await this.locators.textareaDetails.fill(orderDetails);
 
     for (const { name, value } of items) {
-      await this.locators.itemTypeSelectButton.click();
-      await this.locators.divOrderItemType.getByRole('option', { name, exact: true }).click();
+      await this.locators.divOrderItemType.getByTestId(name).click();
       const orderItem = await this.getOrderItem(name);
       const inputOrderItemsQuantity = orderItem.locator("xpath=//input[@type='number']");
       await inputOrderItemsQuantity.fill(String(value));

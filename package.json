@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "npx playwright test",
     "dbpush": "dotenv -e .env.development.local -- npx prisma db push",
     "studio": "dotenv -e .env.development.local -- npx prisma studio",
     "dbgenerate": "dotenv -e .env.development.local -- npx prisma generate"

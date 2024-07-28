@@ -7,6 +7,7 @@ type ResponseData = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
+  throw Error('cant be used')
   const orders = await prisma.order.findMany({});
   res.status(200).json({ orders });
 }
