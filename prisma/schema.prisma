@@ -1,0 +1,113 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum ItemTypeType {
+  INVENTORY
+  PRODUCT
+}
+
+enum OrderStates {
+  CREATED
+  INPROGRESS
+  COMPLETED
+  SENT
+  ARCHIVE
+}
+
+model ItemType {
+  id        String       @id @default(cuid())
+  name      String
+  type      ItemTypeType @default(INVENTORY)
+  ItemChild ItemChild[]
+  ItemStock ItemStock?
+  OrderItem OrderItem[]
+  image     String?
+  unit      Int?
+
+  @@map(name: "item_types")
+}
+
+model ItemChild {
+  id           String   @id @default(cuid())
+  parentTypeId String
+  itemTypeId   String
+  quantity     Int
+  ItemType     ItemType @relation(fields: [parentTypeId], references: [id])
+
+  @@map(name: "item_child")
+}
+
+model ItemStock {
+  id          String   @id @default(cuid())
+  itemTypeId  String   @unique
+  ItemType    ItemType @relation(fields: [itemTypeId], references: [id])
+  value       Int
+  lockVersion Int      @default(0)
+
+  @@map(name: "item_stock")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  num         Int         @default(autoincrement())
+  deadlineAt  DateTime?
+  OrderItem   OrderItem[]
+  details     String?
+  lastStateId String?     @unique
+
+  states    OrderStatesHistory[] @relation("OrderStates")
+  lastState OrderStatesHistory?  @relation("LastState", fields: [lastStateId], references: [id])
+
+  @@map(name: "orders")
+}
+
+model OrderStatesHistory {
+  id             String      @id @default(cuid())
+  state          OrderStates @default(CREATED)
+  date           DateTime    @default(now())
+  userId         String
+  User           User        @relation(fields: [userId], references: [id])
+  Order          Order       @relation("OrderStates", fields: [orderId], references: [id])
+  orderId        String
+  LastStateOrder Order?      @relation("LastState")
+
+  @@map(name: "order_states_history")
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  name        String?
+  orderId     String
+  itemTypeId  String
+  quantity    Int
+  newQuantity Int?
+  completed   Boolean @default(false)
+  fromStock   Boolean @default(false)
+
+  Order    Order    @relation(fields: [orderId], references: [id])
+  ItemType ItemType @relation(fields: [itemTypeId], references: [id])
+
+  @@map(name: "order_items")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  OrderStatesHistory OrderStatesHistory[]
+
+  @@map(name: "users")
+}
