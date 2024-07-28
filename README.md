@@ -19,6 +19,12 @@ A simple and efficient application for managing inventory. Track products, suppl
 - Create orders to produce products
 - Track stock levels and get alerts for low stock
 
+## Roadmap
+
+- Users management module
+- Statistics module
+- Notification module
+
 ## Installation
 
    ```bash
@@ -42,10 +48,8 @@ A simple and efficient application for managing inventory. Track products, suppl
 
 1. 🚀 Launch the Application
     - Start the application to access its features.
-
 2. 🔑 Log In
     - Log in using your account credentials to access the main dashboard.
-
 3. 🏢 Manage Inventory in the Warehouse Tab. Use the Warehouse tab to manage your inventory items:
     - Create Items:
         - If you produce a product, such as a [Cheese Cake], create items for each ingredient (e.g., cracker crumbs,
@@ -68,7 +72,6 @@ A simple and efficient application for managing inventory. Track products, suppl
           stock levels.
           Completing an order changes its status to "Completed."
           Manage Completed Orders:
-
     - Archive: Change the status to archived (after 30 days, the order will be hidden from the board). Use the long
       press action.
     - Send: Reduce the stock of created items (after 30 days, the order will be hidden from the board). Use the long
@@ -86,6 +89,7 @@ A simple and efficient application for managing inventory. Track products, suppl
     - Monitor current orders to check required ingredients and track progress.
 
 ## Screenshots
+
 ![Wareshouse](https://res.cloudinary.com/aroundy/image/upload/v1721772186/assets/itojoz2bdbumo4zmq5v4.jpg)
 *Caption: The item creation with inventory type.*
 ![Warehouse](https://res.cloudinary.com/aroundy/image/upload/v1721772820/assets/eqnbibwarolu1d97ictn.jpg)
@@ -96,9 +100,9 @@ A simple and efficient application for managing inventory. Track products, suppl
 ![Dashboard](https://res.cloudinary.com/aroundy/image/upload/v1722174643/assets/nzcccj3z0svmlzybsolz.jpg)
 *Caption: The orders completion and stock levels.*
 ![Dashboard](https://res.cloudinary.com/aroundy/image/upload/v1722174843/assets/z5grc3telwsfwumadkfa.jpg)
-*Caption: Search by item 
+*Caption: Search by item*
 ![Orders](https://res.cloudinary.com/aroundy/image/upload/v1722174918/assets/rked7rvtgq6mhvauwwy5.jpg)
-*Caption: Order tracking
+Caption: Order tracking*
 
 ## Technologies Used
 
