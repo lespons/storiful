@@ -1,4 +1,4 @@
-import React, { startTransition } from 'react';
+import React, { startTransition, useState } from 'react';
 import { compareAsc, differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
 import {
   CheckCircleIcon,
@@ -7,15 +7,12 @@ import {
 } from '@heroicons/react/24/outline';
 import { OrdersListProps } from '@/components/order/OrdersList';
 import { OrderOpen } from '@/components/order/OrderCardBase';
+import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/solid';
 
-export const TodoOrderCard = function TodoOrder({
-  order,
-  setOptimisticOrder,
-  onComplete,
-  onCompleteOrderItem,
-  blurred,
-  highlightItem
-}: Pick<OrdersListProps, 'onCompleteOrderItem' | 'onComplete' | 'highlightItem'> & {
+export type TodoOrderCardProps = Pick<
+  OrdersListProps,
+  'onCompleteOrderItem' | 'onComplete' | 'highlightItem'
+> & {
   order: OrdersListProps['orders'][0];
   setOptimisticOrder: (action: {
     order: OrdersListProps['orders'][0];
@@ -23,7 +20,16 @@ export const TodoOrderCard = function TodoOrder({
   }) => void;
   blurred?: boolean;
   key?: string;
-}) {
+};
+export const TodoOrderCard = function TodoOrder({
+  order,
+  setOptimisticOrder,
+  onComplete,
+  onCompleteOrderItem,
+  blurred,
+  highlightItem
+}: TodoOrderCardProps) {
+  const [expanded, setExpanded] = useState(false);
   const disabled = order.pending || order.items.some((oi) => !oi.completed);
   const deadlineFailed = order.deadlineAt ? compareAsc(new Date(), order.deadlineAt) > 0 : false;
 
@@ -34,8 +40,7 @@ export const TodoOrderCard = function TodoOrder({
   return (
     <div
       data-testid={`todo_order_${order.details}`}
-      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}
-       ${deadlineSoon ? '' : ''}`}>
+      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline" aria-description={'order number'} data-testid="order_number">
           #{order.num}
@@ -52,9 +57,11 @@ export const TodoOrderCard = function TodoOrder({
             new
           </div>
         ) : null}
+
         <div className={'flex flex-1 justify-end gap-2'}>
           <OrderOpen orderId={order.id} state={order.lastState.state} />
         </div>
+
         <div
           data-testid="order_edit"
           className={
@@ -69,6 +76,18 @@ export const TodoOrderCard = function TodoOrder({
             });
           }}>
           EDIT
+        </div>
+        <div
+          data-testid="order_expand"
+          className={
+            'invisible group-hover:visible text-right hover:underline hover:cursor-pointer font-bold text-gray-700'
+          }
+          onClick={() => setExpanded((ex) => !ex)}>
+          {expanded ? (
+            <ArrowsPointingInIcon className={'size-4 hover:scale-125 hover:text-fuchsia-950'} />
+          ) : (
+            <ArrowsPointingOutIcon className={'size-4 hover:scale-125 hover:text-fuchsia-950'} />
+          )}
         </div>
       </div>
       <div className="text-xs mb-2 text-gray-600" data-testid="order_created_by">
@@ -141,24 +160,28 @@ export const TodoOrderCard = function TodoOrder({
                 </div>
               )}
             </div>
-            <div data-testid={`order_item_${oi.name}_children`}>
-              {oi.children?.map((oic) => (
-                <div
-                  key={oic.name}
-                  className={`text-red-900 text-xs font-normal flex flex-row gap-1 pl-6 ${!oi.completed || highlightItem === oic.itemTypeId ? ' visible' : ' group/rootitem-hover:hidden'}`}
-                  role={'listitem'}
-                  data-testid={`order_item_${oi.name}_children_${oic.name}`}>
+            {expanded || highlightItem ? (
+              <div data-testid={`order_item_${oi.name}_children`}>
+                {oi.children?.map((oic) => (
                   <div
-                    className={`font-bold ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
-                    {oic.name}
+                    key={oic.name}
+                    className={`text-red-900 text-xs font-normal flex flex-row gap-1 pl-6 ${!oi.completed || highlightItem === oic.itemTypeId ? ' visible' : ' group/rootitem-hover:hidden'}`}
+                    role={'listitem'}
+                    data-testid={`order_item_${oi.name}_children_${oic.name}`}>
+                    <div
+                      className={`font-bold ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
+                      {oic.name}
+                    </div>
+                    <div
+                      className="text-xs"
+                      data-testid={`order_item_${oi.name}_children_quantity`}>
+                      (-{oic.quantity * oi.quantity}
+                      {oic.unit})
+                    </div>
                   </div>
-                  <div className="text-xs" data-testid={`order_item_${oi.name}_children_quantity`}>
-                    (-{oic.quantity * oi.quantity}
-                    {oic.unit})
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
@@ -170,47 +193,73 @@ export const TodoOrderCard = function TodoOrder({
           {order.details}
         </div>
       ) : null}
-      {order.deadlineAt ? (
-        <div
-          data-testid={`order_deadline`}
-          className={`flex gap-2 mt-2 text-sm px-2 py-1 rounded-md ${
-            deadlineFailed
-              ? 'text-white font-bold bg-red-700 bg-opacity-90'
-              : deadlineSoon
-                ? 'text-white font-bold bg-orange-700 bg-opacity-90'
-                : 'font-normal'
-          }`}>
-          <ClockIcon className="size-4 my-auto" />
-          <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
-          <span className={'font-light ml-1'}>
-            ({formatDistance(order.deadlineAt, startOfDay(Date.now()), { addSuffix: true })})
-          </span>
-        </div>
-      ) : null}
-      <div
-        className={`overflow-hidden max-h-0 ${disabled ? '' : 'group-hover:max-h-10 group-hover:mt-2'}  transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100`}>
-        <button
-          type="submit"
-          disabled={disabled}
-          onClick={async () => {
-            startTransition(() => {
-              setOptimisticOrder({
-                order: { ...order, pending: true }
-              });
-              onComplete?.(order.id);
+      <TodoDeadline deadlineFailed={deadlineFailed} deadlineSoon={deadlineSoon} order={order} />
+      <TodoActions
+        disabled={disabled}
+        setOptimisticOrder={setOptimisticOrder}
+        order={order}
+        onComplete={onComplete}
+      />
+    </div>
+  );
+};
+
+const TodoDeadline = ({
+  order,
+  deadlineFailed,
+  deadlineSoon
+}: Pick<TodoOrderCardProps, 'order'> & { deadlineFailed: boolean; deadlineSoon: boolean }) => {
+  return order.deadlineAt ? (
+    <div
+      data-testid={`order_deadline`}
+      className={`flex gap-2 mt-2 text-sm px-2 py-1 rounded-md ${
+        deadlineFailed
+          ? 'text-white font-bold bg-red-700 bg-opacity-90'
+          : deadlineSoon
+            ? 'text-white font-bold bg-orange-700 bg-opacity-90'
+            : 'font-normal'
+      }`}>
+      <ClockIcon className="size-4 my-auto" />
+      <span>{format(order.deadlineAt, 'dd MMM EE')}</span>
+      <span className={'font-light ml-1'}>
+        ({formatDistance(order.deadlineAt, startOfDay(Date.now()), { addSuffix: true })})
+      </span>
+    </div>
+  ) : null;
+};
+
+const TodoActions = ({
+  disabled,
+  setOptimisticOrder,
+  onComplete,
+  order
+}: Pick<TodoOrderCardProps, 'setOptimisticOrder' | 'onComplete' | 'order'> & {
+  disabled: boolean;
+}) => {
+  return (
+    <div
+      className={`overflow-hidden max-h-0 ${disabled ? '' : 'group-hover:max-h-10 group-hover:mt-2'}  transition-(max-height) ease-in-out duration-500 delay-1000 group-hover:delay-100`}>
+      <button
+        type="submit"
+        disabled={disabled}
+        onClick={async () => {
+          startTransition(() => {
+            setOptimisticOrder({
+              order: { ...order, pending: true }
             });
-          }}
-          className={`group flex justify-center gap-2 text-white w-full p-1 rounded-md font-semibold ${disabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-green-600/80 hover:bg-green-600/90'}`}>
-          {order.pending ? (
-            'updating'
-          ) : (
-            <div className={'flex gap-2'}>
-              complete
-              <CheckCircleIcon className={'size-5 my-auto'} />
-            </div>
-          )}
-        </button>
-      </div>
+            onComplete?.(order.id);
+          });
+        }}
+        className={`group flex justify-center gap-2 text-white w-full p-1 rounded-md font-semibold ${disabled ? 'bg-gray-300 hover:bg-gray-300' : 'bg-green-600/80 hover:bg-green-600/90'}`}>
+        {order.pending ? (
+          'updating'
+        ) : (
+          <div className={'flex gap-2'}>
+            complete
+            <CheckCircleIcon className={'size-5 my-auto'} />
+          </div>
+        )}
+      </button>
     </div>
   );
 };
