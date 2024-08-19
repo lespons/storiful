@@ -11,9 +11,14 @@ export const getTodoOrders = async (args?: Paging) => {
     },
     skip: args?.skip,
     take: args?.limit,
-    orderBy: {
-      num: 'asc'
-    },
+    orderBy: [
+      {
+        deadlineAt: 'asc'
+      },
+      {
+        num: 'asc'
+      }
+    ],
     include: {
       OrderItem: {
         include: {
