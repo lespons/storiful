@@ -122,7 +122,6 @@ export const TodoOrderCard = function TodoOrder({
                   <input
                     className={!disabled ? 'hover:cursor-pointer' : ''}
                     type="checkbox"
-                    defaultChecked={oi.completed ?? false}
                     checked={oi.completed ?? false}
                     disabled={order.pending}
                     onChange={(e) => e.preventDefault()}
