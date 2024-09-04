@@ -60,7 +60,9 @@ export const createOrder = async (
     console.error(e);
     return { error: (e as { message: string }).message };
   } finally {
+    revalidateTag('item_stock');
     revalidateTag('order_find');
-    revalidatePath('/');
+    revalidatePath('/', 'layout');
+    revalidatePath('/order', 'page');
   }
 };
