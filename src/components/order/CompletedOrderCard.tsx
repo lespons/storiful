@@ -39,7 +39,7 @@ function CompletedItem({
                   {orderItem.name}
                 </div>
                 <div className="flex gap-1 text-xs my-auto">
-                  {orderItem.newQuantity ? (
+                  {!isNaN(Number(orderItem.newQuantity)) ? (
                     <span>
                       (<b>{orderItem.newQuantity}</b>/ {orderItem.quantity})
                     </span>
