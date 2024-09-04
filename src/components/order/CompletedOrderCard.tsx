@@ -25,7 +25,8 @@ function CompletedItem({
 }) {
   const [edit, setEdit] = useState(false);
   const inputref = useRef<HTMLInputElement>(null);
-  const theValuesIsChanged = !(orderItem.newQuantity ?? 1);
+  const theValuesIsChanged = orderItem.newQuantity !== null;
+  console.log({ theValuesIsChanged });
   return (
     <Disclosure defaultOpen={false}>
       {({ open }) => (
@@ -67,7 +68,7 @@ function CompletedItem({
                       placeholder={'new value'}
                       max={orderItem.quantity}
                       className="flex-1 text-xs bg-green-100 rounded-md px-2 w-20 my-auto py-1"
-                      defaultValue={orderItem.quantity}
+                      defaultValue={orderItem.newQuantity ?? orderItem.quantity}
                     />
                     <button
                       className={'rounded-md bg-pink-200 px-2 my-auto hover:bg-pink-300'}
