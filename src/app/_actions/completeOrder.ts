@@ -7,62 +7,63 @@ export const completeOrder = async (id: string) => {
 
   const session = await auth();
 
-  await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findFirst({
-      where: {
-        id,
-        lastState: {
-          state: { in: ['CREATED', 'INPROGRESS'] }
-        }
-      },
-      include: {
-        OrderItem: {
-          include: {
-            ItemType: {
-              include: {
-                ItemChild: true
-              }
-            }
-          },
-          orderBy: {
-            ItemType: {
-              name: 'asc'
-            }
+  try {
+    await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findFirst({
+        where: {
+          id,
+          lastState: {
+            state: { in: ['CREATED', 'INPROGRESS'] }
           }
-        }
-      }
-    });
-
-    if (!order) {
-      throw Error(`Order is not found with id ${id}`);
-    }
-
-    await tx.order.update({
-      where: {
-        id
-      },
-      data: {
-        lastState: {
-          create: {
-            state: 'COMPLETED',
-            User: {
-              connect: {
-                id: session!.user!.id!
+        },
+        include: {
+          OrderItem: {
+            include: {
+              ItemType: {
+                include: {
+                  ItemChild: true
+                }
               }
             },
-            Order: {
-              connect: {
-                id
+            orderBy: {
+              ItemType: {
+                name: 'asc'
               }
             }
           }
         }
-      }
-    });
-  });
+      });
 
-  revalidateTag('order_find');
-  revalidatePath('/', 'layout');
-  revalidatePath('/order', 'page');
-  revalidatePath('/order/create', 'page');
+      if (!order) {
+        throw Error(`Order is not found with id ${id}`);
+      }
+
+      await tx.order.update({
+        where: {
+          id
+        },
+        data: {
+          lastState: {
+            create: {
+              state: 'COMPLETED',
+              User: {
+                connect: {
+                  id: session!.user!.id!
+                }
+              },
+              Order: {
+                connect: {
+                  id
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  } finally {
+    revalidateTag('order_find');
+    revalidatePath('/', 'page');
+    revalidatePath('/order', 'layout');
+  }
 };

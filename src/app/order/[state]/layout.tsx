@@ -34,7 +34,7 @@ export default async function OrdersLayout({
     <div className="flex mt-6 w-full">
       <TabGroup
         className="w-full"
-        defaultIndex={['created', 'completed', 'sent'].indexOf(state)}
+        defaultIndex={['created', 'completed', 'sent', 'archive'].indexOf(state)}
         manual={true}>
         <TabList className="flex gap-2 text-lg ml-2">
           <OrdersNav className={tabBaseStyle} />

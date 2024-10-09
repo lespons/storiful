@@ -18,7 +18,7 @@ export async function setStock(id: string, lockVersion: number, value: number): 
     console.error(e);
   } finally {
     revalidateTag('item_stock');
-    revalidatePath('/order', 'page');
+    revalidatePath('/order', 'layout');
     revalidatePath('/', 'page');
   }
 }

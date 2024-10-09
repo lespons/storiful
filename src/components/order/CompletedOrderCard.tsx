@@ -25,8 +25,8 @@ function CompletedItem({
 }) {
   const [edit, setEdit] = useState(false);
   const inputref = useRef<HTMLInputElement>(null);
-  const theValuesIsChanged = orderItem.newQuantity !== null;
-  console.log({ theValuesIsChanged });
+  const theValueIsChanged = orderItem.newQuantity !== null;
+
   return (
     <Disclosure defaultOpen={false}>
       {({ open }) => (
@@ -41,14 +41,14 @@ function CompletedItem({
                   {orderItem.name}
                 </div>
                 <div className="flex gap-1 text-xs my-auto">
-                  {theValuesIsChanged ? (
+                  {theValueIsChanged ? (
                     <span>
                       (<b>{orderItem.newQuantity}</b>/ {orderItem.quantity})
                     </span>
                   ) : (
                     <>({orderItem.quantity})</>
                   )}
-                  {theValuesIsChanged ? (
+                  {theValueIsChanged ? (
                     <ExclamationTriangleIcon
                       className="size-4 text-orange-600"
                       title={`you have new value of items`}
