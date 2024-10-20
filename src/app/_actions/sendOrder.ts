@@ -7,71 +7,73 @@ export const sendOrder = async (id: string) => {
 
   const session = await auth();
 
-  await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findFirst({
-      where: {
-        id,
-        lastState: {
-          state: { in: ['COMPLETED'] }
-        }
-      },
-      include: {
-        OrderItem: {
-          include: {
-            ItemType: true
+  try {
+    await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findFirst({
+        where: {
+          id,
+          lastState: {
+            state: { in: ['COMPLETED'] }
           }
-        }
-      }
-    });
-
-    if (!order) {
-      throw Error(`Order is not found with id ${id}`);
-    }
-
-    await Promise.all(
-      order.OrderItem.map((oi) =>
-        tx.itemStock.update({
-          where: {
-            itemTypeId: oi.itemTypeId
-          },
-          data: {
-            value: {
-              decrement: oi.newQuantity ?? oi.quantity
-            },
-            lockVersion: {
-              increment: 1
-            }
-          }
-        })
-      )
-    );
-
-    await tx.order.update({
-      where: {
-        id
-      },
-      data: {
-        lastState: {
-          create: {
-            state: 'SENT',
-            User: {
-              connect: {
-                id: session!.user!.id!
-              }
-            },
-            Order: {
-              connect: {
-                id
-              }
+        },
+        include: {
+          OrderItem: {
+            include: {
+              ItemType: true
             }
           }
         }
-      }
-    });
-  });
+      });
 
-  revalidateTag('order_find');
-  revalidateTag('item_stock');
-  revalidatePath('/', 'layout');
-  revalidatePath('/order', 'page');
+      if (!order) {
+        throw Error(`Order is not found with id ${id}`);
+      }
+
+      await Promise.all(
+        order.OrderItem.map((oi) =>
+          tx.itemStock.update({
+            where: {
+              itemTypeId: oi.itemTypeId
+            },
+            data: {
+              value: {
+                decrement: oi.newQuantity ?? oi.quantity
+              },
+              lockVersion: {
+                increment: 1
+              }
+            }
+          })
+        )
+      );
+
+      await tx.order.update({
+        where: {
+          id
+        },
+        data: {
+          lastState: {
+            create: {
+              state: 'SENT',
+              User: {
+                connect: {
+                  id: session!.user!.id!
+                }
+              },
+              Order: {
+                connect: {
+                  id
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  } finally {
+    revalidateTag('order_find');
+    revalidateTag('item_stock');
+    revalidatePath('/', 'page');
+    revalidatePath('/order', 'layout');
+  }
 };

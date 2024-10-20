@@ -62,7 +62,7 @@ export const createOrder = async (
   } finally {
     revalidateTag('item_stock');
     revalidateTag('order_find');
-    revalidatePath('/', 'layout');
-    revalidatePath('/order', 'page');
+    revalidatePath('/', 'page');
+    revalidatePath('/order', 'layout');
   }
 };

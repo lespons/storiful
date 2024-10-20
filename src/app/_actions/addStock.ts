@@ -20,7 +20,7 @@ export async function addStock(id: string, lockVersion: number, value: number): 
     console.error(e);
   } finally {
     revalidateTag('item_stock');
-    revalidatePath('/order', 'page');
     revalidatePath('/', 'page');
+    revalidatePath('/order', 'layout');
   }
 }
