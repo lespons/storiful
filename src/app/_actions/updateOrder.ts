@@ -70,10 +70,8 @@ export const updateOrder: OrdersListEditCallback = async (prevData, values) => {
     console.error(e);
     return { error: (e as { message: string }).message, order: { items: [] } };
   } finally {
-    // redisClient.publish('orders', 'new order!');
     revalidateTag('order_find');
     revalidatePath('/', 'page');
-    revalidatePath('/order', 'page');
-    revalidatePath('/order/create', 'page');
+    revalidatePath('/order', 'layout');
   }
 };

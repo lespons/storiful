@@ -7,37 +7,37 @@ export const archiveOrder = async (id: string) => {
 
   const session = await auth();
 
-  await prisma.$transaction(async (tx) => {
-    await tx.order.update({
-      where: {
-        id,
-        lastState: {
-          state: { in: ['COMPLETED'] }
-        }
-      },
-      data: {
-        lastState: {
-          create: {
-            state: 'ARCHIVE',
-            User: {
-              connect: {
-                id: session!.user!.id!
-              }
-            },
-            Order: {
-              connect: {
-                id
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: {
+          id,
+          lastState: {
+            state: { in: ['COMPLETED'] }
+          }
+        },
+        data: {
+          lastState: {
+            create: {
+              state: 'ARCHIVE',
+              User: {
+                connect: {
+                  id: session!.user!.id!
+                }
+              },
+              Order: {
+                connect: {
+                  id
+                }
               }
             }
           }
         }
-      }
+      });
     });
-  });
-
-  revalidateTag('order_find');
-  revalidatePath('/', 'layout');
-  revalidatePath('/', 'page');
-  revalidatePath('/order', 'page');
-  revalidatePath('/order/create', 'page');
+  } finally {
+    revalidateTag('order_find');
+    revalidatePath('/', 'page');
+    revalidatePath('/order', 'layout');
+  }
 };

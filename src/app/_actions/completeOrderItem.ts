@@ -92,7 +92,8 @@ export const completeOrderItem = async (
     console.error(e);
   } finally {
     revalidateTag('order_find');
-    revalidatePath('/', 'layout');
     revalidatePath('/', 'page');
+    // revalidatePath('/order', 'page');
+    // revalidatePath('/order/created', 'page'); TODO update only by orderId
   }
 };
