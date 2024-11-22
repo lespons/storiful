@@ -9,6 +9,7 @@ import { mapItemType } from '@/app/itemtype/_lib/mappers';
 import { createAsNewItemType } from '@/app/itemtype/_actions/createAsNewItemType';
 import { deleteItemType } from '@/app/itemtype/_actions/deleteItemType';
 import { updateItemType } from '@/app/itemtype/_actions/updateItemType';
+import { ItemTreeView } from '@/app/itemtype/_components/ItemTreeView';
 
 export const dynamicParams = false;
 
@@ -60,7 +61,6 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
   if (!itemType) {
     return <div>404</div>;
   }
-
   return (
     <div>
       <div className="mb-4">
@@ -73,6 +73,10 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
           }
           path={'/itemtype'}
         />
+      </div>
+
+      <div className="mb-4">
+        <ItemTreeView builtItem={itemType} itemTypes={itemTypes} />
       </div>
 
       <ItemTypeForm

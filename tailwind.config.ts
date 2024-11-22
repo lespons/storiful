@@ -8,6 +8,12 @@ const config: Config = {
     './src/containers/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}'
   ],
+  safelist: [
+    {
+      pattern:
+        /(border|bg)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-(300)/
+    }
+  ],
   theme: {
     extend: {
       backgroundImage: {

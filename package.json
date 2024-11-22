@@ -13,12 +13,13 @@
     "dbgenerate": "dotenv -e .env.development.local -- npx prisma generate"
   },
   "dependencies": {
-    "@headlessui/react": "^2.1.1",
+    "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.1.4",
     "@prisma/client": "^5.18.0",
     "@sentry/nextjs": "^8.26.0",
     "@vercel/analytics": "^1.3.1",
     "@vercel/speed-insights": "^1.0.12",
+    "@xyflow/react": "^12.3.5",
     "bcrypt": "^5.1.1",
     "date-fns": "^3.6.0",
     "ioredis": "^5.4.1",
