@@ -1,9 +1,11 @@
 'use client';
 import { ItemStock, ItemType } from '@prisma/client';
 import { ItemStockElement } from '@/components/ItemStockElement';
-import { KeyboardEvent, startTransition, useCallback, useEffect, useState } from 'react';
+import React, { KeyboardEvent, startTransition, useCallback, useMemo, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
+import { Switch } from '@headlessui/react';
+import { ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
 
 export function ItemStockViewClient({
   sortedItemsStock,
@@ -16,12 +18,18 @@ export function ItemStockViewClient({
   onAddStock: (id: string, lockVersion: number, value: number) => Promise<void>;
   onSetStock: (id: string, lockVersion: number, value: number) => Promise<void>;
 }) {
-  const [filteredItemsStock, setFilteredItemsStock] = useState(sortedItemsStock);
+  const [itemTypeFilter, setItemTypeFilter] = useState<'INVENTORY' | null>(null);
+  const [search, setSearch] = useState<string | null>();
+  const filteredItemsStock = useMemo(
+    () =>
+      sortedItemsStock.filter(
+        ({ ItemType: { name, type } }) =>
+          name.toLowerCase().indexOf(search ?? '') >= 0 &&
+          (!itemTypeFilter || itemTypeFilter === type)
+      ),
+    [sortedItemsStock, search, itemTypeFilter]
+  );
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-
-  useEffect(() => {
-    setFilteredItemsStock(sortedItemsStock);
-  }, [sortedItemsStock]);
 
   function sendSelectEvent(itemTypeId: string | null) {
     setSelectedItem((sitem) => {
@@ -74,22 +82,30 @@ export function ItemStockViewClient({
 
   return (
     <div className={`flex flex-col gap-4 outline-0`} tabIndex={0} onKeyDown={handleKeyDown}>
-      <div className={'sticky top-0 left-0 z-30'}>
+      <div className={'flex gap-2 sticky top-0 left-0 z-30'}>
         <input
           placeholder={'search'}
           onChange={(e) => {
             startTransition(() => {
               const searchValue = e.target.value.toLowerCase();
-              setFilteredItemsStock(
-                sortedItemsStock.filter(
-                  ({ ItemType: { name } }) => name.toLowerCase().indexOf(searchValue) >= 0
-                )
-              );
+              setSearch(searchValue);
             });
           }}
-          className={`w-full py-1 text-center rounded-md shadow-md`}
+          className={`flex-1 py-1 text-center rounded-md shadow-md`}
           type="text"
         />
+        <Switch
+          checked={itemTypeFilter === 'INVENTORY'}
+          onChange={() => setItemTypeFilter(itemTypeFilter === null ? 'INVENTORY' : null)}
+          className="group shadow-md inline-flex my-auto w-14 items-center rounded-full bg-gray-500/15 transition data-[checked]:bg-fuchsia-500/15 ">
+          <div className="flex size-8 translate-x-0 rounded-full bg-white transition group-data-[checked]:translate-x-6 group-hover:shadow-lg">
+            {itemTypeFilter === 'INVENTORY' ? (
+              <ShoppingBagIcon className={'flex-1 my-auto size-5 text-blue-900'} />
+            ) : (
+              <div className={'flex-1 my-auto text-xs font-semibold'}>all</div>
+            )}
+          </div>
+        </Switch>
       </div>
       <div className={`flex flex-col gap-0.5 scroll-mt-5`} data-testid="stock_view">
         {filteredItemsStock.map((is, index) => (

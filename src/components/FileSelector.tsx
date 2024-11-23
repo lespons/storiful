@@ -48,7 +48,7 @@ const FileSelector = ({
       <label
         htmlFor="file"
         className={
-          'group flex gap-2 w-full justify-center px-2 py-1 rounded-md bg-blue-300 hover:bg-blue-400 hover:cursor-pointer font-semibold'
+          'group flex gap-2 w-full justify-center px-2 py-1 rounded-md bg-blue-200 hover:bg-blue-300 hover:cursor-pointer font-semibold'
         }>
         attach file
         <PaperClipIcon className={'size-4 my-auto group-hover:animate-shake'} />

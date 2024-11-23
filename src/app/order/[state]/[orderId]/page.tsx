@@ -131,7 +131,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                   <td className={'table-cell text-green-800'}>{orderItem.quantity}</td>
                   <td className={'table-cell'}>
                     <div
-                      className={`${orderItem.ItemType.type === 'PRODUCT' ? 'text-fuchsia-900/80' : 'text-blue-900/80'} rounded-md px-2 font-semibold`}>
+                      className={`${orderItem.ItemType.type === 'PRODUCT' ? 'text-fuchsia-600' : 'text-blue-600'} rounded-md px-2 font-semibold`}>
                       {orderItem.ItemType.type === 'INVENTORY' ? (
                         <ShoppingBagIcon className={'size-6'} />
                       ) : (
@@ -166,7 +166,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                       </td>
                     )}
                     <td
-                      className={`table-cell ${itemsById[itemChild.itemTypeId].type === 'PRODUCT' ? 'text-fuchsia-900/80' : 'text-blue-900/80'} group-hover:text-white font-semibold`}>
+                      className={`table-cell ${itemsById[itemChild.itemTypeId].type === 'PRODUCT' ? 'text-fuchsia-600/80' : 'text-blue-600/80'} group-hover:text-white font-semibold`}>
                       {itemsById[itemChild.itemTypeId].type === 'INVENTORY' ? (
                         <ShoppingBagIcon className={'size-5'} />
                       ) : (

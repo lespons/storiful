@@ -16,6 +16,7 @@ export function mapItemType(
       return {
         id: ch.id,
         name: it.name,
+        type: it.type,
         itemTypeId: ch.itemTypeId,
         quantity: ch.quantity
       };

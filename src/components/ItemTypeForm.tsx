@@ -6,7 +6,12 @@ import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { useFieldArray, useForm } from 'react-hook-form';
 import FileSelector from '@/components/FileSelector';
-import { CheckBadgeIcon, ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
+import {
+  CheckBadgeIcon,
+  ShoppingBagIcon,
+  TrashIcon,
+  WrenchScrewdriverIcon
+} from '@heroicons/react/24/solid';
 
 export const ItemTypeUnits = {
   distance: {
@@ -49,6 +54,7 @@ export interface ItemType {
   children: {
     id?: string;
     name: string;
+    type: 'INVENTORY' | 'PRODUCT';
     itemTypeId: string;
     quantity: number;
   }[];
@@ -75,7 +81,7 @@ function ItemTypeSubmit({ action }: { action: string }) {
     <button
       type="submit"
       disabled={pending}
-      className={`mt-2 px-3 py-1 rounded-md ${pending ? 'bg-gray-900/5' : 'bg-amber-300 hover:bg-amber-400'} font-bold`}>
+      className={`mt-2 px-3 py-1 rounded-md ${pending ? 'bg-gray-900/5' : 'bg-green-400/50 hover:bg-green-400'} font-bold`}>
       {pending ? '...' : action.toLowerCase()}
     </button>
   );
@@ -107,7 +113,6 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
       }
     }
   });
-
   const {
     fields: children,
     append,
@@ -210,7 +215,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
               value={name}
               className={({ active, checked }) =>
                 `${active ? 'ring-2 ring-amber-900 ring-opacity-40' : ''}
-                  ${checked ? 'bg-amber-200' : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
+                  ${checked ? (name === 'PRODUCT' ? 'bg-fuchsia-500/15' : 'bg-blue-500/15') : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
                     relative flex cursor-pointer rounded-md px-4 py-2 focus:outline-none mb-2`
               }>
               {({ active, checked }) => (
@@ -225,7 +230,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
                       {desc}
                     </RadioGroup.Description>
                   </div>
-                  {checked ? <CheckBadgeIcon className={'size-5 text-amber-950'} /> : null}
+                  {checked ? <CheckBadgeIcon className={'size-5 text-green-500'} /> : null}
                 </div>
               )}
             </RadioGroup.Option>
@@ -243,10 +248,11 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
           items={
             itemsList
               .filter((item) => !children.some(({ itemTypeId }) => itemTypeId === item.id))
-              .map(({ name, id, children }) => ({
+              .map(({ name, id, children, type }) => ({
                 name,
                 id,
-                children
+                children,
+                type
               })) ?? []
           }
           onSelect={(item) => {
@@ -256,19 +262,36 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             append({
               name: item.name,
               itemTypeId: item.id,
-              quantity: 0
+              quantity: 0,
+              type: item.type as 'INVENTORY' | 'PRODUCT'
             });
-          }}
-        />
+          }}>
+          {(item) => (
+            <div className="flex">
+              <div className={'flex-1'}>{item.name}</div>
+              <div>
+                {item.type === 'PRODUCT' ? (
+                  <WrenchScrewdriverIcon className={'size-5 text-fuchsia-600'} />
+                ) : (
+                  <ShoppingBagIcon className={'size-5 text-blue-600'} />
+                )}
+              </div>
+            </div>
+          )}
+        </SelectBox>
 
-        <>
-          <div className={'text-xs py-2'}>
-            {children?.length > 0 ? 'Children of new item:' : 'No children to add'}
-          </div>
+        <div className={'flex gap-1 flex-col mt-2'}>
           {children.map((v, index) => (
-            <div key={v.itemTypeId} className="text-xs font-bold">
-              <label htmlFor={v.itemTypeId}>- {v.name}</label>
+            <div key={v.itemTypeId} className="text-xs">
+              <label className={'font-semibold'} htmlFor={v.itemTypeId}>
+                {v.name}
+              </label>
               <div className="flex flex-row gap-2">
+                {v.type === 'PRODUCT' ? (
+                  <WrenchScrewdriverIcon className={'my-auto size-5 text-fuchsia-600'} />
+                ) : (
+                  <ShoppingBagIcon className={'my-auto  size-5 text-blue-600'} />
+                )}
                 <input
                   id={v.itemTypeId}
                   type="number"
@@ -280,12 +303,15 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
                     e.preventDefault();
                     remove(index);
                   }}>
-                  🗑
+                  <TrashIcon
+                    title={'delete'}
+                    className={'my-auto size-5 text-red-900/50 hover:text-red-500'}
+                  />
                 </button>
               </div>
             </div>
           ))}
-        </>
+        </div>
       </div>
       <FileSelector
         onChange={(url) => {

@@ -14,13 +14,15 @@ export function SelectBox({
   showDisplayValue,
   onSelect,
   initialItem,
-  id
+  id,
+  children
 }: {
   id?: string;
   items: Item[];
   initialItem?: Item | null;
   showDisplayValue?: boolean;
   onSelect: (item: Item | null) => void;
+  children?: (item: Item) => React.ReactNode;
 }) {
   const [options, setOptions] = useState(items);
   const search = useCallback(
@@ -70,7 +72,7 @@ export function SelectBox({
                   selected ? 'bg-gray-600 text-white' : 'odd:bg-gray-200 hover:text-white'
                 }`
               }>
-              {item.name}
+              {children ? children(item) : item.name}
             </ComboboxOption>
           ))}
         </ComboboxOptions>
