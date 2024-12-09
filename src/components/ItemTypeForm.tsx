@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment } from 'react';
+import React from 'react';
 import { SelectBox } from '@/components/SelectBox';
 import { RadioGroup } from '@headlessui/react';
 import { useFormState, useFormStatus } from 'react-dom';
@@ -51,6 +51,9 @@ export interface ItemType {
   type: 'INVENTORY' | 'PRODUCT';
   image?: string | null;
   unit?: number | null;
+  price?: number;
+  newPrice?: number;
+  cost?: string;
   children: {
     id?: string;
     name: string;
@@ -76,7 +79,7 @@ interface ItemTypeFormProps {
 }
 
 function ItemTypeSubmit({ action }: { action: string }) {
-  const { pending, ...rest } = useFormStatus();
+  const { pending } = useFormStatus();
   return (
     <button
       type="submit"
@@ -93,6 +96,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, defaultValues }
   } = useForm<ItemTypeFormValuesType>({
     defaultValues: {
@@ -113,6 +117,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
       }
     }
   });
+
   const {
     fields: children,
     append,
@@ -133,6 +138,8 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
       }
     }
   });
+
+  const watchItemType = watch('itemType.type', defaultValues?.itemType?.type);
 
   const unitItems = Object.values(ItemTypeUnits)
     .map((value) => {
@@ -161,7 +168,6 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
               errors.itemType?.name ? 'border-red-500' : ''
             }`}
           />
-          {/*<ErrorMessage name="name" component="div" className="text-red-700 font-bold text-xs" />*/}
         </div>
         <div className="mb-4">
           <label htmlFor="children" className="block text-gray-700 text-sm font-bold mb-2">
@@ -206,16 +212,16 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             },
             {
               name: 'PRODUCT',
-              desc: 'what you produce',
+              desc: `what you produce ${itemType?.cost ? 'for $' + (itemType?.cost ?? 0) : ''}`,
               icon: <WrenchScrewdriverIcon className={'size-5'} />
             }
           ].map(({ name, desc, icon }) => (
             <RadioGroup.Option
               key={name}
               value={name}
-              className={({ active, checked }) =>
-                `${active ? 'ring-2 ring-amber-900 ring-opacity-40' : ''}
-                  ${checked ? (name === 'PRODUCT' ? 'bg-fuchsia-500/15' : 'bg-blue-500/15') : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
+              className={({ focus, checked }) =>
+                `${focus ? 'ring-2 ring-green-200' : ''}
+                ${checked ? (name === 'PRODUCT' ? 'bg-fuchsia-500/15' : 'bg-blue-500/15') : 'bg-white bg-opacity-0 hover:bg-opacity-50 shadow-md '}
                     relative flex cursor-pointer rounded-md px-4 py-2 focus:outline-none mb-2`
               }>
               {({ active, checked }) => (
@@ -236,6 +242,47 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             </RadioGroup.Option>
           ))}
         </RadioGroup>
+        <div className="flex gap-2">
+          <div className={'flex-1'}>
+            <label htmlFor="price" className="block text-gray-700 text-sm font-bold mb-2">
+              {watchItemType === 'PRODUCT' ? 'Sell price' : 'Buy price'}:
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={0.01}
+              {...register(`itemType.price`, {
+                disabled: !!state.itemType.id,
+                valueAsNumber: true
+              })}
+              id="price"
+              placeholder="$"
+              className={`w-full px-3 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.itemType?.price ? 'border-red-500' : ''
+              }`}
+            />
+          </div>
+          {state.itemType.id ? (
+            <div>
+              <label htmlFor="newPrice" className="block text-gray-700 text-sm font-bold mb-2">
+                New {watchItemType === 'PRODUCT' ? 'sell price' : 'buy price'}:
+              </label>
+              <input
+                type="number"
+                min={0}
+                step={0.01}
+                {...register(`itemType.newPrice`, {
+                  valueAsNumber: true
+                })}
+                id="newPrice"
+                placeholder="$"
+                className={`w-full px-3 py-1 rounded-md  focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${
+                  errors.itemType?.newPrice ? 'border-red-500' : ''
+                }`}
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* Add child item form fields here (nested or separate components) */}

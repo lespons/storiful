@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getOrders, getTodoOrders } from '@/app/lib/actions/order';
+import { getOrders } from '@/app/lib/actions/order';
 import { unstable_cache } from 'next/cache';
 
 export type FindOrdersResponseData = {
-  orders: ReturnType<typeof getTodoOrders> extends Promise<infer T> ? T : never;
+  orders: ReturnType<typeof getOrders> extends Promise<infer T> ? T : never;
 };
 
 export default async function handler(

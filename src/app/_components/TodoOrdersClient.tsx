@@ -2,21 +2,29 @@
 
 import { OrdersList, OrdersListEditCallback, OrdersListProps } from '@/components/order/OrdersList';
 import useSWR, { useSWRConfig } from 'swr';
-import { ItemChild, ItemType } from '@prisma/client';
 import { fetcher } from '@/lib/rest_fecther';
 import { TodoOrdersResponseData } from '@/pages/api/order/todo';
 import { useEffect, useRef, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
-import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
+import { ItemType as ClientItemType, ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 
 export const mapOrderToListItem = (
-  { num, id, deadlineAt, OrderItem, details, lastState }: TodoOrdersResponseData['orders'][0],
-  itemTypes: { [itemId: string]: ItemType & { ItemChild: ItemChild[] } }
+  {
+    num,
+    id,
+    deadlineAt,
+    OrderItem,
+    details,
+    lastState,
+    price
+  }: TodoOrdersResponseData['orders'][0],
+  itemTypes: { [itemId: string]: ClientItemType }
 ): OrdersListProps['orders'][0] => ({
   id,
   num,
   deadlineAt,
   details,
+  price: price ? price : undefined,
   items: OrderItem.map((oi) => ({
     id: oi.id,
     itemId: oi.ItemType.id,
@@ -51,20 +59,15 @@ export function TodoOrdersClient({
     fromStock: boolean
   ) => Promise<void>;
   updateOrder: OrdersListEditCallback;
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
+  itemTypes: ClientItemType[];
 }) {
   const { mutate } = useSWRConfig();
   const highlightItem = useRef<string | null>(null);
-  const { data: todoOrdersData, isLoading } = useSWR<TodoOrdersResponseData>(
-    '/api/order/todo',
-    fetcher,
-    {
-      onSuccess: (data) => {
-        filterOutOrders(data, highlightItem.current);
-      }
+  const { data: todoOrdersData } = useSWR<TodoOrdersResponseData>('/api/order/todo', fetcher, {
+    onSuccess: (data) => {
+      filterOutOrders(data, highlightItem.current);
     }
-  );
-
+  });
   const [filteredOrders, setFilteredOrders] = useState(todoOrdersData!.orders);
 
   function filterOutOrders(data: typeof todoOrdersData, itemTypeFilterId: string | null) {
@@ -122,19 +125,7 @@ export function TodoOrdersClient({
       }}
       orders={filteredOrders.map((order) => mapOrderToListItem(order, itemTypesById))}
       edit={{
-        itemTypes: itemTypes.map(({ name, id, ItemChild, type }) => ({
-          id,
-          name,
-          type,
-          children: ItemChild.map((ic) => ({
-            itemTypeId: ic.itemTypeId,
-            quantity: ic.quantity,
-            name: itemTypesById[ic.id]?.name,
-            unit: itemTypesById[ic.itemTypeId]?.unit
-              ? ItemTypeUnitsNames[itemTypesById[ic.itemTypeId].unit!]
-              : ''
-          }))
-        })),
+        itemTypes,
         onEditOrder: async (prev, next) => {
           const result = await updateOrder(prev, next);
 

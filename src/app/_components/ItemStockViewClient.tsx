@@ -5,7 +5,7 @@ import React, { KeyboardEvent, startTransition, useCallback, useMemo, useState }
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
 import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 import { Switch } from '@headlessui/react';
-import { ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/solid';
+import { ShoppingBagIcon } from '@heroicons/react/24/solid';
 
 export function ItemStockViewClient({
   sortedItemsStock,
@@ -13,7 +13,9 @@ export function ItemStockViewClient({
   onAddStock,
   onSetStock
 }: {
-  sortedItemsStock: (ItemStock & { ItemType: ItemType })[];
+  sortedItemsStock: (ItemStock & {
+    ItemType: Pick<ItemType, 'id' | 'name' | 'type' | 'unit' | 'image'>;
+  })[];
   consumedItemsTotalsById: { [itemTypeId: string]: number };
   onAddStock: (id: string, lockVersion: number, value: number) => Promise<void>;
   onSetStock: (id: string, lockVersion: number, value: number) => Promise<void>;

@@ -1,13 +1,13 @@
 'use client';
 
 import { Tab } from '@headlessui/react';
-import { useRouter } from 'next/navigation';
 import {
   ArchiveBoxIcon,
   CheckCircleIcon,
   TruckIcon,
   WrenchScrewdriverIcon
 } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/navigation';
 
 export default function OrdersNav({ className }: { className: string }) {
   const router = useRouter();

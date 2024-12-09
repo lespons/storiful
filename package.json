@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx playwright test",
+    "test": "npx playwright test --trace on",
+    "test.ui": "npx playwright test --ui",
     "dbpush": "dotenv -e .env.development.local -- npx prisma db push",
     "studio": "dotenv -e .env.development.local -- npx prisma studio",
     "dbgenerate": "dotenv -e .env.development.local -- npx prisma generate"
@@ -22,8 +23,9 @@
     "@xyflow/react": "^12.3.5",
     "bcrypt": "^5.1.1",
     "date-fns": "^3.6.0",
+    "install": "^0.13.0",
     "ioredis": "^5.4.1",
-    "next": "^14.2.15",
+    "next": "^14.2.20",
     "next-auth": "^5.0.0-beta.22",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -44,8 +46,8 @@
     "eslint-config-next": "14.1.3",
     "postcss": "^8",
     "prettier": "^3.3.3",
-    "prisma": "^5.18.0",
+    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.10",
-    "typescript": "^5"
+    "typescript": "^5.7.2"
   }
 }

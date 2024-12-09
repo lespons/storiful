@@ -1,5 +1,4 @@
 'use server';
-import { ItemChild, ItemType } from '@prisma/client';
 import { cloneOrder } from '@/app/_actions/cloneOrder';
 import { getActualCompleted, getExpiredCount } from '@/app/_actions/getCompleted';
 import { CompletedOrdersClient } from '@/app/_components/CompletedOrdersClient';
@@ -7,18 +6,14 @@ import { ArchiveBoxIcon, CheckCircleIcon, TruckIcon } from '@heroicons/react/24/
 import { sendOrder } from '@/app/_actions/sendOrder';
 import { changeOrderItemValue } from '@/app/_actions/changeOrderItemValue';
 import { archiveOrder } from '@/app/_actions/archiveOrder';
+import { ItemType } from '@/components/ItemTypeForm';
 
-export async function CompletedOrders({
-  itemTypes
-}: {
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
-}) {
+export async function CompletedOrders({ itemTypes }: { itemTypes: ItemType[] }) {
   const orders = await getActualCompleted();
 
   orders.sort(({ states: [completedState1] }, { states: [completedState2] }) => {
     return completedState2.date.getTime() - completedState1.date.getTime();
   });
-
   const expiredOrdersCount = await getExpiredCount();
   return (
     <div className="max-h-[90vh] flex flex-col">

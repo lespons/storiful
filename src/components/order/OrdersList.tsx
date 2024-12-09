@@ -15,6 +15,7 @@ type OrderListItem = {
   num: number;
   deadlineAt?: Date | null;
   details?: string | null;
+  price?: string;
   items: {
     id: string;
     itemId: string;

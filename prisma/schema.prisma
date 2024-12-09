@@ -23,17 +23,35 @@ enum OrderStates {
   ARCHIVE
 }
 
+enum ItemTypePriceType {
+  BUY
+  SELL
+}
+
 model ItemType {
-  id        String       @id @default(cuid())
+  id        String          @id @default(cuid())
   name      String
-  type      ItemTypeType @default(INVENTORY)
+  type      ItemTypeType    @default(INVENTORY)
   ItemChild ItemChild[]
   ItemStock ItemStock?
   OrderItem OrderItem[]
   image     String?
   unit      Int?
+  cost      Decimal?         @db.Decimal(10, 2)
+  prices    ItemTypePrice[]
 
   @@map(name: "item_types")
+}
+
+model ItemTypePrice {
+  id         String            @id @default(cuid())
+  itemType   ItemType          @relation(fields: [itemTypeId], references: [id], onDelete: Cascade)
+  itemTypeId String
+  price      Decimal           @db.Decimal(10, 2)
+  type       ItemTypePriceType
+  date       DateTime          @default(now())
+
+  @@map(name: "item_type_price")
 }
 
 model ItemChild {
@@ -66,6 +84,8 @@ model Order {
 
   states    OrderStatesHistory[] @relation("OrderStates")
   lastState OrderStatesHistory?  @relation("LastState", fields: [lastStateId], references: [id])
+
+  price Decimal? @db.Decimal(10, 2)
 
   @@map(name: "orders")
 }

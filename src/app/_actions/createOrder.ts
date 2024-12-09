@@ -2,6 +2,7 @@ import { OrderFormValue } from '@/components/order/OrderForm';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { calcOrderPrice } from '@/app/_actions/orders';
 
 export const createOrder = async (
   prevData: { order: OrderFormValue },
@@ -39,15 +40,31 @@ export const createOrder = async (
           }
         },
         include: {
-          states: true
+          states: true,
+          OrderItem: {
+            include: {
+              ItemType: {
+                include: {
+                  prices: {
+                    orderBy: {
+                      date: 'desc'
+                    },
+                    take: 1
+                  }
+                }
+              }
+            }
+          }
         }
       });
+
       await tx.order.update({
         where: {
           id: order.id
         },
         data: {
-          lastStateId: order.states[0].id
+          lastStateId: order.states[0].id,
+          price: calcOrderPrice(order)
         }
       });
     });

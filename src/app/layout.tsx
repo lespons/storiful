@@ -4,6 +4,7 @@ import './globals.css';
 import { UserAppNav } from '@/app/_components/UserAppNav';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import React from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 

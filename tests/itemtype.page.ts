@@ -54,7 +54,7 @@ export class PlaywrightItemTypePage {
   }
 
   async getChildInput(name: string) {
-    const labelParentChild = this.page.getByText(`- ${name}`);
+    const labelParentChild = this.page.locator('label').filter({ hasText: name });
     const inputId = await labelParentChild.getAttribute('for');
 
     return this.page.locator(`input#${inputId}`);
@@ -162,7 +162,7 @@ export class PlaywrightItemTypePage {
     }
 
     if (childrenToDelete?.length) {
-      for (const { name: chName, value: chValue } of childrenToDelete) {
+      for (const { name: chName, value: _chValue } of childrenToDelete) {
         await (await this.getChildDelete(chName)).click();
       }
     }

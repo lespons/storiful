@@ -1,4 +1,3 @@
-import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order';
 import { TodoOrdersClient } from '@/app/_components/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
@@ -7,14 +6,10 @@ import { updateOrder } from '@/app/_actions/updateOrder';
 import { OrderCreate } from '@/app/_components/OrderCreate';
 import { completeOrder } from '@/app/_actions/completeOrder';
 import { completeOrderItem } from '@/app/_actions/completeOrderItem';
+import { ItemType } from '@/components/ItemTypeForm';
 
-export async function TodoOrders({
-  itemTypes
-}: {
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
-}) {
+export async function TodoOrders({ itemTypes }: { itemTypes: ItemType[] }) {
   const orders = await getTodoOrders();
-
   return (
     <div className="relative max-h-[90vh] flex flex-col">
       <div className={'flex justify-center w-full mb-1'}>

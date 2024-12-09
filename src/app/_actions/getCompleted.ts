@@ -5,63 +5,67 @@ export type CompletedOrdersReturnType = UnwrapPromise<ReturnType<typeof getActua
 
 export async function getActualCompleted() {
   'use server';
-  return prisma.order.findMany({
-    where: {
-      OR: [
-        {
-          states: {
-            some: {
-              state: {
-                in: ['COMPLETED']
-              }
-            },
-            none: {
-              state: {
-                in: ['SENT', 'ARCHIVE']
-              }
-            }
-          }
-        },
-        {
-          states: {
-            some: {
-              state: {
-                in: ['SENT', 'ARCHIVE']
+  return (
+    await prisma.order.findMany({
+      where: {
+        OR: [
+          {
+            states: {
+              some: {
+                state: {
+                  in: ['COMPLETED']
+                }
               },
-              date: {
-                gte: sub(new Date(), {
-                  months: 1
-                })
+              none: {
+                state: {
+                  in: ['SENT', 'ARCHIVE']
+                }
+              }
+            }
+          },
+          {
+            states: {
+              some: {
+                state: {
+                  in: ['SENT', 'ARCHIVE']
+                },
+                date: {
+                  gte: sub(new Date(), {
+                    months: 1
+                  })
+                }
               }
             }
           }
-        }
-      ]
-    },
-
-    include: {
-      states: {
-        where: {
-          state: 'COMPLETED'
-        },
-        take: 1
+        ]
       },
-      OrderItem: {
-        include: {
-          ItemType: {
-            include: {
-              ItemChild: true
+
+      include: {
+        states: {
+          where: {
+            state: 'COMPLETED'
+          },
+          take: 1
+        },
+        OrderItem: {
+          include: {
+            ItemType: {
+              select: {
+                id: true,
+                name: true,
+                ItemChild: true
+              }
             }
           }
-        }
-      },
-      lastState: {
-        include: {
-          User: true
+        },
+        lastState: {
+          include: {
+            User: true
+          }
         }
       }
-    }
-  });
+    })
+  ).map(({ price, ...order }) => ({ ...order, price: price?.toString() }));
 }
 
 export async function getExpiredCount() {

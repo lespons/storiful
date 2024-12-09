@@ -9,7 +9,9 @@ import { setStock } from '@/app/_actions/setStock';
 export async function ItemStockView({
   itemStock
 }: {
-  itemStock: (ItemStock & { ItemType: ItemType })[];
+  itemStock: (ItemStock & {
+    ItemType: Pick<ItemType, 'id' | 'name' | 'type' | 'unit' | 'image'>;
+  })[];
 }) {
   const orders = await getTodoOrders();
 

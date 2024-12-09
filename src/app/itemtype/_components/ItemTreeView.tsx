@@ -1,7 +1,6 @@
 'use client';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { useState } from 'react';
-import { ItemTypesReturnType } from '@/app/lib/actions/itemType';
 import { Background, Controls, Edge, Handle, Node, Position, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -16,13 +15,8 @@ function CustomNode({ data }: { data: { label: string; color: string }; type: an
   );
 }
 
-export function ItemTreeView({
-  itemTypes,
-  builtItem
-}: {
-  builtItem: ItemTypesReturnType[0];
-  itemTypes: ItemTypesReturnType;
-}) {
+type Item = { id: string; name: string; ItemChild: { itemTypeId: string; id: string }[] };
+export function ItemTreeView({ itemTypes, builtItem }: { builtItem: Item; itemTypes: Item[] }) {
   let [isOpen, setIsOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const tailwindColors = [
@@ -51,7 +45,7 @@ export function ItemTreeView({
   ];
 
   const createFlowData = (
-    tree: ItemTypesReturnType[0],
+    tree: Item,
     position = { x: 0, y: 0 },
     depth = 0,
     nodes: Node[] = [],

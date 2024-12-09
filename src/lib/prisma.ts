@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 let prisma: PrismaClient;
+// @ts-ignore
 const allLogs = {
   log: [
     {

@@ -91,7 +91,7 @@ test.describe('base orders flow', () => {
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order1_item1');
     await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: false });
-    await expect(orderItem1Div.getByText('order1_item1(+10)')).toBeVisible();
+    await expect(orderItem1Div.getByText('order1_item1')).toBeVisible();
 
     await expect(orderCard.getByTestId('order_details')).toHaveText(orderDetails);
     await expect(orderCard.getByTestId('order_deadline')).toHaveText(
@@ -138,7 +138,7 @@ test.describe('base orders flow', () => {
     await expect(itemChildStockSize).toHaveText('0(200)');
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order2_item1');
-    await orderItem1Div.filter({ hasText: 'order2_item1(+20)' }).click();
+    await orderItem1Div.filter({ hasText: 'order2_item1' }).click();
     await page.waitForResponse(
       (response) => response.url().includes('/order/todo') && response.status() === 200
     );
@@ -193,7 +193,7 @@ test.describe('base orders flow', () => {
     let responsePromise = page.waitForResponse(
       (response) => response.url().includes('/') && response.status() === 200
     );
-    await orderItem1Div.filter({ hasText: 'order4_item1(+120)' }).click();
+    await orderItem1Div.filter({ hasText: 'order4_item1' }).click();
     await responsePromise;
 
     await orderCard.hover({ timeout: 1000 });
@@ -232,7 +232,7 @@ test.describe('base orders flow', () => {
     await expect(orderCard).toBeVisible();
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order5_item1');
-    await orderItem1Div.filter({ hasText: 'order5_item1(+20)' }).click();
+    await orderItem1Div.filter({ hasText: 'order5_item1' }).click();
     await page.waitForResponse(
       (response) => response.url().includes('/order/todo') && response.status() === 200
     );
@@ -264,7 +264,7 @@ test.describe('base orders flow', () => {
     );
     await completedCard.getByTestId('completed-item-edit-order5_item1').getByRole('button').click();
     await changeValueResponsePromise;
-    await expect(completedCard.getByText('(1/ 20)')).toBeVisible();
+    await expect(completedCard.filter({ hasText: '1/ 20' })).toBeVisible();
     await page.waitForTimeout(100);
 
     // await expect(completedCard.getByRole('button', { name: 'send' })).toBeDisabled();
@@ -395,7 +395,7 @@ test.describe.skip('concurrency test', () => {
       const responsePromise = page.waitForResponse(
         (response) => response.url().includes('/') && response.status() === 200
       );
-      await orderItem1Div.filter({ hasText: 'order3_item1(+20)' }).click();
+      await orderItem1Div.filter({ hasText: 'order3_item1' }).click();
       await responsePromise;
       await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: true });
 

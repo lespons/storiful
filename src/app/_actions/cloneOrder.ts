@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { add, differenceInDays } from 'date-fns';
+import { calcOrderPrice } from '@/app/_actions/orders';
 
 export async function cloneOrder(id: string) {
   const session = await auth();
@@ -23,7 +24,16 @@ export async function cloneOrder(id: string) {
         include: {
           OrderItem: {
             include: {
-              ItemType: true
+              ItemType: {
+                include: {
+                  prices: {
+                    orderBy: {
+                      date: 'desc'
+                    },
+                    take: 1
+                  }
+                }
+              }
             }
           },
           states: true
@@ -48,12 +58,13 @@ export async function cloneOrder(id: string) {
           details: `CLONED from #${order.num}`,
           OrderItem: {
             createMany: {
-              data: order.OrderItem.map(({ id, itemTypeId, quantity }) => ({
+              data: order.OrderItem.map(({ itemTypeId, quantity }) => ({
                 itemTypeId,
                 quantity: Number(quantity)
               }))
             }
           },
+          price: calcOrderPrice(order),
           states: {
             create: {
               state: 'CREATED',

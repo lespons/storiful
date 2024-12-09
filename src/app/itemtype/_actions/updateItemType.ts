@@ -1,17 +1,45 @@
 import { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
-import { getItemType, ItemTypesReturnType } from '@/app/lib/actions/itemType';
+import { Prisma } from '@prisma/client';
+import { getItemType } from '@/app/lib/actions/itemType';
 import { mapItemType } from '@/app/itemtype/_lib/mappers';
 import { revalidatePath, revalidateTag } from 'next/cache';
 
 export const updateItemType = async (
-  { itemType: prevItemType2 }: ItemTypeFormValuesType,
+  _: ItemTypeFormValuesType,
   { itemType }: ItemTypeFormValuesType,
-  itemTypes: ItemTypesReturnType
+  itemTypes: { id: string; name: string; type: ItemTypeFormValuesType['itemType']['type'] }[]
 ): Promise<ItemTypeFormValuesType> => {
   'use server';
   try {
     await prisma.$transaction(async (tx) => {
+      const childrenQuantity = itemType.children.reduce(
+        (result, curr) => {
+          result[curr.itemTypeId] = curr.quantity;
+          return result;
+        },
+        {} as { [itemTypeId: string]: number }
+      );
+      const childCosts = await tx.itemType.findMany({
+        where: {
+          id: {
+            in: itemType.children.map((c) => c.itemTypeId)
+          }
+        },
+        select: {
+          id: true,
+          cost: true,
+          prices: {
+            where: {
+              type: 'BUY'
+            },
+            orderBy: {
+              date: 'desc'
+            },
+            take: 1
+          }
+        }
+      });
       const prevItemType = await tx.itemType.findUniqueOrThrow({
         where: {
           id: itemType.id
@@ -40,6 +68,13 @@ export const updateItemType = async (
           type: itemType.type,
           image: itemType.image,
           unit: itemType.unit,
+          cost: childCosts.reduce(
+            (acc, curr) =>
+              curr.prices?.[0]?.price
+                ? acc.add(curr.prices[0].price.mul(childrenQuantity[curr.id]))
+                : acc.add(curr.cost ?? 0),
+            new Prisma.Decimal(0)
+          ),
           ItemChild: {
             deleteMany: {
               id: { in: childrenToDelete.map(({ id }) => id) }
@@ -50,7 +85,17 @@ export const updateItemType = async (
                 quantity: Number(c.quantity)
               }))
             }
-          }
+          },
+          ...(itemType.newPrice && itemType.newPrice > 0
+            ? {
+                prices: {
+                  create: {
+                    price: new Prisma.Decimal(itemType.newPrice),
+                    type: itemType.type === 'PRODUCT' ? 'SELL' : 'BUY'
+                  }
+                }
+              }
+            : {})
         }
       });
 
@@ -80,7 +125,9 @@ export const updateItemType = async (
         name: newItemType.name,
         image: newItemType.image,
         ItemChild: newItemType.ItemChild,
-        unit: newItemType.unit
+        unit: newItemType.unit,
+        prices: newItemType.prices,
+        cost: newItemType.cost
       })
     };
   } catch (error) {
