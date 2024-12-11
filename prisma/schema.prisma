@@ -47,7 +47,7 @@ model ItemTypePrice {
   id         String            @id @default(cuid())
   itemType   ItemType          @relation(fields: [itemTypeId], references: [id], onDelete: Cascade)
   itemTypeId String
-  price      Decimal           @db.Decimal(10, 2)
+  price      Decimal           @db.Decimal(9, 3)
   type       ItemTypePriceType
   date       DateTime          @default(now())
 

@@ -250,7 +250,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             <input
               type="number"
               min={0}
-              step={0.01}
+              step={0.001}
               {...register(`itemType.price`, {
                 disabled: !!state.itemType.id,
                 valueAsNumber: true
@@ -270,7 +270,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
               <input
                 type="number"
                 min={0}
-                step={0.01}
+                step={0.001}
                 {...register(`itemType.newPrice`, {
                   valueAsNumber: true
                 })}
