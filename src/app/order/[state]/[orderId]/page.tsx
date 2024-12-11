@@ -9,6 +9,7 @@ import { ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/soli
 import React from 'react';
 import { getStock } from '@/app/lib/actions/stock';
 import { getCachedItemForOrders } from '@/app/lib/actions/itemType';
+import { formatCurrency } from '@/lib/format';
 
 export async function generateStaticParams() {
   return [];
@@ -62,7 +63,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
     const item = itemsById[itemId];
     return item.prices?.[0];
   };
-  const totalPrice = order.price ? order.price.toNumber() : 0;
+  const totalPrice = order.price ? order.price.toString() : '$0';
   const totalExpenses = order.OrderItem.reduce(
     (acc, oi) =>
       acc.add(
@@ -87,11 +88,11 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
         {
           <div className={'flex gap-2 mb-2'}>
             <div className={'flex px-2 rounded-md bg-green-400/50 gap-1 whitespace-nowrap'}>
-              <div className={'font-semibold'}>${totalPrice}</div>
+              <div className={'font-semibold'}>{formatCurrency(totalPrice)}</div>
               <div className={''}>sell price</div>
             </div>
             <div className={'flex px-2 rounded-md bg-red-400/50 gap-1 whitespace-nowrap'}>
-              <div className={'font-semibold'}>${totalExpenses.toFixed(2)}</div>
+              <div className={'font-semibold'}>{formatCurrency(totalExpenses.toString())}</div>
               <div className={''}>expenses</div>
             </div>
           </div>

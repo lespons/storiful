@@ -3,6 +3,7 @@ import LongPressButton from '@/components/LongPressButton';
 import { OrdersListProps } from '@/components/order/OrdersList';
 import { differenceInDays, startOfDay } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { formatCurrency } from '@/lib/format';
 
 export function OrderCardStatus({
   price,
@@ -24,7 +25,7 @@ export function OrderCardStatus({
     <div
       className={`flex gap-2 absolute right-0 group-hover:hidden text-xs font-semibold text-${color}-900 rounded-md`}
       data-testid="order_price">
-      {price ? <span>${price}</span> : null}
+      {price ? <span>{formatCurrency(price)}</span> : null}
       {icon}
     </div>
   );
