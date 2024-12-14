@@ -178,7 +178,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             items={unitItems ?? []}
             showDisplayValue={true}
             initialItem={
-              itemType?.unit
+              itemType?.unit && itemType.unit >= 0
                 ? {
                     id: String(itemType.unit),
                     name: unitItems.find(({ id }) => Number(id) === itemType.unit)!.name

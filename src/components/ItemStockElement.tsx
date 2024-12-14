@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { PaperClipIcon } from '@heroicons/react/24/outline';
 import { ArrowRightEndOnRectangleIcon, FolderOpenIcon, PlusIcon } from '@heroicons/react/24/solid';
 import LongPressButton from '@/components/LongPressButton';
+import { formatCount } from '@/lib/format';
 
 function background(consumedItemsCount: number, value: number) {
   const useProgress = Math.max(Math.round((consumedItemsCount / value) * 100), 0);
@@ -96,11 +97,16 @@ export function ItemStockElement({
         </div>
 
         <div className="flex-2 z-10 flex gap-1 px-4 py-1" role={'contentinfo'}>
-          <span>{value}</span>
+          <span>{formatCount(value)}</span>
           <span>{unit}</span>
           {consumedItemsCount > value ? (
-            <span className="font-bold text-red-800 group-hover:text-white">
-              ({consumedItemsCount - value})
+            <span className="font-semibold text-red-800 group-hover:text-white">
+              ({formatCount(consumedItemsCount - value)})
+            </span>
+          ) : null}
+          {consumedItemsCount && consumedItemsCount < value ? (
+            <span className="font-semibold text-green-800 group-hover:text-white">
+              ({formatCount(value - consumedItemsCount)})
             </span>
           ) : null}
         </div>

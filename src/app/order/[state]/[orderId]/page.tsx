@@ -9,7 +9,7 @@ import { ShoppingBagIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/soli
 import React from 'react';
 import { getStock } from '@/app/lib/actions/stock';
 import { getCachedItemForOrders } from '@/app/lib/actions/itemType';
-import { formatCurrency } from '@/lib/format';
+import { formatCount, formatCurrency } from '@/lib/format';
 
 export async function generateStaticParams() {
   return [];
@@ -51,6 +51,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
     },
     {} as { [id: string]: (typeof itemTypes)[0] }
   );
+
   const itemsStockById = itemsStock.reduce(
     (result, curr) => {
       result[curr.itemTypeId] = curr;
@@ -82,11 +83,11 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
         {order.deadlineAt ? (
           <div className={'flex gap-2 mb-2'}>
             <ClockIcon className={'size-5 my-auto'} />
-            <div>{formatDate(order.deadlineAt, 'dd MMMM yyyy HH:mm')}</div>
+            <div>{formatDate(order.deadlineAt, 'dd MMM yyyy HH:mm')}</div>
           </div>
         ) : null}
         {
-          <div className={'flex gap-2 mb-2'}>
+          <div className={'flex flex-col gap-2 mb-2'}>
             <div className={'flex px-2 rounded-md bg-green-400/50 gap-1 whitespace-nowrap'}>
               <div className={'font-semibold'}>{formatCurrency(totalPrice)}</div>
               <div className={''}>sell price</div>
@@ -120,7 +121,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                   key={orderItem.id}
                   id={orderItem.id}
                   className={`${index % 2 === 0 ? 'bg-black/5' : ''} table-row hover:bg-black/10 row-span-[${itemsById[orderItem.ItemType.id].ItemChild.length}] *:px-4`}>
-                  <td className={'table-cell w-0'}>
+                  <td className={'table-cell !p-2 !pr-0 text-center w-0'}>
                     {orderItem.completed ? (
                       orderItem.fromStock ? (
                         <HomeModernIcon className={'size-5 text-blue-800'} />
@@ -141,11 +142,16 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                   <td className={'table-cell text-green-800'}>{orderItem.quantity}</td>
                   <td className={'table-cell '}>
                     {orderItem.ItemType.type === 'PRODUCT'
-                      ? '$' + orderItem.ItemType.cost?.mul(orderItem.quantity).toFixed(2)
-                      : '$' +
-                        getItemPrice(orderItem.itemTypeId)
-                          ?.price?.mul(orderItem.quantity)
-                          .toFixed(2)}
+                      ? formatCurrency(
+                          orderItem.ItemType.cost
+                            ? orderItem.ItemType.cost.mul(orderItem.quantity).toString()
+                            : '0'
+                        )
+                      : formatCurrency(
+                          getItemPrice(orderItem.itemTypeId)
+                            ?.price?.mul(orderItem.quantity)
+                            .toString()
+                        )}
                   </td>
                   <td className={'table-cell'}>
                     <div
@@ -172,27 +178,25 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                     </td>
                     {orderItem.completed ? (
                       <td className={`table-cell border-r-2font-light`}>
-                        {itemChild.quantity * orderItem.quantity}
+                        {formatCount(itemChild.quantity * orderItem.quantity)}
                       </td>
                     ) : (
                       <td
                         className={`table-cell border-r-2font-light ${itemChild.quantity * orderItem.quantity > itemsStockById[itemChild.itemTypeId].value ? 'text-red-700 group-hover:text-red-700 bg-red-100' : 'group-hover:text-black bg-green-100'}`}>
-                        {itemChild.quantity * orderItem.quantity}/
-                        {itemsStockById[itemChild.itemTypeId].value}
+                        {formatCount(itemChild.quantity * orderItem.quantity)}/
+                        {formatCount(itemsStockById[itemChild.itemTypeId].value)}
                       </td>
                     )}
                     <td className={'table-cell text-red-600/80'}>
-                      {getItemPrice(itemChild.itemTypeId) || itemsById[itemChild.itemTypeId]?.cost
-                        ? '$' +
-                          (itemsById[itemChild.itemTypeId]?.type === 'INVENTORY'
-                            ? getItemPrice(itemChild.itemTypeId)?.price.mul(
-                                itemChild.quantity * orderItem.quantity
-                              )
-                            : itemsById[itemChild.itemTypeId]?.cost?.mul(
-                                itemChild.quantity * orderItem.quantity
-                              )
-                          ).toFixed(2)
-                        : ''}
+                      {formatCurrency(
+                        itemsById[itemChild.itemTypeId]?.type === 'INVENTORY'
+                          ? getItemPrice(itemChild.itemTypeId)
+                              ?.price.mul(itemChild.quantity * orderItem.quantity)
+                              .toString()
+                          : itemsById[itemChild.itemTypeId]?.cost
+                              ?.mul(itemChild.quantity * orderItem.quantity)
+                              .toString() || '0'
+                      )}
                     </td>
                     <td
                       className={`table-cell ${itemsById[itemChild.itemTypeId].type === 'PRODUCT' ? 'text-fuchsia-600/80' : 'text-blue-600/80'} group-hover:text-white font-semibold`}>
