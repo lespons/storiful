@@ -1,7 +1,7 @@
 import { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { Prisma } from '@prisma/client';
+import { calcItemTypeCost } from '@/app/itemtype/_actions/itemTypes';
 
 export const createItemType = async (
   prevvalues: ItemTypeFormValuesType,
@@ -10,27 +10,6 @@ export const createItemType = async (
   'use server';
   try {
     await prisma.$transaction(async (tx) => {
-      const childCosts = await tx.itemType.findMany({
-        where: {
-          id: {
-            in: itemType.children.map((c) => c.itemTypeId)
-          }
-        },
-        select: {
-          id: true,
-          cost: true,
-          prices: {
-            where: {
-              type: 'BUY'
-            },
-            orderBy: {
-              date: 'desc'
-            },
-            take: 1
-          }
-        }
-      });
-
       const result = await tx.itemType.create({
         data: {
           name: itemType.name,
@@ -45,10 +24,7 @@ export const createItemType = async (
               }))
             }
           },
-          cost: childCosts.reduce(
-            (acc, curr) => (curr.cost ? acc.add(curr.cost) : acc.add(curr.prices[0].price ?? 0)),
-            new Prisma.Decimal(0)
-          ),
+          cost: await calcItemTypeCost(tx, itemType),
           ...(itemType.price && itemType.price > 0
             ? {
                 prices: {

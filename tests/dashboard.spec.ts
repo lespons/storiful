@@ -103,6 +103,48 @@ test.describe('base orders flow', () => {
     await expect(orderCard.getByTestId('order_open')).toBeVisible();
   });
 
+  test('should create the order with product and display the correct data', async ({ page }) => {
+    const playwrightItemTypePage = new PlaywrightItemTypePage(page);
+    await playwrightItemTypePage.createItemType({
+      name: 'order1_product_item1',
+      type: 'product',
+      price: '1000'
+    });
+
+    await page.waitForTimeout(100);
+    await page.goto('/');
+
+    const dashboardPage = new PlaywrightDashboardPage(page);
+
+    const orderDetails = 'detail_product#1';
+    await dashboardPage.createOrder(orderDetails, 10, [
+      { name: 'order1_product_item1', value: 10 }
+    ]);
+
+    const orderCard = await dashboardPage.getOrderCard('todo', orderDetails);
+    await expect(orderCard.getByTestId('order_number')).toHaveText(/^#(\d+)/);
+    await expect(orderCard).toBeVisible();
+
+    await expect(orderCard.getByTestId('order_date')).toHaveText(
+      formatDate(new Date(), 'dd MMM yyyy')
+    );
+
+    await expect(orderCard.getByTestId('order_new_label')).toBeVisible();
+    await expect(orderCard.getByTestId('order_created_by')).toHaveText(
+      'Created by ' + PlaywrightBasePage.BASE_USER_NAME
+    );
+
+    await expect(orderCard.getByTestId('order_details')).toHaveText(orderDetails);
+    await expect(orderCard.getByTestId('order_price')).toHaveText('$10,000');
+    await expect(orderCard.getByTestId('order_deadline')).toHaveText(
+      `${formatDate(addDays(new Date(), 10), 'dd MMM EE')}(in ${10} days)`
+    );
+
+    await orderCard.hover();
+    await expect(orderCard.getByTestId('order_edit')).toBeVisible();
+    await expect(orderCard.getByTestId('order_open')).toBeVisible();
+  });
+
   test('should create the order and complete with stock changes', async ({ page }) => {
     const playwrightItemTypePage = new PlaywrightItemTypePage(page);
 

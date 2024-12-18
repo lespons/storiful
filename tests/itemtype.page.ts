@@ -7,11 +7,11 @@ export class PlaywrightItemTypePage {
   constructor(page: Page) {
     this.page = page;
 
-    const inputName = page.locator('#name');
+    const nameInput = page.locator('#name');
 
     const radioInventory = page.getByRole('radio', { name: 'inventory' });
     const radioProduct = page.getByRole('radio', { name: 'product' });
-
+    const radioProductCost = radioProduct.locator('span');
     const divItemTypeUnit = page.locator('#itemTypeUnit');
 
     const divItemTypeChild = page.locator('#itemTypeChild');
@@ -23,8 +23,11 @@ export class PlaywrightItemTypePage {
 
     const buttonCreateNew = page.getByRole('button', { name: 'create as new' });
 
+    const priceInput = page.getByTestId('price');
+    const newPriceInput = page.getByTestId('newPrice');
+
     this.locators = {
-      inputName,
+      nameInput,
       radioInventory,
       radioProduct,
       divItemTypeUnit,
@@ -32,7 +35,10 @@ export class PlaywrightItemTypePage {
       buttonCreate,
       buttonUpdate,
       buttonClose,
-      buttonCreateNew
+      buttonCreateNew,
+      priceInput,
+      newPriceInput,
+      radioProductCost
     };
   }
 
@@ -42,12 +48,13 @@ export class PlaywrightItemTypePage {
 
   async openItemType(name: string) {
     const parent1 = this.page
-      .locator("xpath=//div[contains(@class, 'max-w-[45vw]')]")
+      .getByTestId('item-types-list')
       .getByText(name, { exact: true })
       .first();
 
     await expect(parent1).toBeVisible();
 
+    await this.page.waitForTimeout(100);
     await parent1.click();
 
     await expect(this.locators.buttonClose).toBeVisible();
@@ -60,7 +67,7 @@ export class PlaywrightItemTypePage {
     return this.page.locator(`input#${inputId}`);
   }
   async getChildDelete(name: string) {
-    const labelParentChild = this.page.getByText(`- ${name}`);
+    const labelParentChild = this.page.locator('label').filter({ hasText: name });
     const inputId = await labelParentChild.getAttribute('for');
 
     return this.page.locator(`input#${inputId} + button`);
@@ -70,16 +77,20 @@ export class PlaywrightItemTypePage {
     name,
     type,
     unit,
-    children
+    children,
+    price,
+    newPrice
   }: {
     name: string;
     type: 'product' | 'inventory';
     unit?: string;
     children?: Array<{ name: string; value: number }>;
+    price?: string;
+    newPrice?: string;
   }) {
     await this.goToItemType();
 
-    await this.locators.inputName.fill(name);
+    await this.locators.nameInput.fill(name);
     if (type === 'product') {
       await this.locators.radioProduct.click();
     } else {
@@ -100,6 +111,12 @@ export class PlaywrightItemTypePage {
         await (await this.getChildInput(chName)).fill(String(chValue));
       }
     }
+    if (price) {
+      await this.locators.priceInput.fill(price);
+    }
+    if (newPrice) {
+      await this.locators.newPriceInput.fill(newPrice);
+    }
 
     await this.locators.buttonCreate.click();
 
@@ -115,7 +132,8 @@ export class PlaywrightItemTypePage {
     unit,
     childrenToAdd,
     childrenToChange,
-    childrenToDelete
+    childrenToDelete,
+    newPrice
   }: {
     name: string;
     newName?: string;
@@ -124,12 +142,13 @@ export class PlaywrightItemTypePage {
     childrenToAdd?: Array<{ name: string; value: number }>;
     childrenToDelete?: Array<{ name: string; value: number }>;
     childrenToChange?: Array<{ name: string; value: number }>;
+    newPrice?: string;
   }) {
     await this.goToItemType();
 
     await this.openItemType(name);
 
-    await this.locators.inputName.fill(newName ?? name, { force: true });
+    await this.locators.nameInput.fill(newName ?? name, { force: true });
 
     if (type) {
       if (type === 'product') {
@@ -167,6 +186,10 @@ export class PlaywrightItemTypePage {
       }
     }
 
+    if (newPrice) {
+      await this.locators.newPriceInput.fill(newPrice);
+    }
+
     await this.locators.buttonUpdate.click();
     await this.page.waitForResponse(
       (response) => response.url().includes('/itemtype') && response.status() === 200
@@ -176,15 +199,14 @@ export class PlaywrightItemTypePage {
   async deleteItemType(name: string) {
     await this.goToItemType();
 
-    const divTestItem2 = this.page
-      .locator("xpath=//div[contains(@class, 'max-w-[45vw]')]")
-      .getByText(name, {
-        exact: true
-      });
+    const divTestItem = this.page
+      .getByTestId('item-types-list')
+      .getByText(name, { exact: true })
+      .first();
 
-    await expect(divTestItem2).toBeVisible();
+    await expect(divTestItem).toBeVisible();
 
-    await divTestItem2.click();
+    await divTestItem.click();
 
     const buttonDelete = this.page.getByRole('button', { name: 'delete' });
     await buttonDelete.click({

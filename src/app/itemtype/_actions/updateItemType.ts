@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { getItemType } from '@/app/lib/actions/itemType';
 import { mapItemType } from '@/app/itemtype/_lib/mappers';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { calcItemTypeCost } from '@/app/itemtype/_actions/itemTypes';
 
 export const updateItemType = async (
   _: ItemTypeFormValuesType,
@@ -13,33 +14,6 @@ export const updateItemType = async (
   'use server';
   try {
     await prisma.$transaction(async (tx) => {
-      const childrenQuantity = itemType.children.reduce(
-        (result, curr) => {
-          result[curr.itemTypeId] = curr.quantity;
-          return result;
-        },
-        {} as { [itemTypeId: string]: number }
-      );
-      const childCosts = await tx.itemType.findMany({
-        where: {
-          id: {
-            in: itemType.children.map((c) => c.itemTypeId)
-          }
-        },
-        select: {
-          id: true,
-          cost: true,
-          prices: {
-            where: {
-              type: 'BUY'
-            },
-            orderBy: {
-              date: 'desc'
-            },
-            take: 1
-          }
-        }
-      });
       const prevItemType = await tx.itemType.findUniqueOrThrow({
         where: {
           id: itemType.id
@@ -68,13 +42,7 @@ export const updateItemType = async (
           type: itemType.type,
           image: itemType.image,
           unit: itemType.unit,
-          cost: childCosts.reduce(
-            (acc, curr) =>
-              curr.prices?.[0]?.price
-                ? acc.add(curr.prices[0].price.mul(childrenQuantity[curr.id]))
-                : acc.add(curr.cost ?? 0),
-            new Prisma.Decimal(0)
-          ),
+          cost: await calcItemTypeCost(tx, itemType),
           ItemChild: {
             deleteMany: {
               id: { in: childrenToDelete.map(({ id }) => id) }

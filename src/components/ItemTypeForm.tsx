@@ -249,6 +249,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
             </label>
             <input
               type="number"
+              data-testid="price"
               min={0}
               step={0.001}
               {...register(`itemType.price`, {
@@ -269,6 +270,7 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({ action, onSubmit, itemsList
               </label>
               <input
                 type="number"
+                data-testid="newPrice"
                 min={0}
                 step={0.001}
                 {...register(`itemType.newPrice`, {
