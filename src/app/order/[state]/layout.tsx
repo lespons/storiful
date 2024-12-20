@@ -50,7 +50,6 @@ export default async function OrdersLayout({
               <SimpleOrderList
                 className={`h-[80vh]`}
                 rightSection={children}
-                orders={orders}
                 defaultParams={listParams}
                 ordersCount={ordersCount}
               />

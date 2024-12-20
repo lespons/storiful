@@ -56,7 +56,6 @@ export function SimpleOrderList({
   defaultParams,
   ordersCount
 }: {
-  orders: Array<Omit<Order, 'price'> & { price?: string; lastState: OrderStatesHistory | null }>;
   defaultParams: { limit: number; skip: number; states: $Enums.OrderStates[] };
   rightSection?: ReactNode;
   ordersCount: number;

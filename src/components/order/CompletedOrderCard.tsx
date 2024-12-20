@@ -41,7 +41,7 @@ function CompletedItem({
                   {orderItem.name}
                 </div>
                 <div
-                  date-testid="order_item_quantity"
+                  data-testid="order_item_quantity"
                   className="flex gap-1 text-xs my-auto rounded-xl justify-center bg-white/50 px-1 min-w-5 group-hover:hidden">
                   {theValueIsChanged ? (
                     <span>
@@ -181,7 +181,7 @@ export const CompletedOrderCard = function CompletedOrder({
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date, 'dd MMM yyyy')}</div>
 
-        <OrderCardStatus price={order.price} color={'green'} stateDate={order.lastState.date!}>
+        <OrderCardStatus price={order.price} color={'green'} stateDate={order.lastState.date}>
           <CheckCircleIcon />
         </OrderCardStatus>
 

@@ -143,9 +143,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
                   <td className={'table-cell '}>
                     {orderItem.ItemType.type === 'PRODUCT'
                       ? formatCurrency(
-                          orderItem.ItemType.cost
-                            ? orderItem.ItemType.cost.mul(orderItem.quantity).toString()
-                            : '0'
+                          orderItem.ItemType.cost?.mul(orderItem.quantity).toString() ?? '0'
                         )
                       : formatCurrency(
                           getItemPrice(orderItem.itemTypeId)

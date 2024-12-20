@@ -21,7 +21,7 @@ export const SentOrderCard = function SentOrder({
         <div className="flex gap-0.5 font-light">
           <div>{format(order.lastState.date, 'dd MMM yyyy')}</div>
         </div>
-        <OrderCardStatus price={order.price} color={'orange'} stateDate={order.lastState.date!}>
+        <OrderCardStatus price={order.price} color={'orange'} stateDate={order.lastState.date}>
           <TruckIcon />
         </OrderCardStatus>
         <div className={'flex flex-1 justify-end gap-2'}>

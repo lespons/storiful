@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Background, Controls, Edge, Handle, Node, Position, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-function CustomNode({ data }: { data: { label: string; color: string }; type: any }) {
+function CustomNode({ data }: Readonly<{ data: { label: string; color: string } }>) {
   return (
     <div className={`px-3 py-1 shadow-md rounded-md border-2 border-black/10 bg-${data.color}-300`}>
       <div className={`flex text-black`}>{data.label}</div>
@@ -16,7 +16,10 @@ function CustomNode({ data }: { data: { label: string; color: string }; type: an
 }
 
 type Item = { id: string; name: string; ItemChild: { itemTypeId: string; id: string }[] };
-export function ItemTreeView({ itemTypes, builtItem }: { builtItem: Item; itemTypes: Item[] }) {
+export function ItemTreeView({
+  itemTypes,
+  builtItem
+}: Readonly<{ builtItem: Item; itemTypes: Item[] }>) {
   let [isOpen, setIsOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const tailwindColors = [

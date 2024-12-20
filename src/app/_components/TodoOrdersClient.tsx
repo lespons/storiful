@@ -24,7 +24,7 @@ export const mapOrderToListItem = (
   num,
   deadlineAt,
   details,
-  price: price ? price : undefined,
+  price,
   items: OrderItem.map((oi) => ({
     id: oi.id,
     itemId: oi.ItemType.id,

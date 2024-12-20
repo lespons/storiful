@@ -10,17 +10,18 @@ export function OrderCardStatus({
   stateDate,
   color,
   children
-}: {
+}: Readonly<{
   price?: string;
   stateDate: Date;
   color: string;
   children: ReactNode;
-}) {
+}>) {
   const today = startOfDay(Date.now());
 
   const icon = children ? (
     <span className={`group-hover:invisible size-4 my-auto opacity-60`}>{children}</span>
   ) : null;
+
   const priceElement = (
     <div
       className={`flex gap-2 absolute right-0 group-hover:hidden text-xs font-semibold text-${color}-900 rounded-md`}

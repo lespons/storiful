@@ -15,7 +15,6 @@ export function ItemTypeElement(props: {
   return (
     <div
       className={`flex flex-row gap-3 px-4 py-1 rounded-md bg-white
-      ${props.index % 2 === 0 ? '' : ''}
       ${(pathname?.indexOf(props.id) ?? 0) > 0 ? 'ring-4' : 'hover:text-white cursor-pointer'}
       shadow-md  transition-transform duration-300 hover:bg-black hover:text-white
       `}

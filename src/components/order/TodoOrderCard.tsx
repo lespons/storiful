@@ -51,7 +51,7 @@ export const TodoOrderCard = function TodoOrder({
         <div className="font-light" data-testid="order_date">
           {format(order.lastState.date!, 'dd MMM yyyy')}
         </div>
-        <OrderCardStatus price={order.price} color={'fuchsia'} stateDate={order.lastState.date!}>
+        <OrderCardStatus price={order.price} color={'fuchsia'} stateDate={order.lastState.date}>
           {null}
         </OrderCardStatus>
 
