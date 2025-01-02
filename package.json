@@ -23,7 +23,6 @@
     "@xyflow/react": "^12.3.5",
     "bcrypt": "^5.1.1",
     "date-fns": "^3.6.0",
-    "install": "^0.13.0",
     "ioredis": "^5.4.1",
     "next": "^14.2.20",
     "next-auth": "^5.0.0-beta.22",
@@ -35,7 +34,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "^1.49.1",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.30",
     "@types/react": "^18.3.3",

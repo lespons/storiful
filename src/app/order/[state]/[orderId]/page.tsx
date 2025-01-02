@@ -64,7 +64,7 @@ export default async function OrdersPage({ params: { orderId } }: { params: { or
     const item = itemsById[itemId];
     return item.prices?.[0];
   };
-  const totalPrice = order.price ? order.price.toString() : '$0';
+  const totalPrice = order.price ? order.price.toString() : '0';
   const totalExpenses = order.OrderItem.reduce(
     (acc, oi) =>
       acc.add(
