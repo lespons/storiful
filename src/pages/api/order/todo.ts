@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getTodoOrders } from '@/app/lib/actions/order';
 
-type TodoOrder = Awaited<ReturnType<typeof getTodoOrders>>[number];
+export type TodoOrder = Awaited<ReturnType<typeof getTodoOrders>>[number];
 
 export type TodoOrdersResponseData = {
   orders: (Omit<TodoOrder, 'price'> & { price: string })[];

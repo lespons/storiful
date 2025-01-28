@@ -15,8 +15,8 @@ export const ArchivedOrderCard = function ArchivedOrderCard({
   return (
     <div
       data-testid={`archived_order_${order.details}`}
-      className={`group bg-gray-700/10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
-      <div className="relative flex text-xs gap-2 mb-1">
+      className={`group mb-2 min-w-52 rounded-md bg-gray-700/10 px-6 py-4 font-light`}>
+      <div className="relative mb-1 flex gap-2 text-xs">
         <div className="underline">#{order.num}</div>
         <div className="flex gap-0.5 font-light">
           <div>{format(order.lastState.date, 'dd MMM yyyy')}</div>
@@ -36,12 +36,12 @@ export const ArchivedOrderCard = function ArchivedOrderCard({
           return (
             <div key={oi.id}>
               <div
-                className={`group flex flex-row gap-1 text-gray-800 font-normal hover:text-gray-950`}>
+                className={`group flex flex-row gap-1 font-normal text-gray-800 hover:text-gray-950`}>
                 <div
-                  className={`group-hover:underline font-bold text-sm ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                  className={`text-sm font-bold group-hover:underline ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
                   {oi.name}
                 </div>
-                <div className="group-hover:underline text-xs my-auto ml-auto text-center rounded-xl bg-white/50 px-1 min-w-5">
+                <div className="my-auto ml-auto min-w-5 rounded-xl bg-white/50 px-1 text-center text-xs group-hover:underline">
                   {oi.newQuantity ? (
                     <span>
                       <b>{oi.newQuantity}</b>/
@@ -56,7 +56,7 @@ export const ArchivedOrderCard = function ArchivedOrderCard({
       </div>
       {order.details ? (
         <div
-          className={`mt-2 text-gray-900 font-medium border-l-4 border-gray-600 pl-2 line-clamp-3`}>
+          className={`mt-2 line-clamp-3 border-l-4 border-gray-600 pl-2 font-medium text-gray-900`}>
           {order.details}
         </div>
       ) : null}

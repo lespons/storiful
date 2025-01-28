@@ -61,12 +61,11 @@ class GanttChartCanvas {
 
   public render = (canvas: HTMLCanvasElement, dpr: number) => {
     const canvasWidth = this.days.length * this.dayWidth * dpr;
-    const rect = canvas.getBoundingClientRect();
 
     canvas.width = canvasWidth;
-    canvas.height = rect.height * dpr;
+    canvas.height = (this.items.length + 1) * this.rowHeight * dpr;
 
-    canvas.style.height = `${this.items.length * this.rowHeight + 50}px`;
+    canvas.style.height = `${this.items.length * this.rowHeight - this.headerHeight}px`;
 
     const ctx = canvas.getContext('2d');
 
@@ -217,17 +216,11 @@ export default function GanttChart({ items }: Readonly<GanttChartProps>) {
     if (!canvas) return;
     ganttChartCanvasRef.current.initData(items);
     ganttChartCanvasRef.current.render(canvas, window.devicePixelRatio || 1);
-  }, [items]);
+  }, [items, canvasRef]);
 
   return (
-    <div className="overflow-auto max-h-[90vh]">
-      <canvas
-        ref={canvasRef}
-        className="min-w-max max-w-full"
-        style={{
-          display: 'block'
-        }}
-      />
+    <div className="h-[85vh] overflow-auto">
+      <canvas ref={canvasRef} className="block min-w-max max-w-full" />
     </div>
   );
 }

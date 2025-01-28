@@ -7,15 +7,17 @@ import { OrderCreate } from '@/app/_components/OrderCreate';
 import { completeOrder } from '@/app/_actions/completeOrder';
 import { completeOrderItem } from '@/app/_actions/completeOrderItem';
 import { ItemType } from '@/components/ItemTypeForm';
+import { TodoOrdersSummary } from '@/app/_components/TodoOrdersSummary';
 
 export async function TodoOrders({ itemTypes }: { itemTypes: ItemType[] }) {
   const orders = await getTodoOrders();
   return (
-    <div className="relative max-h-[90vh] flex flex-col">
-      <div className={'flex justify-center w-full mb-1'}>
+    <div className="relative flex max-h-[90vh] flex-col">
+      <div className={'mb-1 flex w-full justify-center'}>
         <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
       </div>
       <OrderCreate itemTypes={itemTypes} />
+      <TodoOrdersSummary itemTypes={itemTypes} orders={orders} />
       <SWRProvider
         fallback={{
           '/api/order/todo': { orders }
