@@ -32,23 +32,22 @@ export function OrderCreateClient({
     <div className={'absolute right-0 z-20 rounded-md will-change-transform'}>
       <button
         className={
-          'ease duration-[150ms] overflow-hidden transition-[width, transform] font-bold  min-w-10 ' +
+          'ease transition-[width, transform] min-w-10 overflow-hidden font-bold duration-[150ms]' +
           (showCreate
-            ? 'w-full rounded-t-md right-0 text-center bg-black text-white'
+            ? 'right-0 w-full rounded-t-md bg-black text-center text-white'
             : 'w-full rounded-md')
         }
         onClick={openCreateOrder}>
         <div
           className={
-            'flex gap-1 w-full justify-end bg-fuchsia-900/10 hover:bg-fuchsia-900/20 px-2 transition-[width, transform] ease-in-out duration-[250ms]'
+            'transition-[width, transform] flex w-full justify-end gap-1 bg-fuchsia-900/10 px-4 py-1 duration-[250ms] ease-in-out hover:bg-fuchsia-900/20'
           }>
           create
-          <PlusIcon className={'size-5 text-fuchsia-800 my-auto'} />
+          <PlusIcon className={'my-auto size-5 text-fuchsia-800'} />
         </div>
       </button>
       <div
-        className={`shadow-md overflow-auto bg-white will-change-transform transition-[max-width] rounded-b-md ease duration-[150ms] ${showCreate ? 'max-w-96 max-h-[80vh]' : 'max-w-0 max-h-0'}
-         ${overflowHidden ? 'overflow-hidden' : 'overflow-initial'}`}>
+        className={`ease overflow-auto rounded-b-md bg-white shadow-md transition-[max-width] duration-[150ms] will-change-transform ${showCreate ? 'max-h-[80vh] max-w-96' : 'max-h-0 max-w-0'} ${overflowHidden ? 'overflow-hidden' : 'overflow-initial'}`}>
         <OrderForm
           action={'CREATE'}
           itemTypes={itemTypes}

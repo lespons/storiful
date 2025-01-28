@@ -14,7 +14,10 @@ export async function TodoOrders({ itemTypes }: { itemTypes: ItemType[] }) {
   return (
     <div className="relative flex max-h-[90vh] flex-col">
       <div className={'mb-1 flex w-full justify-center'}>
-        <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
+        <div className="flex gap-2 rounded-md bg-fuchsia-100 px-2 py-1">
+          <span className="font-bold">{orders?.length}</span>
+          <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
+        </div>
       </div>
       <OrderCreate itemTypes={itemTypes} />
       <TodoOrdersSummary itemTypes={itemTypes} orders={orders} />

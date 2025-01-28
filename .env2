@@ -1,0 +1,48 @@
+# Created by Vercel CLI
+NX_DAEMON=""
+; POSTGRES_DATABASE="verceldb"
+; POSTGRES_HOST="ep-super-tooth-a2zpryhy-pooler.eu-central-1.aws.neon.tech"
+; POSTGRES_PASSWORD="kWnyVS6mdPz5"
+; POSTGRES_PRISMA_URL="postgres://default:kWnyVS6mdPz5@ep-super-tooth-a2zpryhy-pooler.eu-central-1.aws.neon.tech/${POSTGRES_DATABASE}?pgbouncer=true&connect_timeout=15&sslmode=require"
+; POSTGRES_URL="postgres://default:kWnyVS6mdPz5@ep-super-tooth-a2zpryhy-pooler.eu-central-1.aws.neon.tech/${POSTGRES_DATABASE}?sslmode=require"
+; POSTGRES_URL_NON_POOLING="postgres://default:kWnyVS6mdPz5@ep-super-tooth-a2zpryhy.eu-central-1.aws.neon.tech/${POSTGRES_DATABASE}?sslmode=require"
+; POSTGRES_URL_NO_SSL="postgres://default:kWnyVS6mdPz5@ep-super-tooth-a2zpryhy-pooler.eu-central-1.aws.neon.tech/${POSTGRES_DATABASE}"
+; POSTGRES_USER="default"
+
+TURBO_REMOTE_ONLY=""
+TURBO_RUN_SUMMARY=""
+VERCEL="1"
+VERCEL_ENV="production"
+VERCEL_GIT_COMMIT_AUTHOR_LOGIN=""
+VERCEL_GIT_COMMIT_AUTHOR_NAME=""
+VERCEL_GIT_COMMIT_MESSAGE=""
+VERCEL_GIT_COMMIT_REF=""
+VERCEL_GIT_COMMIT_SHA=""
+VERCEL_GIT_PREVIOUS_SHA=""
+VERCEL_GIT_PROVIDER=""
+VERCEL_GIT_PULL_REQUEST_ID=""
+VERCEL_GIT_REPO_ID=""
+VERCEL_GIT_REPO_OWNER=""
+VERCEL_GIT_REPO_SLUG=""
+VERCEL_URL=""
+KV_URL="redis://default:4ba6592319ea4d15b250e7517df07ecb@vast-barnacle-48039.upstash.io:48039"
+AUTH_SECRET=2PTM0GDeqp9j3rfNfGC7QX0UCDDIyPtAB8FtCGbvaBs=
+
+
+; POSTGRES_PRISMA_URL="postgres://postgres:root@localhost:5432/postgres?pgbouncer=true&connect_timeout=15"
+; POSTGRES_URL="postgres://postgres:root@localhost:5432/postgres"
+; POSTGRES_URL_NON_POOLING="postgres://postgres:root@localhost:5432/postgres"
+; POSTGRES_URL_NO_SSL="postgres://postgres:root@elocalhost:5432/postgres"
+; POSTGRES_USER="postgres"
+; POSTGRES_PASSWORD="root"
+; POSTGRES_DATABASE="postgres"
+; POSTGRES_HOST="localhost:5432"
+
+POSTGRES_DATABASE="postgres"
+# Connect to Supabase via connection pooling with Supavisor.
+POSTGRES_PRISMA_URL="postgres://postgres.tpschsipkcgwjrarflus:Gbq1f|o,-PPw@aws-0-eu-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+# Direct connection to the database. Used for migrations.
+POSTGRES_URL_NON_POOLING="postgres://postgres.tpschsipkcgwjrarflus:Gbq1f|o,-PPw@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
+
+NEXT_PUBLIC_CLOUDINARY_CLOUD="aroundy"
+NEXT_PUBLIC_SENTRY_ID="https://4ae5fcea303ac98114bf9bf0436828e0@o4507453265805312.ingest.de.sentry.io/4507453268164688"
