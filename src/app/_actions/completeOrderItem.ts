@@ -34,6 +34,34 @@ export const completeOrderItem = async (
         }
       });
 
+      // update progress
+      const orderItemProgress = await tx.orderItemProgress.findFirst({
+        where: {
+          itemId: orderItem.ItemType.id
+        }
+      });
+
+      if (orderItemProgress) {
+        const newProgress =
+          (orderItemProgress?.progress ?? 0) -
+          (orderItem.newQuantity ?? orderItem.quantity) * (completed ? 1 : -1);
+
+        await tx.orderItemProgress.upsert({
+          where: {
+            id: orderItemProgress?.id
+          },
+          create: {
+            progress: 0,
+            itemId: orderItem.ItemType.id
+          },
+          update: {
+            progress: completed ? (newProgress >= 0 ? newProgress : 0) : newProgress
+          }
+        });
+      }
+
+      //
+
       const keepStock = completed ? fromStock : orderItem.fromStock;
 
       if (keepStock) {

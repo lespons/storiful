@@ -29,16 +29,17 @@ enum ItemTypePriceType {
 }
 
 model ItemType {
-  id        String          @id @default(cuid())
-  name      String
-  type      ItemTypeType    @default(INVENTORY)
-  ItemChild ItemChild[]
-  ItemStock ItemStock?
-  OrderItem OrderItem[]
-  image     String?
-  unit      Int?
-  cost      Decimal?         @db.Decimal(10, 2)
-  prices    ItemTypePrice[]
+  id                String             @id @default(cuid())
+  name              String
+  type              ItemTypeType       @default(INVENTORY)
+  ItemChild         ItemChild[]
+  ItemStock         ItemStock?
+  OrderItem         OrderItem[]
+  image             String?
+  unit              Int?
+  cost              Decimal?           @db.Decimal(10, 2)
+  prices            ItemTypePrice[]
+  OrderItemProgress OrderItemProgress?
 
   @@map(name: "item_types")
 }
@@ -117,6 +118,16 @@ model OrderItem {
   ItemType ItemType @relation(fields: [itemTypeId], references: [id])
 
   @@map(name: "order_items")
+}
+
+model OrderItemProgress {
+  id       String @id @default(cuid())
+  progress Int?
+  itemId   String @unique
+
+  Item ItemType @relation(fields: [itemId], references: [id])
+
+  @@map(name: "order_item_progress")
 }
 
 model User {
