@@ -39,7 +39,7 @@ class GanttChartCanvas {
           .flat()
       )
       .flat();
-    const startDate = subDays(Math.min(...allDates), 3);
+    const startDate = subDays(Math.min(...allDates), 1);
     const endDate = addDays(Math.max(...allDates), 3);
     let currentDate = startOfDay(startDate);
 
@@ -219,7 +219,7 @@ export default function GanttChart({ items }: Readonly<GanttChartProps>) {
   }, [items, canvasRef]);
 
   return (
-    <div className="h-[85vh] overflow-auto">
+    <div className="overflow-auto">
       <canvas ref={canvasRef} className="block min-w-max max-w-full" />
     </div>
   );

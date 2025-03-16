@@ -30,7 +30,8 @@ export const completeOrderItem = async (
         },
         data: {
           completed,
-          fromStock
+          fromStock,
+          completedAt: completed ? new Date() : null
         }
       });
 
