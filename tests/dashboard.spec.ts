@@ -91,9 +91,51 @@ test.describe('base orders flow', () => {
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order1_item1');
     await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: false });
-    await expect(orderItem1Div.getByText('order1_item1(+10)')).toBeVisible();
+    await expect(orderItem1Div.getByText('order1_item1')).toBeVisible();
 
     await expect(orderCard.getByTestId('order_details')).toHaveText(orderDetails);
+    await expect(orderCard.getByTestId('order_deadline')).toHaveText(
+      `${formatDate(addDays(new Date(), 10), 'dd MMM EE')}(in ${10} days)`
+    );
+
+    await orderCard.hover();
+    await expect(orderCard.getByTestId('order_edit')).toBeVisible();
+    await expect(orderCard.getByTestId('order_open')).toBeVisible();
+  });
+
+  test('should create the order with product and display the correct data', async ({ page }) => {
+    const playwrightItemTypePage = new PlaywrightItemTypePage(page);
+    await playwrightItemTypePage.createItemType({
+      name: 'order1_product_item1',
+      type: 'product',
+      price: '1000'
+    });
+
+    await page.waitForTimeout(100);
+    await page.goto('/');
+
+    const dashboardPage = new PlaywrightDashboardPage(page);
+
+    const orderDetails = 'detail_product#1';
+    await dashboardPage.createOrder(orderDetails, 10, [
+      { name: 'order1_product_item1', value: 10 }
+    ]);
+
+    const orderCard = await dashboardPage.getOrderCard('todo', orderDetails);
+    await expect(orderCard.getByTestId('order_number')).toHaveText(/^#(\d+)/);
+    await expect(orderCard).toBeVisible();
+
+    await expect(orderCard.getByTestId('order_date')).toHaveText(
+      formatDate(new Date(), 'dd MMM yyyy')
+    );
+
+    await expect(orderCard.getByTestId('order_new_label')).toBeVisible();
+    await expect(orderCard.getByTestId('order_created_by')).toHaveText(
+      'Created by ' + PlaywrightBasePage.BASE_USER_NAME
+    );
+
+    await expect(orderCard.getByTestId('order_details')).toHaveText(orderDetails);
+    await expect(orderCard.getByTestId('order_price')).toHaveText('$10,000');
     await expect(orderCard.getByTestId('order_deadline')).toHaveText(
       `${formatDate(addDays(new Date(), 10), 'dd MMM EE')}(in ${10} days)`
     );
@@ -138,7 +180,7 @@ test.describe('base orders flow', () => {
     await expect(itemChildStockSize).toHaveText('0(200)');
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order2_item1');
-    await orderItem1Div.filter({ hasText: 'order2_item1(+20)' }).click();
+    await orderItem1Div.filter({ hasText: 'order2_item1' }).click();
     await page.waitForResponse(
       (response) => response.url().includes('/order/todo') && response.status() === 200
     );
@@ -193,7 +235,7 @@ test.describe('base orders flow', () => {
     let responsePromise = page.waitForResponse(
       (response) => response.url().includes('/') && response.status() === 200
     );
-    await orderItem1Div.filter({ hasText: 'order4_item1(+120)' }).click();
+    await orderItem1Div.filter({ hasText: 'order4_item1' }).click();
     await responsePromise;
 
     await orderCard.hover({ timeout: 1000 });
@@ -232,7 +274,7 @@ test.describe('base orders flow', () => {
     await expect(orderCard).toBeVisible();
 
     const orderItem1Div = orderCard.getByTestId('order_item_' + 'order5_item1');
-    await orderItem1Div.filter({ hasText: 'order5_item1(+20)' }).click();
+    await orderItem1Div.filter({ hasText: 'order5_item1' }).click();
     await page.waitForResponse(
       (response) => response.url().includes('/order/todo') && response.status() === 200
     );
@@ -264,7 +306,7 @@ test.describe('base orders flow', () => {
     );
     await completedCard.getByTestId('completed-item-edit-order5_item1').getByRole('button').click();
     await changeValueResponsePromise;
-    await expect(completedCard.getByText('(1/ 20)')).toBeVisible();
+    await expect(completedCard.filter({ hasText: '1/ 20' })).toBeVisible();
     await page.waitForTimeout(100);
 
     // await expect(completedCard.getByRole('button', { name: 'send' })).toBeDisabled();
@@ -395,7 +437,7 @@ test.describe.skip('concurrency test', () => {
       const responsePromise = page.waitForResponse(
         (response) => response.url().includes('/') && response.status() === 200
       );
-      await orderItem1Div.filter({ hasText: 'order3_item1(+20)' }).click();
+      await orderItem1Div.filter({ hasText: 'order3_item1' }).click();
       await responsePromise;
       await expect(orderItem1Div.getByRole('checkbox')).toBeChecked({ checked: true });
 

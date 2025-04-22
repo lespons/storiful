@@ -1,7 +1,7 @@
 import React, { startTransition, useRef, useState } from 'react';
-import { differenceInDays, format, formatDistance, startOfDay } from 'date-fns';
-import { CheckCircleIcon, CheckIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
+import { differenceInDays, format, formatDistance } from 'date-fns';
+import { CheckCircleIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { OrderCardStatus, OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import {
   ArchiveBoxArrowDownIcon,
@@ -34,19 +34,21 @@ function CompletedItem({
           <DisclosureButton as="div" className="group py-0 text-blue-900">
             <div
               className={`relative flex ${edit ? 'flex-col' : 'flex-row'} gap-1 text-green-800 font-normal ${orderItem.children?.length ? 'cursor-pointer' : ''} hover:text-green-700`}>
-              <div className={'flex gap-1'}>
+              <div className={'flex gap-1 w-full'}>
                 <div
                   data-testid={`completed-item-name-${orderItem.name}`}
-                  className={`transition-all ease-in duration-500 font-bold text-sm my-auto ${highlightItem === orderItem.itemId ? 'bg-yellow-300' : ''}`}>
+                  className={`flex-1 transition-all ease-in duration-500 font-bold text-sm my-auto ${highlightItem === orderItem.itemId ? 'bg-yellow-300' : ''}`}>
                   {orderItem.name}
                 </div>
-                <div className="flex gap-1 text-xs my-auto">
+                <div
+                  data-testid="order_item_quantity"
+                  className="flex gap-1 text-xs my-auto rounded-xl justify-center bg-white/50 px-1 min-w-5 group-hover:hidden">
                   {theValueIsChanged ? (
                     <span>
-                      (<b>{orderItem.newQuantity}</b>/ {orderItem.quantity})
+                      <b>{orderItem.newQuantity}</b>/ {orderItem.quantity}
                     </span>
                   ) : (
-                    <>({orderItem.quantity})</>
+                    <>{orderItem.quantity}</>
                   )}
                   {theValueIsChanged ? (
                     <ExclamationTriangleIcon
@@ -105,7 +107,7 @@ function CompletedItem({
           </DisclosureButton>
           {(open || childIsHighlight) && (
             <DisclosurePanel static>
-              <div className={'pl-2 text-xs text-gray-600 max-w-60 font-bold'}>
+              <div className={'pl-2 text-xs text-gray-600 font-bold'}>
                 {orderItem.children?.map((oic) => (
                   <div
                     key={oic.name}
@@ -114,9 +116,9 @@ function CompletedItem({
                       className={`font-bold  ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
                       {oic.name}
                     </div>
-                    <div className="text-xs">
-                      (-{oic.quantity * orderItem.quantity}
-                      {oic.unit})
+                    <div className="text-xs h-fit rounded-xl bg-white px-1 min-w-5 ml-auto">
+                      {oic.quantity * orderItem.quantity}
+                      {oic.unit}
                     </div>
                   </div>
                 ))}
@@ -168,27 +170,20 @@ export const CompletedOrderCard = function CompletedOrder({
   };
 
   const sendDisabled = order.pending;
-  const today = startOfDay(Date.now());
   return (
     <div
       data-testid={`completed_order_${order.details}`}
-      className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
+      className={`group bg-green-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}
+      style={{
+        viewTransitionName: `order-card-${order.id}`
+      }}>
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="font-light">{format(order.lastState.date, 'dd MMM yyyy')}</div>
-        {differenceInDays(today, order.lastState.date) < 1 ? (
-          <div
-            className={
-              'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-green-900 px-2 my-auto rounded-md'
-            }>
-            new
-            <CheckIcon className={'size-3 my-auto '} />
-          </div>
-        ) : (
-          <CheckCircleIcon
-            className={'group-hover:invisible absolute right-0 size-4 text-green-900'}
-          />
-        )}
+
+        <OrderCardStatus price={order.price} color={'green'} stateDate={order.lastState.date}>
+          <CheckCircleIcon />
+        </OrderCardStatus>
 
         <div className={'flex flex-1 justify-end gap-2'}>
           <OrderOpen orderId={order.id} state={order.lastState.state} />
@@ -210,6 +205,7 @@ export const CompletedOrderCard = function CompletedOrder({
             />
           );
         })}
+
         <div className={'flex w-full gap-1'}>
           <div
             className={

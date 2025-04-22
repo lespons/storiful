@@ -1,14 +1,10 @@
 import prisma from '@/lib/prisma';
-import { ItemChild, ItemType } from '@prisma/client';
 import { OrderFormProps } from '@/components/order/OrderForm';
 import { OrderCreateClient } from '@/app/_components/OrderCreateClient';
 import { createOrder } from '@/app/_actions/createOrder';
+import { ItemType } from '@/components/ItemTypeForm';
 
-export async function OrderCreate({
-  itemTypes
-}: {
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
-}) {
+export async function OrderCreate({ itemTypes }: { itemTypes: ItemType[] }) {
   const itemStock = await prisma.itemStock.findMany({
     where: {
       value: {
@@ -28,16 +24,7 @@ export async function OrderCreate({
   );
   return (
     <OrderCreateClient
-      itemTypes={itemTypes.map(({ name, id, type, ItemChild }) => ({
-        id,
-        name,
-        type,
-        children: ItemChild.map((ic) => ({
-          quantity: ic.quantity,
-          name: itemTypes.find((it) => it.id === ic.itemTypeId)!.name,
-          itemTypeId: ic.itemTypeId
-        }))
-      }))}
+      itemTypes={itemTypes}
       itemStockById={itemStockById}
       onSubmit={createOrder as unknown as OrderFormProps['onSubmit']}
     />

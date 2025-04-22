@@ -18,12 +18,15 @@ export function OrderItem({
 }: {
   className?: string;
   active?: boolean;
-  order: Order & { lastState: OrderStatesHistory | null };
+  order: Omit<Order, 'price'> & { price?: string; lastState: OrderStatesHistory | null };
 }) {
   return (
     <div
       className={`group flex flex-col px-6 py-2 rounded-md bg-white/90 min-w-80 text-sm hover:cursor-pointer hover:bg-black/5
-       ${active ? 'border-[1px] border-l-4 border-black/50' : 'border-[1px] border-black/30'}`}>
+       ${active ? 'border-[1px] border-l-4 border-black/50' : 'border-[1px] border-black/30'}`}
+      style={{
+        viewTransitionName: `order-card-${order.id}`
+      }}>
       <div className={'flex gap-1'}>
         <div className={'font-light my-auto'}>#{order.num}</div>
         {order.details ? (
@@ -53,7 +56,6 @@ export function SimpleOrderList({
   defaultParams,
   ordersCount
 }: {
-  orders: Array<Order & { lastState: OrderStatesHistory | null }>;
   defaultParams: { limit: number; skip: number; states: $Enums.OrderStates[] };
   rightSection?: ReactNode;
   ordersCount: number;

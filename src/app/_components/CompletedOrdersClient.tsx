@@ -1,21 +1,21 @@
 'use client';
 import { OrdersList, OrdersListProps } from '@/components/order/OrdersList';
 import { useSWRConfig } from 'swr';
-import { ItemChild, ItemType } from '@prisma/client';
 import { CompletedOrdersReturnType } from '@/app/_actions/getCompleted';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { eventBus, ItemTypeSelectEvent } from '@/lib/eventBus';
-import { ItemTypeUnitsNames } from '@/components/ItemTypeForm';
+import { ItemType as ClientItemType, ItemTypeUnitsNames } from '@/components/ItemTypeForm';
 
 export const mapOrderToListItem = (
-  { num, id, deadlineAt, OrderItem, details, lastState }: CompletedOrdersReturnType[0],
-  itemTypes: { [itemId: string]: ItemType & { ItemChild: ItemChild[] } }
+  { num, id, deadlineAt, OrderItem, details, lastState, price }: CompletedOrdersReturnType[0],
+  itemTypes: { [itemId: string]: ClientItemType }
 ): OrdersListProps['orders'][0] => ({
   id,
   num,
   deadlineAt: deadlineAt,
   details,
+  price,
   items: OrderItem.map((oi) => ({
     id: oi.id,
     itemId: oi.ItemType.id,
@@ -49,7 +49,7 @@ export function CompletedOrdersClient({
   cloneOrder: (id: string) => Promise<void>;
   onChangeState: (id: string, state: string) => Promise<void>;
   onChangeItemValue: (orderItemId: string, newvalue: number) => Promise<void>;
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
+  itemTypes: ClientItemType[];
   expiredOrdersCount: number;
 }) {
   const { mutate } = useSWRConfig();

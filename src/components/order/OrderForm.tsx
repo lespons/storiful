@@ -43,7 +43,7 @@ function OrderSubmit({
   action: OrderFormProps['action'];
   disabled: boolean;
 }) {
-  const { pending, ...rest } = useFormStatus();
+  const { pending } = useFormStatus();
   return (
     <button
       type="submit"
@@ -96,7 +96,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
     }
   });
 
-  const [state, formAction] = useFormState(onSubmit, {
+  const [_state, formAction] = useFormState(onSubmit, {
     order: {
       items: []
     }

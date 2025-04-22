@@ -1,4 +1,3 @@
-import { ItemChild, ItemType } from '@prisma/client';
 import { getTodoOrders } from '@/app/lib/actions/order';
 import { TodoOrdersClient } from '@/app/_components/TodoOrdersClient';
 import { SWRProvider } from '@/components/swr';
@@ -7,20 +6,21 @@ import { updateOrder } from '@/app/_actions/updateOrder';
 import { OrderCreate } from '@/app/_components/OrderCreate';
 import { completeOrder } from '@/app/_actions/completeOrder';
 import { completeOrderItem } from '@/app/_actions/completeOrderItem';
+import { ItemType } from '@/components/ItemTypeForm';
+import { TodoOrdersSummary } from '@/app/_components/TodoOrdersSummary';
 
-export async function TodoOrders({
-  itemTypes
-}: {
-  itemTypes: (ItemType & { ItemChild: ItemChild[] })[];
-}) {
+export async function TodoOrders({ itemTypes }: { itemTypes: ItemType[] }) {
   const orders = await getTodoOrders();
-
   return (
-    <div className="relative max-h-[90vh] flex flex-col">
-      <div className={'flex justify-center w-full mb-1'}>
-        <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
+    <div className="relative flex max-h-[90vh] flex-col">
+      <div className={'mb-1 flex w-full justify-center'}>
+        <div className="flex gap-2 rounded-md bg-fuchsia-100 px-2 py-1">
+          <span className="font-bold">{orders?.length}</span>
+          <WrenchScrewdriverIcon className={'size-6 text-fuchsia-900'} />
+        </div>
       </div>
       <OrderCreate itemTypes={itemTypes} />
+      <TodoOrdersSummary itemTypes={itemTypes} orders={orders} />
       <SWRProvider
         fallback={{
           '/api/order/todo': { orders }

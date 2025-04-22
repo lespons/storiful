@@ -1,14 +1,14 @@
 import ItemTypeForm from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
-import { unstable_cache } from 'next/cache';
 import { RedirectButton } from '@/components/Button';
-import { getItemType } from '@/app/lib/actions/itemType';
+import { getCachedItemTypesForEdit } from '@/app/lib/actions/itemType';
 import LongPressButton from '@/components/LongPressButton';
 import { DocumentDuplicateIcon, TrashIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { mapItemType } from '@/app/itemtype/_lib/mappers';
 import { createAsNewItemType } from '@/app/itemtype/_actions/createAsNewItemType';
 import { deleteItemType } from '@/app/itemtype/_actions/deleteItemType';
 import { updateItemType } from '@/app/itemtype/_actions/updateItemType';
+import { ItemTreeView } from '@/app/itemtype/_components/ItemTreeView';
 
 export const dynamicParams = false;
 
@@ -25,42 +25,20 @@ export async function generateStaticParams() {
 }
 
 async function getProps(itemid: string) {
-  const itemTypes = await unstable_cache(
-    async () =>
-      prisma.itemType.findMany({
-        include: {
-          ItemChild: true
-        },
-        orderBy: {
-          name: 'asc'
-        }
-      }),
-    ['item_types_edit'],
-    {
-      tags: ['item_types_edit']
-    }
-  )();
+  const itemTypes = await getCachedItemTypesForEdit();
 
-  const itemType = await unstable_cache(
-    async () => getItemType(itemid),
-    [`item_types_edit_${itemid}`],
-    {
-      tags: ['item_types_edit']
-    }
-  )();
   return {
     itemTypes,
-    itemType
+    itemType: itemTypes.find(({ id }) => id === itemid)
   };
 }
 
 export default async function ItemTypeEditPage({ params }: { params: { itemid: string } }) {
   const { itemType, itemTypes } = await getProps(params.itemid);
-
   if (!itemType) {
     return <div>404</div>;
   }
-
+  const clientItemTypes = itemTypes.map(({ id, name, type }) => ({ id, name, type }));
   return (
     <div>
       <div className="mb-4">
@@ -75,11 +53,32 @@ export default async function ItemTypeEditPage({ params }: { params: { itemid: s
         />
       </div>
 
+      <div className="mb-4">
+        <ItemTreeView
+          builtItem={{
+            id: itemType.id,
+            name: itemType.name,
+            ItemChild: itemType.ItemChild.map((ic) => ({
+              itemTypeId: ic.itemTypeId,
+              id: ic.id
+            }))
+          }}
+          itemTypes={itemTypes.map((itemType) => ({
+            id: itemType.id,
+            name: itemType.name,
+            ItemChild: itemType.ItemChild.map((ic) => ({
+              itemTypeId: ic.itemTypeId,
+              id: ic.id
+            }))
+          }))}
+        />
+      </div>
+
       <ItemTypeForm
         action={'UPDATE'}
         onSubmit={async function (prev, newdata) {
           'use server';
-          return await updateItemType(prev, newdata, itemTypes);
+          return await updateItemType(prev, newdata, clientItemTypes);
         }}
         itemsList={itemTypes.map((itemType) => mapItemType(itemTypes, itemType))}
         itemType={mapItemType(itemTypes, itemType)}

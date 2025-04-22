@@ -88,6 +88,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npx prisma migrate deploy && npx prisma generate && npm run build && npm run start',
+    // command: 'npx prisma migrate deploy && npx prisma generate && next dev',
     // command: 'next dev',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: false,

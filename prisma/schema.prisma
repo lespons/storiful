@@ -23,17 +23,36 @@ enum OrderStates {
   ARCHIVE
 }
 
+enum ItemTypePriceType {
+  BUY
+  SELL
+}
+
 model ItemType {
-  id        String       @id @default(cuid())
-  name      String
-  type      ItemTypeType @default(INVENTORY)
-  ItemChild ItemChild[]
-  ItemStock ItemStock?
-  OrderItem OrderItem[]
-  image     String?
-  unit      Int?
+  id                String             @id @default(cuid())
+  name              String
+  type              ItemTypeType       @default(INVENTORY)
+  ItemChild         ItemChild[]
+  ItemStock         ItemStock?
+  OrderItem         OrderItem[]
+  image             String?
+  unit              Int?
+  cost              Decimal?           @db.Decimal(10, 2)
+  prices            ItemTypePrice[]
+  OrderItemProgress OrderItemProgress?
 
   @@map(name: "item_types")
+}
+
+model ItemTypePrice {
+  id         String            @id @default(cuid())
+  itemType   ItemType          @relation(fields: [itemTypeId], references: [id], onDelete: Cascade)
+  itemTypeId String
+  price      Decimal           @db.Decimal(9, 3)
+  type       ItemTypePriceType
+  date       DateTime          @default(now())
+
+  @@map(name: "item_type_price")
 }
 
 model ItemChild {
@@ -67,6 +86,8 @@ model Order {
   states    OrderStatesHistory[] @relation("OrderStates")
   lastState OrderStatesHistory?  @relation("LastState", fields: [lastStateId], references: [id])
 
+  price Decimal? @db.Decimal(10, 2)
+
   @@map(name: "orders")
 }
 
@@ -84,19 +105,30 @@ model OrderStatesHistory {
 }
 
 model OrderItem {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String?
   orderId     String
   itemTypeId  String
   quantity    Int
   newQuantity Int?
-  completed   Boolean @default(false)
-  fromStock   Boolean @default(false)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  fromStock   Boolean   @default(false)
 
   Order    Order    @relation(fields: [orderId], references: [id])
   ItemType ItemType @relation(fields: [itemTypeId], references: [id])
 
   @@map(name: "order_items")
+}
+
+model OrderItemProgress {
+  id       String @id @default(cuid())
+  progress Int?
+  itemId   String @unique
+
+  Item ItemType @relation(fields: [itemId], references: [id])
+
+  @@map(name: "order_item_progress")
 }
 
 model User {

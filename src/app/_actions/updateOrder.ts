@@ -2,6 +2,7 @@ import { OrdersListEditCallback } from '@/components/order/OrdersList';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { calcOrderPrice } from '@/app/_actions/orders';
 
 export const updateOrder: OrdersListEditCallback = async (prevData, values) => {
   'use server';
@@ -59,6 +60,36 @@ export const updateOrder: OrdersListEditCallback = async (prevData, values) => {
           quantity: Number(orderItemToCreate.quantity),
           itemTypeId: orderItemToCreate.itemId
         }))
+      });
+
+      const order = await tx.order.findUniqueOrThrow({
+        where: {
+          id: values.order.id
+        },
+        include: {
+          OrderItem: {
+            include: {
+              ItemType: {
+                include: {
+                  prices: {
+                    orderBy: {
+                      date: 'desc'
+                    },
+                    take: 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      await tx.order.update({
+        where: {
+          id: values.order.id
+        },
+        data: {
+          price: calcOrderPrice(order)
+        }
       });
     });
 

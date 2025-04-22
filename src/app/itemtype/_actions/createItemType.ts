@@ -1,6 +1,7 @@
 import { ItemTypeFormValuesType } from '@/components/ItemTypeForm';
 import prisma from '@/lib/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { calcItemTypeCost } from '@/app/itemtype/_actions/itemTypes';
 
 export const createItemType = async (
   prevvalues: ItemTypeFormValuesType,
@@ -8,28 +9,41 @@ export const createItemType = async (
 ): Promise<ItemTypeFormValuesType> => {
   'use server';
   try {
-    const result = await prisma.itemType.create({
-      data: {
-        name: itemType.name,
-        type: itemType.type,
-        image: itemType.image,
-        unit: itemType.unit,
-        ItemChild: {
-          createMany: {
-            data: itemType.children.map((c) => ({
-              itemTypeId: c.itemTypeId,
-              quantity: Number(c.quantity)
-            }))
-          }
+    await prisma.$transaction(async (tx) => {
+      const result = await tx.itemType.create({
+        data: {
+          name: itemType.name,
+          type: itemType.type,
+          image: itemType.image,
+          unit: itemType.unit,
+          ItemChild: {
+            createMany: {
+              data: itemType.children.map((c) => ({
+                itemTypeId: c.itemTypeId,
+                quantity: Number(c.quantity)
+              }))
+            }
+          },
+          cost: await calcItemTypeCost(tx, itemType),
+          ...(itemType.price && itemType.price > 0
+            ? {
+                prices: {
+                  create: {
+                    price: itemType.price,
+                    type: itemType.type === 'PRODUCT' ? 'SELL' : 'BUY'
+                  }
+                }
+              }
+            : {})
         }
-      }
-    });
+      });
 
-    await prisma.itemStock.create({
-      data: {
-        value: 0,
-        itemTypeId: result.id
-      }
+      await tx.itemStock.create({
+        data: {
+          value: 0,
+          itemTypeId: result.id
+        }
+      });
     });
 
     return {

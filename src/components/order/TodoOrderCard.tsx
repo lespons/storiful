@@ -6,7 +6,7 @@ import {
   HomeModernIcon as HomeModernOutlineIcon
 } from '@heroicons/react/24/outline';
 import { OrdersListProps } from '@/components/order/OrdersList';
-import { OrderOpen } from '@/components/order/OrderCardBase';
+import { OrderCardStatus, OrderOpen } from '@/components/order/OrderCardBase';
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/solid';
 
 export type TodoOrderCardProps = Pick<
@@ -40,7 +40,10 @@ export const TodoOrderCard = function TodoOrder({
   return (
     <div
       data-testid={`todo_order_${order.details}`}
-      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
+      style={{
+        viewTransitionName: `order-card-${order.id}`
+      }}
+      className={`relative group ${order.pending ? 'bg-[size:200%] bg-fuchsia-gradient bg-opacity-10 animate-shift' : 'bg-fuchsia-900/10'} [view-transition-name:order-card-${order.id}] font-light px-6 py-4 mb-2 rounded-md min-w-52 ${blurred ? '[&:not(:hover)]:opacity-40' : ''}`}>
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline" aria-description={'order number'} data-testid="order_number">
           #{order.num}
@@ -48,15 +51,9 @@ export const TodoOrderCard = function TodoOrder({
         <div className="font-light" data-testid="order_date">
           {format(order.lastState.date!, 'dd MMM yyyy')}
         </div>
-        {differenceInDays(new Date(), order.lastState.date!) < 1 ? (
-          <div
-            data-testid="order_new_label"
-            className={
-              'group-hover:invisible absolute right-0 font-normal text-white bg-violet-900 px-2 rounded-md'
-            }>
-            new
-          </div>
-        ) : null}
+        <OrderCardStatus price={order.price} color={'fuchsia'} stateDate={order.lastState.date}>
+          {null}
+        </OrderCardStatus>
 
         <div className={'flex flex-1 justify-end gap-2'}>
           <OrderOpen orderId={order.id} state={order.lastState.state} />
@@ -93,6 +90,7 @@ export const TodoOrderCard = function TodoOrder({
       <div className="text-xs mb-2 text-gray-600" data-testid="order_created_by">
         Created by {order.lastState.userName}
       </div>
+
       <div
         className={`relative bg-white hover:shadow-md hover:bg-opacity-80 px-4 py-2 rounded-md shadow-sm transition-colors duration-100 bg-opacity-30`}>
         {order.items.map((oi) => (
@@ -133,9 +131,9 @@ export const TodoOrderCard = function TodoOrder({
                 {oi.name}
               </div>
               <div
-                className={`${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} text-xs my-auto`}
+                className={`${oi.completed ? 'group-hover/item:text-red-500' : 'group-hover/item:text-green-500'} text-xs my-auto ml-auto text-center rounded-xl bg-white/50 px-1 min-w-5`}
                 date-testid="order_item_quantity">
-                (+{oi.quantity})
+                {oi.quantity}
               </div>
               {oi.completed ? null : (
                 <div
@@ -164,18 +162,18 @@ export const TodoOrderCard = function TodoOrder({
                 {oi.children?.map((oic) => (
                   <div
                     key={oic.name}
-                    className={`text-red-900 text-xs font-normal flex flex-row gap-1 pl-6 ${!oi.completed || highlightItem === oic.itemTypeId ? ' visible' : ' group/rootitem-hover:hidden'}`}
+                    className={`flex flex-row gap-1 pl-6 text-red-900 text-xs font-normal  ${!oi.completed || highlightItem === oic.itemTypeId ? ' visible' : ' group/rootitem-hover:hidden'}`}
                     role={'listitem'}
                     data-testid={`order_item_${oi.name}_children_${oic.name}`}>
                     <div
-                      className={`font-bold ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
+                      className={`w-fit font-bold ${highlightItem === oic.itemTypeId ? 'bg-yellow-300' : ''}`}>
                       {oic.name}
                     </div>
                     <div
-                      className="text-xs"
+                      className="text-xs h-fit text-center rounded-xl bg-white px-1 min-w-5 ml-auto"
                       data-testid={`order_item_${oi.name}_children_quantity`}>
-                      (-{oic.quantity * oi.quantity}
-                      {oic.unit})
+                      {oic.quantity * oi.quantity}
+                      {oic.unit}
                     </div>
                   </div>
                 ))}

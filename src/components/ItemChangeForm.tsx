@@ -49,7 +49,6 @@ const ItemTypeForm: React.FC<ItemTypeFormProps> = ({
     register,
     control,
     handleSubmit,
-    reset,
     formState: { errors }
   } = useForm<ItemTypeFormFormState>({
     values: state as ItemTypeFormFormState

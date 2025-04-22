@@ -1,7 +1,7 @@
 import React from 'react';
-import { differenceInDays, format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 import { TruckIcon } from '@heroicons/react/24/solid';
-import { OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
+import { OrderCardStatus, OrderClone, OrderOpen } from '@/components/order/OrderCardBase';
 import { OrdersListProps } from '@/components/order/OrdersList';
 
 export const SentOrderCard = function SentOrder({
@@ -12,28 +12,18 @@ export const SentOrderCard = function SentOrder({
   order: OrdersListProps['orders'][0];
   onClone: OrdersListProps['onClone'];
 }) {
-  const today = startOfDay(Date.now());
   return (
     <div
       data-testid={`sent_order_${order.details}`}
-      className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52`}>
+      className={`group bg-yellow-700 bg-opacity-10 font-light px-6 py-4 mb-2 rounded-md min-w-52 [view-transition-name:order-card-${order.id}]`}>
       <div className="relative flex text-xs gap-2 mb-1">
         <div className="underline">#{order.num}</div>
         <div className="flex gap-0.5 font-light">
           <div>{format(order.lastState.date, 'dd MMM yyyy')}</div>
         </div>
-        {differenceInDays(today, order.lastState.date!) < 1 ? (
-          <div
-            className={
-              'group-hover:invisible absolute right-0 flex gap-1 font-normal text-white bg-orange-900 px-2 my-auto rounded-md'
-            }>
-            new <TruckIcon className={'text-white size-3 my-auto'} />
-          </div>
-        ) : (
-          <TruckIcon
-            className={'group-hover:invisible absolute right-0 text-orange-900 size-4 my-auto'}
-          />
-        )}
+        <OrderCardStatus price={order.price} color={'orange'} stateDate={order.lastState.date}>
+          <TruckIcon />
+        </OrderCardStatus>
         <div className={'flex flex-1 justify-end gap-2'}>
           <OrderOpen orderId={order.id} state={order.lastState.state} />
           <OrderClone orderId={order.id} onClone={onClone} />
@@ -44,19 +34,19 @@ export const SentOrderCard = function SentOrder({
         {order.items.map((oi) => {
           return (
             <div key={oi.id}>
-              <div className={`flex flex-row gap-1 text-gray-800 font-normal hover:text-gray-950`}>
+              <div
+                className={`group flex flex-row gap-1  text-gray-800 font-normal hover:text-gray-950`}>
                 <div
-                  className={`font-bold text-sm ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
+                  className={`group-hover:underline font-bold text-sm ${highlightItem === oi.itemId ? 'bg-yellow-300' : ''}`}>
                   {oi.name}
                 </div>
-                <div className="text-xs my-auto">
-                  (
+                <div className="group-hover:underline text-xs my-auto ml-auto text-center rounded-xl bg-white/50 px-1 min-w-5">
                   {oi.newQuantity ? (
                     <span>
                       <b>{oi.newQuantity}</b>/
                     </span>
                   ) : null}
-                  {oi.quantity})
+                  {oi.quantity}
                 </div>
               </div>
             </div>
