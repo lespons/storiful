@@ -13,7 +13,7 @@ export async function CompletedOrders({ itemTypes }: { itemTypes: ItemType[] }) 
   orders.sort(({ states: [completedState1] }, { states: [completedState2] }) => {
     return completedState2.date.getTime() - completedState1.date.getTime();
   });
-  console.log(orders[0].lastState?.state);
+
   const expiredOrdersCount = await getExpiredCount();
 
   const completedCount = orders.filter((order) => order.lastState?.state === 'COMPLETED').length;

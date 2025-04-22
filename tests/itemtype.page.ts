@@ -120,7 +120,10 @@ export class PlaywrightItemTypePage {
 
     await this.locators.buttonCreate.click();
 
-    const divTestItem2 = this.page.getByTestId('item-types-list').getByText(name).first();
+    const divTestItem2 = this.page
+      .getByTestId('item-types-list')
+      .getByText(name, { exact: true })
+      .first();
 
     await expect(divTestItem2).toBeVisible();
   }
